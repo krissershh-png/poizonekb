@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>POIZON.EKB</title>
+<meta name="description" content="Оригиналы с Poizon под заказ. Цена под каждый размер, конечная и без доплат. Екатеринбург и Верхняя Пышма — до двери, другие города — пункт выдачи.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:title" content="POIZON.EKB — оригиналы с Poizon под заказ">
+<meta property="og:description" content="Каталог с ценой под каждый размер. Трек и этапы посылки в Telegram.">
+<meta property="og:image" content="https://krissershh-png.github.io/poizonekb/img/bot-welcome.jpg">
+<link rel="icon" href="img/mascot-round.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -720,7 +727,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="rule">Сомневаетесь в размере? Напишите мне до заказа, помогу подобрать.</div>
     <label class="check"><input type="checkbox" id="f-agree"><span>Размер проверен. Понимаю, что вещь выкупается под меня, поэтому возврата и обмена нет</span></label>
     <div class="rule">Трек-номер и статус посылки пришлю в Telegram сама, ничего спрашивать не нужно</div>
-    <button class="btn block" style="margin-top:14px" onclick="submitOrder()">Отправить Кристине</button>
+    <button class="btn block" id="f-send" style="margin-top:14px" onclick="submitOrder()">Оформить заказ</button>
   </div>
 </section>
 
@@ -794,6 +801,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <button class="btn block ghost" onclick="openTg('https://t.me/'+CFG.admin)">Написать Кристине</button>
     <button class="btn block ghost" onclick="openTg('https://t.me/'+CFG.channel)">Канал @buypoizonekb</button>
   </div>
+  <div class="small" id="hours-note" style="text-align:center;margin-top:10px"></div>
 </section>
 </div>
 
@@ -817,7 +825,8 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 const CFG = {
   admin: 'kristinaershhova',
   channel: 'buypoizonekb',
-  appLink: 'https://t.me/poizonekbb_bot/shop',
+  appLink: 'https://t.me/poizonekbb_bot',   // ссылки друзьям ведут в бота (?start=…): он встречает, начисляет подарок и открывает магазин
+  hours: 'с 10 до 22',                       // когда отвечаю; то же число в bot/Code.gs, CFG.hours
   rateChannel: 'amblixObmen',
   rateFallback: { small: 13.75, big: 13.7, date: '13 сентября' },   // запасной курс; свежий приходит из канала, из prices.json (GitHub, 3 раза в день) или из таблицы
   /* Доставка = max(minParcelKg, объёмный вес посылки) × kgRate + shipRisk × цена товаров (защита от рисков Ракеты).
@@ -877,7 +886,15 @@ const dmy = ts => new Date(ts).toLocaleDateString('ru-RU',{day:'2-digit',month:'
 const dmyhm = ts => dmy(ts) + ', ' + new Date(ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
 function load(k,d){ try{ const v=localStorage.getItem('pz5_'+k); return v?JSON.parse(v):d }catch(e){ return d } }
 function save(k,v){ try{ localStorage.setItem('pz5_'+k, JSON.stringify(v)) }catch(e){}
-  if(['gifts','grow','unlock','hero'].includes(k)){ clearTimeout(save._c); save._c = setTimeout(()=>cloudSave(), 400) } }
+  if(['gifts','grow','unlock','hero'].includes(k)){ clearTimeout(save._c); save._c = setTimeout(()=>cloudSave(), 400) }
+  if(k === 'cart'){ clearTimeout(save._k); save._k = setTimeout(()=>cartSync(), 1500) } }
+/* корзина уходит в таблицу: если заказ собран и не оформлен, через сутки бот напомнит один раз */
+function cartSync(){
+  const key = JSON.stringify(cart.map(c => [c.id || c.link, c.size, c.price]));
+  if(key === load('cartSent', '')) return;
+  api('cart', { list: cart.map(c => { const p = CAT.find(x => x.id === c.id); return { id: c.id || '', n: c.custom ? 'Вещь по ссылке' : p ? p.brand+' '+p.name : '', s: c.size, p: c.price || 0 } }) })
+    .then(r => { if(r && r.ok) save('cartSent', key) });
+}
 function haptic(t){ try{ if(!tg||!tg.HapticFeedback) return; if(t==='ok') tg.HapticFeedback.notificationOccurred('success'); else if(t==='tick') tg.HapticFeedback.selectionChanged(); else tg.HapticFeedback.impactOccurred(t||'light') }catch(e){} }
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400) }
 /* inTg: приложение реально открыто внутри Telegram (в обычном браузере initData пустой) */
@@ -939,9 +956,10 @@ const myTag = user ? (user.username || ('id'+user.id)) : '';
   if(sp === 'shelf') setTimeout(()=>{ go('me'); scrollToId('me-shelf') }, 300);   // «Моя полка» из сообщения бота
   if(sp === 'calc') setTimeout(()=>go('calc'), 300);                                  // «Рассчитать цену» из меню бота
   if(sp === 'stock') setTimeout(()=>{ go('home'); scrollToId('home-stock') }, 600);   // «В наличии» из меню бота
+  if(sp === 'cart') setTimeout(()=>go('cart'), 300);                                  // «Открыть заказ» из напоминания о корзине
   const jm = /^j_(PZ-\d{4,6})$/i.exec(sp);                                         // «Путь посылки»: ждём заказы из таблицы
   if(jm){ const t0 = Date.now(), tick = () => { if(SRV_ORDERS) openJourney(jm[1].toUpperCase()); else if(Date.now() - t0 < 12000) setTimeout(tick, 400) }; setTimeout(tick, 600) }
-  if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe|calc|stock)$/i.test(sp) && !G.ref && sp !== myTag){
+  if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe|calc|stock|cart)$/i.test(sp) && !G.ref && sp !== myTag){
     G.ref = sp.slice(0,40);
     G.coupons.push({ id:'friend', v:CFG.friend.value, min:CFG.friend.min, until:Date.now()+CFG.friend.days*DAY, why:'Подарок от друга', first:true });
     save('gifts', G);
@@ -1052,7 +1070,7 @@ const HEART = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4
 function card(p){
   const mp = minPrice(p), S = sizesOf(p).filter(s=>s.ok), n = S.length;
   const studio = studioAt(p, 0) ? 'studio' : '';
-  const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes'?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
+  const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
   const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-mp)}</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
   const meta = p.stock ? `<i></i>${range} · отправлю сегодня` : p.post ? `<i></i>${range ? range+' · ' : ''}выкуп ${buyShort()}` : (n ? `<i></i>${range} · выкуп ${buyShort()}` : `<i class="no"></i>уточню наличие`);
   return `<div class="card">
@@ -1132,7 +1150,7 @@ function renderHow(){
   const row = $('how-row'); if(!row) return;
   /* схема работы её словами: три шага заказа, потом три сообщения о пути (e — подпись «Сообщу») */
   const steps = [
-    { i:'chat',  t:'Присылаете вещь',        s:'Фото или название в личные сообщения — проверю наличие на Poizon' },
+    { i:'chat',  t:'Выбираете вещь',         s:'В каталоге или присылаете фото и название мне в личку — проверю наличие на Poizon' },
     { i:'swap',  t:'Нет в наличии?',         s:'Ищу альтернативные варианты. Они всегда есть' },
     { i:'card',  t:'Есть в наличии',         s:'Вы оплачиваете, я заказываю в ближайшую поставку' },
     { i:'box',   t:'Заказ на складе в Китае', s:'И пришлю фото вашей вещи', e:'Сообщу' },
@@ -1322,7 +1340,7 @@ function askProduct(id){
 /* ссылка на товар; если у клиента есть личный код, подарок подруге тоже засчитается */
 function shareProduct(id){
   const p = CAT.find(x=>x.id===id); if(!p) return;
-  const url = CFG.appLink + '?startapp=' + (G.code ? 'r_'+G.code+'__' : '') + 'p_' + id;
+  const url = CFG.appLink + '?start=' + (G.code ? 'r_'+G.code+'__' : '') + 'p_' + id;
   shareUrl(url, `${p.brand} ${p.name}. Смотри в POIZON.EKB`, 'Ссылка на товар скопирована');
 }
 function shareUrl(url, text, copied){
@@ -1533,6 +1551,7 @@ function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.que
 $('f-city').innerHTML = Object.entries(CITY).map(([k,v])=>`<button data-k="${k}" onclick="setCity('${k}')">${v.t}</button>`).join('');
 setCity('ekb');
 if(user) $('f-name').value = [user.first_name,user.last_name].filter(Boolean).join(' ');
+$('hours-note').textContent = `На связи ${CFG.hours} по Екатеринбургу`;
 const cartSum = () => cart.reduce((a,c)=>a+c.price,0);
 /* подарки: к заказу один самый выгодный купон; скидка за объём суммируется с ним; к оплате сертификатом скидок нет */
 const payByCert = () => !!($('f-cert') && $('f-cert').checked);
@@ -1695,19 +1714,42 @@ function sendOrder(name, phone, addr, write){
     `Возврата нет — согласна`,
     user&&user.username ? `@${user.username}` : null,
     G.code ? `Код клиента: ${G.code}` : null ].filter(v=>v!==null).join('\n');
-  api('order', { order:{ num, items:lines, ids: cart.filter(c=>!c.custom).map(c=>({ id:c.id, s:c.size })), photos, n, nb, rush, ship: shipc, pay, vol, cut, couponId: cp && cut ? cp.id : '', gift: cp && cut ? cp.why : '', perk: !!perk, certPay, certNum, margin,
+  const offline = !(CFG.api && inTg), btn = $('f-send');   // без таблицы колесо после заказа открывается сразу, с таблицей — когда заказ выдан
+  const req = api('order', { order:{ num, items:lines, ids: cart.filter(c=>!c.custom).map(c=>({ id:c.id, s:c.size })), photos, n, nb, rush, ship: shipc, pay, vol, cut, couponId: cp && cut ? cp.id : '', gift: cp && cut ? cp.why : '', perk: !!perk, certPay, certNum, margin,
     addr:`${CITY[city].m}: ${addr}`, name, phone, note:$('f-note').value.trim(), ref }, write });
-  orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids: cart.filter(c=>!c.custom).map(c=>({ id:c.id, s:c.size })) }); save('orders', orders);
-  if(cp && cut){ cp.used = true }
-  G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
-  if(perk){ perk.used = true }
-  const offline = !(CFG.api && inTg);   // без таблицы колесо после заказа открывается сразу, с таблицей — когда заказ выдан
-  if(offline && CFG.repeat.on && Date.now() - (G.lastRepeat||0) > CFG.repeat.gapDays*DAY){ G.spins = (G.spins||0)+1; G.lastRepeat = Date.now() }
-  cleanCoupons(); save('gifts', G);
-  cart = []; save('cart', cart); badge(); $('f-rush').checked = false;
-  $('f-cert').checked = false; $('f-cert-num').value = ''; $('f-cert-msg').hidden = true; CERT = null; CERT_FAIL = '';
-  go('home'); openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(msg)}`, msg);
-  haptic('ok'); if(offline) setTimeout(()=>{ if(spinAvailable()==='repeat' && !$('sheet-bg').classList.contains('open')) openWheel() }, 700);
+  // ждём таблицу не дольше 20 секунд: заказ записан — экран «Заказ принят»; нет ответа — готовое сообщение Кристине, как раньше
+  const answer = offline ? Promise.resolve(null) : Promise.race([req, new Promise(res => setTimeout(() => res(null), 20000))]);
+  btn.disabled = true; btn.textContent = 'Отправляю…';
+  const ids = cart.filter(c=>!c.custom).map(c=>({ id:c.id, s:c.size }));
+  answer.then(r => {
+    btn.disabled = false; btn.textContent = 'Оформить заказ';
+    orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids }); save('orders', orders);
+    if(cp && cut){ cp.used = true }
+    G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
+    if(perk){ perk.used = true }
+    if(offline && CFG.repeat.on && Date.now() - (G.lastRepeat||0) > CFG.repeat.gapDays*DAY){ G.spins = (G.spins||0)+1; G.lastRepeat = Date.now() }
+    cleanCoupons(); save('gifts', G);
+    cart = []; save('cart', cart); badge(); $('f-rush').checked = false;
+    $('f-cert').checked = false; $('f-cert-num').value = ''; $('f-cert-msg').hidden = true; CERT = null; CERT_FAIL = '';
+    go('home');
+    if(r && r.ok) orderDone(num, pay - certUse, nb, rush);
+    else openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(msg)}`, msg);
+    haptic('ok'); if(offline) setTimeout(()=>{ if(spinAvailable()==='repeat' && !$('sheet-bg').classList.contains('open')) openWheel() }, 700);
+  });
+}
+/* заказ записан в таблицу и уже у Кристины в боте: вместо простыни текста — понятный итог и один следующий шаг */
+function orderDone(num, left, nb, rush){
+  const text = `Здравствуйте! Оформил(а) заказ ${num} на ${fmt(left)}. Куда перевести оплату?`;
+  const when = rush ? 'выкуплю сразу после оплаты, отдельно от закупки' : nb ? `уйдёт в закупку ${buyDate()}, после выкупа дорога ${CFG.journey.text}` : 'привезу сразу после оплаты';
+  openSheet(`<span class="hand">заказ принят</span>
+    <div class="h2" style="margin-top:4px">${esc(num)}${left > 0 ? ' · '+fmt(left) : ''}</div>
+    <div class="howmore"><div class="slip"><dl>
+      <div class="row"><dt>Оплата</dt><dd>${left > 0 ? `Напишите мне, пришлю реквизиты. На связи ${CFG.hours} по Екатеринбургу` : 'Оплачено сертификатом полностью'}</dd></div>
+      <div class="row"><dt>Выкуп</dt><dd>Вещь ${when}</dd></div>
+      <div class="row"><dt>Статус</dt><dd>Трек и этапы посылки пришлю в Telegram сама, заказ виден в профиле</dd></div>
+    </dl></div></div>
+    <div class="list" style="margin-top:16px">${left > 0 ? `<button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(text)}')">Написать про оплату</button>` : ''}
+      <button class="btn ghost block" onclick="closeSheet();go('me');scrollToId('orders-sec')">Мои заказы</button></div>`);
 }
 
 /* ---------- профиль ---------- */
@@ -2288,6 +2330,7 @@ function register(){
     if(r.friendGift && !G.friendGiven){ G.friendGiven = true; G.ref = String(r.invitedBy||'').replace(/^@/,''); toast('Подарок от друга: −'+CFG.friend.value+' ₽') }
     save('gifts', G); renderGiftBanner(); renderMyLink(); if($('s-me').classList.contains('active')) renderMe();
     syncFavs();   // избранное в лист «Хочу», если было добавлено до подключения таблицы
+    cartSync();   // корзина, собранная до этой версии, тоже попадает в таблицу
     return r;
   });
 }
@@ -2419,7 +2462,7 @@ function openFavs(){ sheetBack = null; closeSheet(); shopCat = 'fav'; shopSub = 
 /* ссылка, а не картинка: ведёт в ту же подборку; с личным кодом другу засчитывается подарок */
 function shareVibe(k){
   const V = VIBES[k]; if(!V) return;
-  const url = CFG.appLink + '?startapp=' + (G.code ? 'r_'+G.code+'__' : '') + 'v_' + k;
+  const url = CFG.appLink + '?start=' + (G.code ? 'r_'+G.code+'__' : '') + 'v_' + k;
   const text = `Мой вайб в POIZON.EKB — ${V.t}. Оригиналы с Poizon, Екатеринбург.` + (G.code ? ` Тебе −${CFG.friend.value} ₽ на первый заказ от ${fmt(CFG.friend.min)} по моей ссылке:` : '');
   api('share'); shareUrl(url, text, 'Ссылка на подборку скопирована');
 }

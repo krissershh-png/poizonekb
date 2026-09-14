@@ -278,14 +278,13 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .paynum .num{white-space:nowrap}
 .paynum b{font-size:12px;color:var(--teal-d)}.popular{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--teal-d)}
 /* подсказка: маленькая белая карточка с бирюзовой рамкой, как остальные карточки приложения; одна-две строки и крестик */
-.hint{position:fixed;z-index:30;display:flex;align-items:flex-start;gap:8px;width:max-content;max-width:min(250px,calc(100% - 24px));padding:9px 9px 9px 12px;border:0;border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 0 0 1.5px var(--teal),0 8px 22px rgba(10,50,60,.16);text-align:left;animation:hintIn .2s ease-out}
+.hint{position:fixed;z-index:30;display:flex;align-items:flex-start;gap:8px;width:max-content;max-width:min(250px,calc(100% - 24px));padding:9px 9px 9px 12px;border:0;border-radius:14px;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);color:#121212;opacity:1;box-shadow:0 0 0 1.5px var(--teal),0 8px 22px rgba(10,50,60,.14);text-align:left;animation:none;transition:none}
 .hint[hidden]{display:none}
-.hint::after{content:'';position:absolute;left:calc(var(--ax,50%) - 6px);bottom:-6px;width:12px;height:12px;background:#fff;box-shadow:1.5px 1.5px 0 0 var(--teal);border-radius:0 0 3px 0;transform:rotate(45deg)}
-.hint.up::after{bottom:auto;top:-6px;box-shadow:-1.5px -1.5px 0 0 var(--teal);border-radius:3px 0 0 0}
-.hint .ht{font-size:12.5px;font-weight:700;line-height:1.35;color:var(--ink)}
+/* стрелка — бирюзовый треугольник: на полупрозрачном фоне повёрнутый квадрат дал бы тёмное пятно */
+.hint::after{content:'';position:absolute;left:calc(var(--ax,50%) - 7px);bottom:-8px;width:0;height:0;border:7px solid transparent;border-bottom:0;border-top-color:var(--teal)}
+.hint.up::after{bottom:auto;top:-8px;border:7px solid transparent;border-top:0;border-bottom-color:var(--teal)}
+.hint .hint-t{font-size:12.5px;font-weight:800;line-height:1.35;color:#121212;-webkit-text-fill-color:#121212;opacity:1;animation:none}   /* не .ht: так называется пульсирующее сердечко в «Вырасти пару» */
 .hint .ok{flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:-1px;border-radius:50%;background:var(--aqua);color:var(--teal-d)}
-@keyframes hintIn{from{opacity:0;transform:translateY(4px)}}
-@media (prefers-reduced-motion: reduce){.hint{animation:none}}
 .revgal img{flex:0 0 88%;height:68vh;aspect-ratio:auto;object-fit:contain;background:#eef3f4}
 .card .ph img.studio{object-fit:contain;padding:9% 7%;mix-blend-mode:multiply}
 .card .ph .dots{right:-30px;bottom:-40px;width:120px;height:120px;opacity:.55}
@@ -842,7 +841,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 <div class="sheet-bg" id="sheet-bg" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
 <canvas id="fx"></canvas>
 <div class="toast" id="toast"></div>
-<button class="hint" id="hint" hidden onclick="hintDone()" aria-label="Подсказка, нажмите, чтобы закрыть"><span class="ht"></span><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></button>
+<button class="hint" id="hint" hidden onclick="hintDone()" aria-label="Подсказка, нажмите, чтобы закрыть"><span class="hint-t"></span><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></button>
 
 <script src="catalog.js"></script>
 <script>
@@ -2657,7 +2656,7 @@ function hintNext(){
   const r = h.el.getBoundingClientRect();
   if(r.bottom < 60 || r.top > innerHeight - 90){ hintQ.shift(); return hint(h.key, h.el, h.text) }
   hintQ.shift(); hintOn = h; hintCount++;
-  const b = $('hint'); b.querySelector('.ht').textContent = h.text; b.hidden = false; placeHint(); haptic('tick');
+  const b = $('hint'); b.querySelector('.hint-t').textContent = h.text; b.hidden = false; placeHint(); haptic('tick');
 }
 function placeHint(){
   if(!hintOn) return;

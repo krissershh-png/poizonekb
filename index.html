@@ -278,15 +278,14 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .paynum{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:8px 12px;border-radius:12px;background:var(--aqua);color:var(--ink);font-size:15px;font-weight:900;text-align:left}
 .paynum .num{white-space:nowrap}
 .paynum b{font-size:12px;color:var(--teal-d)}.popular{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--teal-d)}
-/* подсказка: чёрный пузырь как тост, рукописная подпись как в шапке, стрелка на элемент */
-.hint{position:fixed;z-index:30;width:min(272px,calc(100% - 24px));padding:11px 14px 10px;border-radius:16px;background:var(--ink);color:#fff;box-shadow:0 12px 30px rgba(10,30,36,.28);animation:hintIn .28s cubic-bezier(.2,.9,.3,1.3);text-align:left}
-.hint::after{content:'';position:absolute;left:calc(var(--ax,50%) - 7px);bottom:-6px;width:14px;height:14px;background:var(--ink);border-radius:2px;transform:rotate(45deg)}
-.hint.up::after{bottom:auto;top:-6px}
-.hint{display:block}.hint[hidden]{display:none}
-.hint .hand{display:block;position:static;transform:none;color:var(--orange);font-size:21px;line-height:1.2;margin:0 0 8px;padding:0}
-.hint .ht{display:block;font-size:13px;font-weight:700;line-height:1.4}
-.hint .ok{display:block;margin-top:8px;color:#8fd8e3;font-size:13px;font-weight:900}
-@keyframes hintIn{from{opacity:0;transform:translateY(8px) scale(.96)}}
+/* подсказка: маленькая белая карточка с бирюзовой рамкой, как остальные карточки приложения; одна-две строки и крестик */
+.hint{position:fixed;z-index:30;display:flex;align-items:flex-start;gap:8px;width:max-content;max-width:min(250px,calc(100% - 24px));padding:9px 9px 9px 12px;border:0;border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 0 0 1.5px var(--teal),0 8px 22px rgba(10,50,60,.16);text-align:left;animation:hintIn .2s ease-out}
+.hint[hidden]{display:none}
+.hint::after{content:'';position:absolute;left:calc(var(--ax,50%) - 6px);bottom:-6px;width:12px;height:12px;background:#fff;box-shadow:1.5px 1.5px 0 0 var(--teal);border-radius:0 0 3px 0;transform:rotate(45deg)}
+.hint.up::after{bottom:auto;top:-6px;box-shadow:-1.5px -1.5px 0 0 var(--teal);border-radius:3px 0 0 0}
+.hint .ht{font-size:12.5px;font-weight:700;line-height:1.35;color:var(--ink)}
+.hint .ok{flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:-1px;border-radius:50%;background:var(--aqua);color:var(--teal-d)}
+@keyframes hintIn{from{opacity:0;transform:translateY(4px)}}
 @media (prefers-reduced-motion: reduce){.hint{animation:none}}
 .revgal img{flex:0 0 88%;height:68vh;aspect-ratio:auto;object-fit:contain;background:#eef3f4}
 .card .ph img.studio{object-fit:contain;padding:9% 7%;mix-blend-mode:multiply}
@@ -844,7 +843,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 <div class="sheet-bg" id="sheet-bg" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
 <canvas id="fx"></canvas>
 <div class="toast" id="toast"></div>
-<button class="hint" id="hint" hidden onclick="hintDone()"><span class="hand">подсказка</span><span class="ht"></span><span class="ok">Понятно</span></button>
+<button class="hint" id="hint" hidden onclick="hintDone()" aria-label="Подсказка, нажмите, чтобы закрыть"><span class="ht"></span><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></button>
 
 <script src="catalog.js"></script>
 <script>
@@ -1082,7 +1081,7 @@ function go(s){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
   window.scrollTo(0,0); $('vibe-nudge').hidden = true;
   if(s==='shop') renderShop(); if(s==='cart') renderCart(); if(s==='me') renderMe();
-  if(s==='calc') hint('calc', $('yen'), 'Впишите цену в юанях из приложения Poizon и выберите, что это за вещь. Итог сразу до двери, без доплат.');
+  if(s==='calc') hint('calc', $('yen'), 'Цена в юанях из Poizon — итог сразу до двери');
   if(tg){ s==='home' ? tg.BackButton.hide() : tg.BackButton.show() }
   haptic('light');
 }
@@ -1159,10 +1158,10 @@ function renderHome(){
   $('faq-wait').textContent = `Выкупаю раз в месяц одной закупкой, ближайшая — ${buyDate()}. Если раньше наберётся ${CFG.purchase.early} вещей, выкуплю раньше. После выкупа дорога ${CFG.journey.text}. Нужно быстрее — отметьте в заказе срочный выкуп отдельно, это +${fmt(CFG.purchase.rushFee)}.`;
   renderGiftBanner(); renderGames(); renderLooks(); renderVibeHome();
   if(typeof hint === 'function'){   // подсказки главной — по мере прокрутки, сверху вниз
-    hint('gift', $('gift-banner'), 'Подарок на первый заказ: крутите колесо, скидка применится сама при оформлении.');
-    hint('buy', $('home-buy').querySelector('.buyday'), 'Раз в месяц выкупаю все заказы одной закупкой, так доставка дешевле. Оформите до этой даты — вещь уедет в ней.');
-    hint('how', $('how-row'), 'Листайте карточки вбок: как проходит заказ от выбора до вашей двери.');
-    hint('stock', document.querySelector('#home-stock .card'), 'Эти вещи уже в Екатеринбурге: без закупки и ожидания, привезу сразу.');
+    hint('gift', $('gift-banner'), spinAvailable() ? 'Крутите колесо — скидка на первый заказ' : 'Скидка применится сама при оформлении');
+    hint('buy', $('home-buy').querySelector('.buyday'), 'Оформите до этой даты — вещь уедет в закупку');
+    hint('how', $('how-row'), 'Листайте вбок: как проходит заказ');
+    hint('stock', document.querySelector('#home-stock .card'), 'Уже в Екатеринбурге — привезу сразу');
   }
 }
 /* «Как это работает»: пять карточек, листаются справа налево; при первом показе лента чуть сдвигается — подсказка свайпа,
@@ -1302,8 +1301,8 @@ function renderShop(){
   /* на слабом телефоне 300 карточек разом дёргают скролл: рисуем по 48, остальное по кнопке */
   SHOP_REST = list.slice(48);
   $('shop-grid').innerHTML = list.length ? list.slice(0,48).map(card).join('') + (SHOP_REST.length ? `<button class="btn ghost block" id="shop-more" style="grid-column:1/-1" onclick="shopMore()">Показать ещё ${SHOP_REST.length}</button>` : '') : `<div class="empty" style="grid-column:1/-1"><span class="hand">такого пока нет</span><div style="font-weight:800;margin:6px 0 12px;color:var(--ink-2)">Пришлите ссылку или скрин с Poizon, привезу</div><button class="btn sm" onclick="openCustom()">Заказ по ссылке</button></div>`;
-  hint('vibe', document.querySelector('#shop-chips .chip.vibe'), '«Мой вайб» — вещи под ваш стиль из подборки. Нажмите, чтобы выключить или снова включить.');
-  hint('fav', document.querySelector('#shop-grid .fav'), 'Сердечко — в избранное. Если вещь подешевеет на Poizon, напишу вам в Telegram.');
+  hint('vibe', document.querySelector('#shop-chips .chip.vibe'), '«Мой вайб» — вещи под ваш стиль. Нажмите, чтобы выключить');
+  hint('fav', document.querySelector('#shop-grid .fav'), 'В избранное — напишу, если подешевеет');
 }
 
 /* ---------- размерные сетки ---------- */
@@ -1358,8 +1357,8 @@ function openProduct(id){
     ${!p.stock && buyCount() && !cart.some(c=>c.id===p.id) ? `<div class="rule">В заказе уже есть вещь: за эту комиссия ${fmt(CFG.feeNext)} вместо ${fmt(CFG.fee)}, в заказе цена будет на ${fmt(CFG.fee - CFG.feeNext)} ниже.</div>` : ''}
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button></div>
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
-  if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'На Poizon у каждого размера своя цена. Нажмите на размер — покажу цену именно для него.');
-  hint('fit', document.querySelector('#sheet .fit'), 'Не знаете размер? Впишите длину стопы — подберу по сетке этого бренда и сразу выберу размер.');
+  if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');
+  hint('fit', document.querySelector('#sheet .fit'), 'Впишите длину стопы — подберу размер');
 }
 /* длина стопы → размер по сетке бренда → ближайший размер, который есть в карточке */
 function fitSize(inp){
@@ -1720,7 +1719,7 @@ function renderCart(){
   $('f-cert-f').hidden = !cert;
   $('c-cert-row').hidden = !certUse; $('c-cert').textContent = '−'+fmt(certUse);
   $('c-pay').textContent = fmt(total - certUse);
-  window.hint('coupon', document.querySelector('#cart-coupons .coupon.sel'), 'Скидка применилась сама. К заказу идёт одна, самая выгодная.');   // window: в renderCart есть своя переменная hint с текстом
+  window.hint('coupon', document.querySelector('#cart-coupons .coupon.sel'), 'Скидка применилась сама — самая выгодная');   // window: в renderCart есть своя переменная hint с текстом
 }
 /* оплата сертификатом: номер проверяет таблица, при оформлении сумма спишется сама, остаток сохранится на сертификате */
 var CERT = null, CERT_FAIL = '', certTimer = 0;   // var: renderCart может сработать раньше этой строки
@@ -1875,7 +1874,7 @@ function renderMeView(){
   // игры, полка и герой — после первого заказа: новичку они мешают понять главное, а покупателю дарят радость
   const veteran = orderedBefore() || boxesOf().length > 0;
   ['me-hero', 'games-cap', 'me-games', 'me-shelf'].forEach(id => { $(id).hidden = !veteran });
-  if(veteran) hint('grow', document.querySelector('#me-games .game'), 'Росток растёт, пока едет посылка. Нажмите, чтобы посмотреть путь заказа.');
+  if(veteran) hint('grow', document.querySelector('#me-games .game'), 'Росток растёт, пока едет посылка');
 }
 function orderSub(o){ const sz = (o.ids||[]).map(x=>x.s).filter(s=>s && s !== 'Один'); return `${sz.length ? 'размер '+sz.join(', ')+' · ' : ''}${fmt(o.pay||0)}${itemsOf(o).length ? ' · '+o.num : ' · '+(o.date||'')}` }
 const DROP_SVG = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 3c3.5 4.2 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.2 12 3z"/></svg>';
@@ -2656,7 +2655,7 @@ function placeHint(){
   if(r.bottom < 40 || r.top > innerHeight - 70) return hintPause();   // элемент уехал с экрана — подсказка подождёт
   const below = r.top + r.height / 2 < innerHeight * .5, bw = b.offsetWidth, bh = b.offsetHeight;
   const left = Math.min(Math.max(12, r.left + r.width / 2 - bw / 2), innerWidth - bw - 12);
-  b.style.left = left + 'px'; b.style.top = (below ? Math.min(r.bottom, innerHeight - 120) + 12 : Math.max(r.top, 120) - bh - 12) + 'px';
+  b.style.left = left + 'px'; b.style.top = (below ? Math.min(r.bottom, innerHeight - 90) + 10 : Math.max(r.top, 80) - bh - 10) + 'px';
   b.classList.toggle('up', below); b.style.setProperty('--ax', Math.min(Math.max(20, r.left + r.width / 2 - left), bw - 20) + 'px');
 }
 function hintPause(){ if(!hintOn) return; const h = hintOn; hintOn = null; hintCount--; $('hint').hidden = true; hint(h.key, h.el, h.text) }

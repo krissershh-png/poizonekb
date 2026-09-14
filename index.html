@@ -741,7 +741,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="row sub" id="c-cert-row" hidden><span class="small">Сертификатом</span><b class="num" id="c-cert">0 ₽</b></div>
     <div class="row" style="border-top:2px dashed var(--line)"><span class="small">К оплате</span><b class="num" id="c-pay">0 ₽</b></div>
     <div class="field"><span>Имя</span><input id="f-name"></div>
-    <div class="field"><span>Телефон</span><div class="phone-row"><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7"><button type="button" class="btn sm ghost" id="f-phone-tg" hidden onclick="phoneFromTg()">Из Telegram</button></div></div>
+    <div class="field"><span>Телефон</span><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00"></div>
     <div class="field"><span>Город</span><div class="seg" id="f-city"></div></div>
     <!-- другой город: служба и пункт выдачи. Точный пункт человек находит на официальной карте службы и вставляет адрес -->
     <div class="field" id="f-pvz-f" hidden><span>Пункт выдачи</span><div class="seg" id="f-pvz" style="grid-template-columns:1fr 1fr"></div>
@@ -1108,7 +1108,7 @@ function card(p){
   const mp = minPrice(p), S = sizesOf(p).filter(s=>s.ok), n = S.length;
   const studio = studioAt(p, 0) ? 'studio' : '';
   const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
-  const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-mp)}</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
+  const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-favPrice(p))}</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
   const meta = p.stock ? `<i></i>${range} · отправлю сегодня` : p.post ? `<i></i>${range ? range+' · ' : ''}выкуп ${buyShort()}` : (n ? `<i></i>${range} · выкуп ${buyShort()}` : `<i class="no"></i>уточню наличие`);
   return `<div class="card">
     <button class="ph" onclick="openProduct('${p.id}')"><img class="${studio}" src="${p.img[0]}" alt="" loading="lazy">${tag}</button>
@@ -1119,12 +1119,34 @@ function card(p){
 }
 /* избранное помнит цену на момент добавления: когда на Poizon стало дешевле, на карточке появляется «Цена ниже» */
 let FP = load('favp', {});
-function toggleFav(id,el){
-  const adding = !favs.includes(id);
-  favs = adding ? [...favs,id] : favs.filter(x=>x!==id); save('favs',favs); el.classList.toggle('on'); haptic('light');
-  const p = CAT.find(x=>x.id===id); if(adding && p) FP[id] = minPrice(p) || 0; else delete FP[id]; save('favp', FP);
+/* избранное помнит размер, как в обычных магазинах: цена и «подешевело» — именно для него. Без размера — самая низкая цена */
+let FAVSZ = load('favsz', {});
+function favPrice(p){ const s = FAVSZ[p.id]; if(s){ const x = sizesOf(p).find(z => z.eu === s && z.ok); return x ? x.price : 0 } return minPrice(p) }
+const needsSize = p => !p.stock && !p.post && sizesOf(p).filter(s => s.ok).length > 1;   // в наличии и один размер — без выбора
+function toggleFav(id, el){
+  const p = CAT.find(x => x.id === id);
+  if(!favs.includes(id) && p && needsSize(p)) return pickFavSize(p);
+  setFav(id, '');
+}
+/* выбор размера перед добавлением: размеры с ценой, как в карточке, и «любой размер» */
+function pickFavSize(p){
+  const S = sizesOf(p).filter(s => s.ok);
+  openSheet(`<span class="hand">в избранное</span>
+    <div class="h2" style="margin-top:4px;text-transform:none;font-size:16px">${esc(p.brand)} ${esc(p.name)}</div>
+    <div class="small" style="margin:6px 0 12px">Какой размер отслеживать? Напишу, когда подешевеет именно он</div>
+    <div class="sizes">${S.map(s => `<button onclick="closeSheet();setFav('${p.id}','${s.eu}')"><b>${s.eu}</b><small>${(s.price/1000).toFixed(1).replace('.',',')}к</small></button>`).join('')}</div>
+    <button class="btn ghost block" style="margin-top:12px" onclick="closeSheet();setFav('${p.id}','')">Любой размер</button>`);
+}
+function setFav(id, size){
+  const adding = !favs.includes(id), p = CAT.find(x => x.id === id);
+  favs = adding ? [...favs, id] : favs.filter(x => x !== id); save('favs', favs);
+  document.querySelectorAll(`.fav[onclick*="toggleFav('${id}'"]`).forEach(b => b.classList.toggle('on', adding));
+  haptic(adding ? 'ok' : 'light');
+  if(adding){ if(size) FAVSZ[id] = size; else delete FAVSZ[id]; FP[id] = p ? favPrice(p) || 0 : 0 } else { delete FP[id]; delete FAVSZ[id] }
+  save('favp', FP); save('favsz', FAVSZ);
   syncFavs();
-  if(adding && CFG.api && inTg) askWrite(ok => toast(ok ? 'Слежу за ценой. Подешевеет — напишу в Telegram' : 'В избранном, цена видна на карточке'));
+  if(adding && CFG.api && inTg) askWrite(ok => toast(ok ? (size ? `Слежу за ценой ${size} размера. Подешевеет — напишу` : 'Слежу за ценой. Подешевеет — напишу в Telegram') : 'В избранном, цена видна на карточке'));
+  else if(adding) toast(size ? `В избранном, размер ${size}` : 'В избранном');
 }
 /* «Хочу»: избранное уходит в таблицу, бот каждое утро сравнивает цены и пишет, если стало дешевле */
 let favTimer = null;
@@ -1132,9 +1154,9 @@ function syncFavs(){
   if(!CFG.api || !inTg) return;
   clearTimeout(favTimer);
   favTimer = setTimeout(() => api('favs', { list: favs.map(id => { const p = CAT.find(x=>x.id===id);
-    return p && !p.post && !p.stock ? { id, name:`${p.brand} ${p.name}`, kg:itemKg(p), price: FP[id] || minPrice(p) } : null }).filter(Boolean) }), 1200);
+    return p && !p.post && !p.stock ? { id, name:`${p.brand} ${p.name}`, kg:itemKg(p), s: FAVSZ[id] || '', price: FP[id] || favPrice(p) || minPrice(p) } : null }).filter(Boolean) }), 1200);
 }
-const priceDrop = p => favs.includes(p.id) && FP[p.id] && minPrice(p) && minPrice(p) < FP[p.id];
+const priceDrop = p => favs.includes(p.id) && FP[p.id] && favPrice(p) && favPrice(p) < FP[p.id];
 const CATS = [ {id:'shoes',t:'Обувь'}, {id:'clothes',t:'Одежда'}, {id:'bags',t:'Сумки'}, {id:'acc',t:'Аксессуары'} ];
 const SUBS = {
   shoes:   [ {id:'sneakers',t:'Кроссовки'}, {id:'keds',t:'Кеды и слипоны'}, {id:'boots',t:'Ботинки и сапоги'}, {id:'heels',t:'Туфли и балетки'} ],
@@ -1330,7 +1352,7 @@ let pick = null;
 function openProduct(id){
   const p = CAT.find(x=>x.id===id); if(!p) return;
   openedThisVisit++;
-  if(favs.includes(id) && minPrice(p)){ FP[id] = minPrice(p); save('favp', FP) }   // посмотрели — метка «цена ниже» снимается
+  if(favs.includes(id) && favPrice(p)){ FP[id] = favPrice(p); save('favp', FP) }   // посмотрели — метка «цена ниже» снимается
   const seen = load('seen', 0) + 1; save('seen', seen); if(seen === 3) setTimeout(maybeWheel, 900);   // третья карточка — время подарка
   const S = sizesOf(p), one = S.length === 1 && S[0].eu === 'Один';
   pick = { p, size: p.stock ? p.size : one ? 'Один' : null };
@@ -1642,15 +1664,7 @@ $('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из дру
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
 if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
-/* номер из Telegram одним нажатием; без поддержки кнопки нет */
-$('f-phone-tg').hidden = !(inTg && tg.requestContact && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
-function phoneFromTg(){
-  try{ tg.requestContact((ok, res) => {
-    const ph = res && res.responseUnsafe && res.responseUnsafe.contact && res.responseUnsafe.contact.phone_number;
-    if(ph){ $('f-phone').value = ph.charAt(0) === '+' ? ph : '+' + ph; formatPhone(); $('f-phone-tg').hidden = true; haptic('ok') }
-    else if(!ok) toast('Можно вписать номер вручную');
-  }) }catch(e){ toast('Впишите номер вручную') }
-}
+/* номер вводится один раз и запоминается. Кнопки «Из Telegram» нет: Telegram показывает пугающее системное окно и присылает карточку с номером в чат */
 /* 89226662904 → +7 922 666-29-04: номер легче проверить глазами */
 function formatPhone(){
   const d = $('f-phone').value.replace(/\D/g, ''), n = d.length === 11 && /^[78]/.test(d) ? d.slice(1) : d.length === 10 ? d : '';
@@ -1958,8 +1972,8 @@ function renderWant(guest){
   const e = $('me-want'), fav = favs.map(id => CAT.find(p=>p.id===id)).filter(Boolean);
   if(fav.length){
     e.innerHTML = `<div class="cap"><span>Избранное · ${fav.length} ${plural(fav.length,['вещь','вещи','вещей'])}</span><button onclick="shopCat='fav';go('shop')">Все</button></div>
-      <div class="prow">${fav.slice(0,10).map(p => { const mp = minPrice(p), drop = priceDrop(p) ? FP[p.id] - mp : 0;
-        return `<button class="pc" onclick="openProduct('${p.id}')"><span class="ph">${thumbP(p)}${drop ? `<span class="tg">−${fmt(drop)}</span>` : ''}</span><span class="n">${esc(p.brand)} ${esc(p.name)}</span><span class="p">${mp ? fmt(mp) : 'по запросу'}</span></button>` }).join('')}</div>`;
+      <div class="prow">${fav.slice(0,10).map(p => { const mp = favPrice(p) || minPrice(p), drop = priceDrop(p) ? FP[p.id] - favPrice(p) : 0;
+        return `<button class="pc" onclick="openProduct('${p.id}')"><span class="ph">${thumbP(p)}${drop ? `<span class="tg">−${fmt(drop)}</span>` : ''}</span><span class="n">${esc(p.brand)} ${esc(p.name)}</span><span class="p">${FAVSZ[p.id] ? (p.cat === 'shoes' ? 'EU ' : '') + esc(FAVSZ[p.id]) + ' · ' : ''}${mp ? fmt(mp) : 'по запросу'}</span></button>` }).join('')}</div>`;
   } else if(guest){
     const picks = starterPicks();
     e.innerHTML = picks.length ? `<div class="cap"><span>С чего начинают</span><button onclick="shopCat='all';go('shop')">Весь каталог</button></div>

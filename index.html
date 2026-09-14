@@ -738,6 +738,9 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="field"><span>Имя</span><input id="f-name"></div>
     <div class="field"><span>Телефон</span><div class="phone-row"><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7"><button type="button" class="btn sm ghost" id="f-phone-tg" hidden onclick="phoneFromTg()">Из Telegram</button></div></div>
     <div class="field"><span>Город</span><div class="seg" id="f-city"></div></div>
+    <!-- другой город: служба и пункт выдачи. Точный пункт человек находит на официальной карте службы и вставляет адрес -->
+    <div class="field" id="f-pvz-f" hidden><span>Пункт выдачи</span><div class="seg" id="f-pvz" style="grid-template-columns:1fr 1fr"></div>
+      <button type="button" class="btn sm ghost block" style="margin-top:8px" onclick="openPvzMap()">Выбрать пункт на карте</button></div>
     <div class="field"><span id="f-addr-l">Адрес</span><input id="f-addr"></div>
     <div class="field" id="f-ref-f"><span>Кто посоветовал? Ник друга</span><input id="f-ref" placeholder="Необязательно"></div>
     <div class="field"><span>Комментарий</span><textarea id="f-note"></textarea></div>
@@ -1607,15 +1610,29 @@ function confetti(){
    КОРЗИНА
    ===================================================================== */
 const CITY = { ekb:{t:'Екатеринбург', m:'Екатеринбург, до двери', l:'Адрес'}, pyshma:{t:'Верх. Пышма', m:'Верхняя Пышма, до двери', l:'Адрес'}, other:{t:'Другой город', m:'Другой город, пункт выдачи', l:'Город и пункт выдачи'} };
-function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.querySelectorAll('#f-city button').forEach(b=>b.classList.toggle('on', b.dataset.k===k)) }
+function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.querySelectorAll('#f-city button').forEach(b=>b.classList.toggle('on', b.dataset.k===k));
+  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Город и адрес пункта, скопируйте с карты' : 'Улица, дом, квартира' }
+/* пункты выдачи без договора со службой: официальная карта СДЭК или Яндекс Карты с пунктами Яндекса в нужном городе */
+const PVZ = { cdek:{ t:'СДЭК' }, yandex:{ t:'Яндекс' } };
+let pvz = 'cdek';
+function setPvz(k){ pvz = PVZ[k] ? k : 'cdek'; document.querySelectorAll('#f-pvz button').forEach(b => b.classList.toggle('on', b.dataset.k === pvz)) }
+const placeText = () => city === 'other' ? `Другой город, пункт выдачи ${PVZ[pvz].t}` : CITY[city].m;
+function openPvzMap(){
+  const town = $('f-addr').value.split(',')[0].trim();
+  const url = pvz === 'cdek' ? 'https://www.cdek.ru/ru/offices' : 'https://yandex.ru/maps/?text=' + encodeURIComponent('пункт выдачи Яндекс Маркет ' + town);
+  try{ if(inTg && tg.openLink) tg.openLink(url); else window.open(url, '_blank') }catch(e){ window.open(url, '_blank') }
+  toast(town || pvz === 'cdek' ? 'Найдите пункт, скопируйте адрес и вставьте его сюда' : 'Сначала впишите город в поле ниже, потом откройте карту');
+}
 $('f-city').innerHTML = Object.entries(CITY).map(([k,v])=>`<button data-k="${k}" onclick="setCity('${k}')">${v.t}</button>`).join('');
+$('f-pvz').innerHTML = Object.entries(PVZ).map(([k,v])=>`<button type="button" data-k="${k}" onclick="setPvz('${k}')">${v.t}</button>`).join('');
+setPvz('cdek');
 setCity('ekb');
 if(user) $('f-name').value = [user.first_name,user.last_name].filter(Boolean).join(' ');
 $('hours-note').textContent = `На связи ${CFG.hours} по Екатеринбургу`;
 $('faq-pay').textContent = `Переводом при оформлении: ${CFG.pay.bank}, по номеру ${CFG.pay.phone}, из другого банка — через СБП. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
-if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
+if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
 /* номер из Telegram одним нажатием; без поддержки кнопки нет */
 $('f-phone-tg').hidden = !(inTg && tg.requestContact && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
 function phoneFromTg(){
@@ -1789,7 +1806,7 @@ function sendOrder(name, phone, addr, write){
     RATE.live ? null : 'Курс не обновился: цену подтвержу перед оплатой',
     `К оплате: ${fmt(pay)}`,
     certUse ? (pay - certUse > 0 ? `Доплатить: ${fmt(pay - certUse)}` : 'Оплачено сертификатом полностью') : null, '',
-    `${name}, ${phone}`, `${CITY[city].m}: ${addr}`,
+    `${name}, ${phone}`, `${placeText()}: ${addr}`,
     ref ? `Посоветовал(а): ${ref}` : null,
     $('f-note').value.trim() ? `Комментарий: ${$('f-note').value.trim()}` : null,
     `Возврата нет — согласна`,
@@ -1797,7 +1814,7 @@ function sendOrder(name, phone, addr, write){
     G.code ? `Код клиента: ${G.code}` : null ].filter(v=>v!==null).join('\n');
   const offline = !(CFG.api && inTg), btn = $('f-send');   // без таблицы колесо после заказа открывается сразу, с таблицей — когда заказ выдан
   const req = api('order', { order:{ num, items:lines, ids: cart.filter(c=>!c.custom).map(c=>({ id:c.id, s:c.size })), photos, n, nb, rush, ship: shipc, pay, vol, cut, couponId: cp && cut ? cp.id : '', gift: cp && cut ? cp.why : '', perk: !!perk, certPay, certNum, margin,
-    addr:`${CITY[city].m}: ${addr}`, name, phone, note:$('f-note').value.trim(), ref }, write });
+    addr:`${placeText()}: ${addr}`, name, phone, note:$('f-note').value.trim(), ref }, write });
   // ждём таблицу не дольше 20 секунд: заказ записан — экран «Заказ принят»; нет ответа — готовое сообщение Кристине, как раньше
   const answer = offline ? Promise.resolve(null) : Promise.race([req, new Promise(res => setTimeout(() => res(null), 20000))]);
   btn.disabled = true; btn.textContent = 'Отправляю…';
@@ -1805,7 +1822,7 @@ function sendOrder(name, phone, addr, write){
   answer.then(r => {
     btn.disabled = false; btn.textContent = 'Оформить заказ';
     orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids }); save('orders', orders);
-    save('contact', { name, phone, city, addr });   // следующий заказ — без повторного ввода
+    save('contact', { name, phone, city, addr, pvz });   // следующий заказ — без повторного ввода
     if(cp && cut){ cp.used = true }
     G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
     if(perk){ perk.used = true }

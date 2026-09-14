@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+# два обновления цен одновременно не идут
+concurrency:
+  group: prices
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -21,5 +26,11 @@ jobs:
           git config user.name "prices-bot"
           git config user.email "prices-bot@users.noreply.github.com"
           git add prices.json
-          git diff --cached --quiet || git commit -m "Цены и наличие Poizon на $(date +%d.%m)"
-          git push
+          git diff --cached --quiet && exit 0
+          git commit -m "Цены и наличие Poizon на $(date +%d.%m)"
+          # цены собираются несколько минут: если за это время на сайт что-то выложили, подтягиваем свежую версию и отправляем снова
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 15
+          done
+          exit 1

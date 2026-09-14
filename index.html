@@ -1384,7 +1384,6 @@ function openProduct(id){
       <div class="ar"><span>Подлинность</span><b>Проверка Poizon</b></div>
       <div class="ar"><span>Срок доставки</span><b>${p.stock ? 'в Екатеринбурге, сегодня' : `закупка ${buyDate()} + ${CFG.journey.text}`}</b></div>
     </div>
-    ${!p.stock && buyCount() && !cart.some(c=>c.id===p.id) ? `<div class="rule">В заказе уже есть вещь: за эту комиссия ${fmt(CFG.feeNext)} вместо ${fmt(CFG.fee)}, в заказе цена будет на ${fmt(CFG.fee - CFG.feeNext)} ниже.</div>` : ''}
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button></div>
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
   if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');

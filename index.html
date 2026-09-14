@@ -923,7 +923,8 @@ const myTag = user ? (user.username || ('id'+user.id)) : '';
 
 /* ---------- приглашение по ссылке ---------- */
 (function(){
-  const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
+  // из ссылки t.me/бот/shop?startapp=… приходит start_param; кнопки бота открывают сайт напрямую с ?startapp=… в адресе
+  const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.search).get('startapp') || '';
   /* ссылка на товар: ...?startapp=p_3868 или r_КОД__p_3868 — сразу открываем карточку */
   const pm = /(?:^|__)p_([0-9a-z]+)/i.exec(sp);
   if(pm) setTimeout(()=>openProduct(pm[1]), 400);

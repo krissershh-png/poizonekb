@@ -745,6 +745,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="field"><span>Город</span><div class="seg" id="f-city"></div></div>
     <!-- другой город: служба и пункт выдачи. Точный пункт человек находит на официальной карте службы и вставляет адрес -->
     <div class="field" id="f-pvz-f" hidden><span>Пункт выдачи</span><div class="seg" id="f-pvz" style="grid-template-columns:1fr 1fr"></div>
+      <input id="f-town" placeholder="Город, например Казань" autocomplete="address-level2" style="margin-top:8px">
       <button type="button" class="btn sm ghost block" style="margin-top:8px" onclick="openPvzMap()">Выбрать пункт на карте</button></div>
     <div class="field"><span id="f-addr-l">Адрес</span><input id="f-addr"></div>
     <div class="field" id="f-ref-f"><span>Кто посоветовал? Ник друга</span><input id="f-ref" placeholder="Необязательно"></div>
@@ -1616,19 +1617,20 @@ function confetti(){
 /* =====================================================================
    КОРЗИНА
    ===================================================================== */
-const CITY = { ekb:{t:'Екатеринбург', m:'Екатеринбург, до двери', l:'Адрес'}, pyshma:{t:'Верх. Пышма', m:'Верхняя Пышма, до двери', l:'Адрес'}, other:{t:'Другой город', m:'Другой город, пункт выдачи', l:'Город и пункт выдачи'} };
+const CITY = { ekb:{t:'Екатеринбург', m:'Екатеринбург, до двери', l:'Адрес'}, pyshma:{t:'Верх. Пышма', m:'Верхняя Пышма, до двери', l:'Адрес'}, other:{t:'Другой город', m:'Другой город, пункт выдачи', l:'Адрес пункта выдачи'} };
 function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.querySelectorAll('#f-city button').forEach(b=>b.classList.toggle('on', b.dataset.k===k));
-  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Город и адрес пункта, скопируйте с карты' : 'Улица, дом, квартира' }
+  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Улица и дом пункта — скопируйте с карты' : 'Улица, дом, квартира' }
 /* пункты выдачи без договора со службой: официальная карта СДЭК или Яндекс Карты с пунктами Яндекса в нужном городе */
 const PVZ = { cdek:{ t:'СДЭК' }, yandex:{ t:'Яндекс' } };
 let pvz = 'cdek';
 function setPvz(k){ pvz = PVZ[k] ? k : 'cdek'; document.querySelectorAll('#f-pvz button').forEach(b => b.classList.toggle('on', b.dataset.k === pvz)) }
 const placeText = () => city === 'other' ? `Другой город, пункт выдачи ${PVZ[pvz].t}` : CITY[city].m;
 function openPvzMap(){
-  const town = $('f-addr').value.split(',')[0].trim();
+  const town = $('f-town').value.trim();
+  if(!town){ haptic('medium'); $('f-town').focus(); return toast('Сначала впишите город') }
   const url = pvz === 'cdek' ? 'https://www.cdek.ru/ru/offices' : 'https://yandex.ru/maps/?text=' + encodeURIComponent('пункт выдачи Яндекс Маркет ' + town);
   try{ if(inTg && tg.openLink) tg.openLink(url); else window.open(url, '_blank') }catch(e){ window.open(url, '_blank') }
-  toast(town || pvz === 'cdek' ? 'Найдите пункт, скопируйте адрес и вставьте его сюда' : 'Сначала впишите город в поле ниже, потом откройте карту');
+  toast('Найдите пункт, скопируйте адрес и вставьте в поле ниже');
 }
 $('f-city').innerHTML = Object.entries(CITY).map(([k,v])=>`<button data-k="${k}" onclick="setCity('${k}')">${v.t}</button>`).join('');
 $('f-pvz').innerHTML = Object.entries(PVZ).map(([k,v])=>`<button type="button" data-k="${k}" onclick="setPvz('${k}')">${v.t}</button>`).join('');
@@ -1639,7 +1641,7 @@ $('hours-note').textContent = `На связи ${CFG.hours} по Екатери�
 $('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из другого банка — через СБП. Реквизиты появятся сразу после оформления заказа. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
-if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
+if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
 /* номер из Telegram одним нажатием; без поддержки кнопки нет */
 $('f-phone-tg').hidden = !(inTg && tg.requestContact && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
 function phoneFromTg(){
@@ -1771,7 +1773,9 @@ function submitOrder(){
   if(!name) return toast('Напишите имя');
   if(!phone) return toast('Оставьте телефон');
   if(phone.replace(/\D/g,'').length < 10){ haptic('medium'); return toast('Проверьте номер телефона') }
-  if(!addr) return toast(city==='other'?'Укажите город и пункт выдачи':'Укажите адрес');
+  const town = $('f-town').value.trim();
+  if(city==='other' && !town){ haptic('medium'); $('f-town').focus(); return toast('Впишите город') }
+  if(!addr) return toast(city==='other'?'Вставьте адрес пункта выдачи':'Укажите адрес');
   if(!$('f-agree').checked){ haptic('medium'); return toast('Отметьте, что возврата нет') }
   if(payByCert()){
     const cn = certNorm();
@@ -1779,7 +1783,7 @@ function submitOrder(){
     if(CERT_FAIL === cn){ haptic('medium'); return toast($('f-cert-msg').textContent) }
     if(CFG.api && inTg && !(CERT && CERT.num === cn)){ haptic('medium'); checkCert(); return toast('Проверяю сертификат, нажмите ещё раз через пару секунд') }
   }
-  askWrite(write => sendOrder(name, phone, addr, write));
+  askWrite(write => sendOrder(name, phone, city === 'other' ? `${town}, ${addr}` : addr, write));
 }
 /* один раз спрашиваем разрешение, чтобы бот мог прислать трек и статусы посылки */
 function askWrite(cb){
@@ -1829,7 +1833,7 @@ function sendOrder(name, phone, addr, write){
   answer.then(r => {
     btn.disabled = false; btn.textContent = 'Оформить заказ';
     orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids }); save('orders', orders);
-    save('contact', { name, phone, city, addr, pvz });   // следующий заказ — без повторного ввода
+    save('contact', { name, phone, city, addr: $('f-addr').value.trim(), town: $('f-town').value.trim(), pvz });   // следующий заказ — без повторного ввода
     if(cp && cut){ cp.used = true }
     G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
     if(perk){ perk.used = true }

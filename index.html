@@ -1658,12 +1658,11 @@ function loadYaWidget(){
 }
 function openYaWidget(town){
   const id = 'ydw' + Date.now(), safeTown = town.replace(/['"<>\\]/g, '');
-  const mapsUrl = 'https://yandex.ru/maps/?text=' + encodeURIComponent('пункт выдачи Яндекс Маркет ' + safeTown);
   openSheet(`<span class="hand">пункт выдачи</span><div class="h2" style="margin-top:4px">Яндекс · ${esc(safeTown)}</div>
     <div class="small" style="margin-top:4px">Нажмите на точку и «Выбрать» — адрес встанет в заказ сам</div>
     <div class="ydw-box" id="${id}"><div class="small" style="padding:16px">Загружаю карту…</div></div>
-    <div id="${id}-fail" hidden><div class="rule">Карта Яндекса не открылась. Найдите пункт в Яндекс Картах и вставьте адрес в форму.</div>
-      <button class="btn block" style="margin-top:10px" onclick="closeSheet();openTg('${mapsUrl}')">Открыть Яндекс Карты</button></div>`);
+    <div id="${id}-fail" hidden><div class="rule">Карта с выбором точки не загрузилась. Откройте карту пунктов и впишите адрес — это займёт минуту.</div>
+      <button class="btn block" style="margin-top:10px" onclick="openSearchMap('yandex','${safeTown}')">Показать пункты на карте</button></div>`);
   const fail = () => { const b = $(id); if(b) b.hidden = true; const f = $(id + '-fail'); if(f) f.hidden = false };
   loadYaWidget().then(ok => {
     const box = $(id); if(!box) return;
@@ -1681,14 +1680,31 @@ document.addEventListener('YaNddWidgetPointSelected', e => {
   $('f-addr').value = full; PVZ_ID = String(d.id || '');
   closeSheet(); haptic('ok'); toast('Пункт выбран');
 });
+/* карта пунктов прямо в магазине: встроенная Яндекс Карта с поиском «СДЭК пункт выдачи <город>», ключ не нужен.
+   Выбрать точку карта не даёт, поэтому поле для адреса стоит сразу под ней */
+function openSearchMap(service, town){
+  const safeTown = String(town || '').replace(/['"<>\\]/g, ''), name = service === 'cdek' ? 'СДЭК' : 'Яндекс';
+  const q = (service === 'cdek' ? 'СДЭК пункт выдачи ' : 'пункт выдачи Яндекс Маркет ') + safeTown;
+  const src = 'https://yandex.ru/map-widget/v1/?text=' + encodeURIComponent(q) + '&z=12';
+  openSheet(`<span class="hand">пункт выдачи</span><div class="h2" style="margin-top:4px">${name} · ${esc(safeTown)}</div>
+    <div class="small" style="margin-top:4px">Нажмите на пункт на карте — появится адрес. Впишите его ниже</div>
+    <div class="ydw-box" style="min-height:0"><iframe src="${src}" title="Пункты выдачи ${name} на карте" loading="lazy" allow="geolocation"
+      style="display:block;width:100%;height:${Math.max(300, Math.round(innerHeight * .5))}px;border:0"></iframe></div>
+    <div class="field"><span>Адрес пункта ${name}</span><input id="pvz-addr-in" placeholder="Например: ул. Баумана, 44" value="${esc(PVZ_ID ? '' : $('f-addr').value)}"></div>
+    <button class="btn block" style="margin-top:12px" onclick="pvzAddrDone()">Готово</button>`);
+}
+function pvzAddrDone(){
+  const v = $('pvz-addr-in').value.trim();
+  if(!v){ haptic('medium'); $('pvz-addr-in').focus(); return toast('Впишите адрес пункта') }
+  $('f-addr').value = v; PVZ_ID = '';
+  closeSheet(); haptic('ok'); toast('Адрес пункта добавлен');
+}
 const placeText = () => city === 'other' ? `Другой город, пункт выдачи ${PVZ[pvz].t}` : CITY[city].m;
 function openPvzMap(){
   const town = $('f-town').value.trim();
   if(!town){ haptic('medium'); $('f-town').focus(); return toast('Сначала впишите город') }
-  if(pvz === 'yandex') return openYaWidget(town);   // Яндекс — карта прямо в магазине; СДЭК — их официальная карта на сайте
-  const url = pvz === 'cdek' ? 'https://www.cdek.ru/ru/offices' : 'https://yandex.ru/maps/?text=' + encodeURIComponent('пункт выдачи Яндекс Маркет ' + town);
-  try{ if(inTg && tg.openLink) tg.openLink(url); else window.open(url, '_blank') }catch(e){ window.open(url, '_blank') }
-  toast('Найдите пункт, скопируйте адрес и вставьте в поле ниже');
+  // Яндекс — виджет с выбором точки; СДЭК — карта пунктов СДЭК прямо в магазине (без договора виджета СДЭК с выбором нет)
+  return pvz === 'yandex' ? openYaWidget(town) : openSearchMap('cdek', town);
 }
 $('f-city').innerHTML = Object.entries(CITY).map(([k,v])=>`<button data-k="${k}" onclick="setCity('${k}')">${v.t}</button>`).join('');
 $('f-pvz').innerHTML = Object.entries(PVZ).map(([k,v])=>`<button type="button" data-k="${k}" onclick="setPvz('${k}')">${v.t}</button>`).join('');

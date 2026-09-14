@@ -269,6 +269,9 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .revimg img{width:100%;height:100%;object-fit:contain}
 .cart-revs .revimg{flex-basis:92px;height:128px;border-radius:12px}
 .trust{display:grid;gap:6px;margin-top:8px}
+.paynum{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:8px 12px;border-radius:12px;background:var(--aqua);color:var(--ink);font-size:15px;font-weight:900;text-align:left}
+.paynum .num{white-space:nowrap}
+.paynum b{font-size:12px;color:var(--teal-d)}
 .anchor{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:13px;font-weight:700;color:var(--mute)}
 .anchor s{color:var(--ink-2);font-weight:800;text-decoration-thickness:1.5px}
 .anchor em{font-style:normal;font-size:11px}
@@ -847,6 +850,7 @@ const CFG = {
   channel: 'buypoizonekb',
   appLink: 'https://t.me/poizonekbb_bot',   // ссылки друзьям ведут в бота (?start=…): он встречает, начисляет подарок и открывает магазин
   hours: 'с 10 до 22',                       // когда отвечаю; то же число в bot/Code.gs, CFG.hours
+  pay: { bank: 'Сбербанк', phone: '+7 922 666-29-04', raw: '+79226662904' },   // куда переводить оплату; то же в bot/Code.gs, CFG.pay
   rateChannel: 'amblixObmen',
   rateFallback: { small: 13.75, big: 13.7, date: '13 сентября' },   // запасной курс; свежий приходит из канала, из prices.json (GitHub, 3 раза в день) или из таблицы
   /* Доставка = max(minParcelKg, объёмный вес посылки) × kgRate + shipRisk × цена товаров (защита от рисков Ракеты).
@@ -1782,16 +1786,15 @@ function sendOrder(name, phone, addr, write){
 }
 /* заказ записан в таблицу и уже у Кристины в боте: вместо простыни текста — понятный итог и один следующий шаг */
 function orderDone(num, left, nb, rush){
-  const text = `Здравствуйте! Оформил(а) заказ ${num} на ${fmt(left)}. Куда перевести оплату?`;
   const when = rush ? 'выкуплю сразу после оплаты, отдельно от закупки' : nb ? `уйдёт в закупку ${buyDate()}, после выкупа дорога ${CFG.journey.text}` : 'привезу сразу после оплаты';
   openSheet(`<span class="hand">заказ принят</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${left > 0 ? ' · '+fmt(left) : ''}</div>
     <div class="howmore"><div class="slip"><dl>
-      <div class="row"><dt>Оплата</dt><dd>${left > 0 ? `Напишите мне, пришлю реквизиты. На связи ${CFG.hours} по Екатеринбургу` : 'Оплачено сертификатом полностью'}</dd></div>
+      <div class="row"><dt>Оплата</dt><dd>${left > 0 ? `${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}. Пришлите скриншот — отмечу оплату` : 'Оплачено сертификатом полностью'}</dd></div>
       <div class="row"><dt>Выкуп</dt><dd>Вещь ${when}</dd></div>
       <div class="row"><dt>Статус</dt><dd>Трек и этапы посылки пришлю в Telegram сама, заказ виден в профиле</dd></div>
     </dl></div></div>
-    <div class="list" style="margin-top:16px">${left > 0 ? `<button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(text)}')">Написать про оплату</button>` : ''}
+    <div class="list" style="margin-top:16px">${left > 0 ? `<button class="btn block" onclick="openPay('${esc(num)}', ${left})">Оплатить ${fmt(left)}</button>` : ''}
       <button class="btn ghost block" onclick="closeSheet();go('me');scrollToId('orders-sec')">Мои заказы</button></div>`);
 }
 
@@ -1845,7 +1848,7 @@ function payCard(o){
     ${orderHead(o, false)}
     <div class="seg8">${JOURNEY.map((_,i)=>`<i class="${i === 0 ? 'on' : ''}"></i>`).join('')}</div>
     <div class="st"><div><b>Заказ оформлен</b><span>${esc(o.date||'')} · ${o.local ? 'дальше оплата' : 'не оплачен'}</span></div><span class="sum">${fmt(o.pay||0)}</span></div>
-    <div class="note">${o.local ? 'Если ещё не оплатили, напишите мне — пришлю, куда перевести.' : 'Оплатите, и я сразу выкуплю на Poizon: цены там меняются каждый день. Росток начнёт расти после оплаты.'}</div>
+    <div class="note">${o.local ? `Если ещё не оплатили: ${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}, потом пришлите скриншот.` : 'Оплатите, и я сразу выкуплю на Poizon: цены там меняются каждый день. Росток начнёт расти после оплаты.'}</div>
     <button class="btn block light" onclick="payOrder('${n}')">${o.local ? SEND_SVG + 'Написать Кристине' : 'Оплатить'}</button>
     ${o.local ? `<div class="acts"><button onclick="reportGot('${n}')">Уже получили? Напишите мне</button><button onclick="hideOrder('${n}')">Убрать из списка</button></div>` : ''}
   </div>`;
@@ -1910,8 +1913,20 @@ function reportGot(num){
 const pendingLocal = o => !!o.local;
 function payOrder(num){
   const o = myOrders().find(x=>x.num===num);
-  const text = `Здравствуйте! Хочу оплатить заказ ${num}${o && o.pay ? ` на ${fmt(o.pay)}` : ''}.`;
-  openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(text)}`, text);
+  openPay(num, o && o.pay || 0);
+}
+/* оплата без переписки: куда перевести, номер копируется одним нажатием, скриншот уходит Кристине готовым сообщением */
+function openPay(num, sum){
+  const shot = `Оплатил(а) заказ ${num}${sum ? ` на ${fmt(sum)}` : ''}, скриншот прикладываю`;
+  openSheet(`<span class="hand">оплата заказа</span>
+    <div class="h2" style="margin-top:4px">${esc(num)}${sum ? ' · '+fmt(sum) : ''}</div>
+    <div class="howmore"><div class="slip"><dl>
+      <div class="row"><dt>Банк</dt><dd>${esc(CFG.pay.bank)}. Из другого банка — через СБП</dd></div>
+      <div class="row"><dt>Номер</dt><dd><button class="paynum" onclick="copyText('${CFG.pay.raw}','Номер скопирован, вставьте в приложении банка')"><span class="num">${esc(CFG.pay.phone)}</span><b>Копировать</b></button></dd></div>
+      ${sum ? `<div class="row"><dt>Сумма</dt><dd class="num">${fmt(sum)}</dd></div>` : ''}
+      <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, бот сразу пришлёт подтверждение, а вещь уйдёт в закупку</dd></div>
+    </dl></div></div>
+    <div class="list" style="margin-top:16px"><button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(shot)}')">Отправить скриншот</button></div>`);
 }
 function hideOrder(num){ const o = orders.find(x=>x.num===num); if(o){ o.hidden = true; save('orders', orders) } renderMeView(); renderGiftBanner(); toast('Убрала из списка') }
 const thumb = it => it && it.img ? `<img class="${isStudio(it.img) ? '' : 'life'}" src="${it.img}" alt="">` : `<span class="pzbox">${boxSVG('', true)}</span>`;   // заказ по ссылке без фото: коробка прямо на фоне карточки

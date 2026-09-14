@@ -1636,7 +1636,7 @@ setPvz('cdek');
 setCity('ekb');
 if(user) $('f-name').value = [user.first_name,user.last_name].filter(Boolean).join(' ');
 $('hours-note').textContent = `На связи ${CFG.hours} по Екатеринбургу`;
-$('faq-pay').textContent = `Переводом при оформлении: ${CFG.pay.bank}, по номеру ${CFG.pay.phone}, из другого банка — через СБП. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;
+$('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из другого банка — через СБП. Реквизиты появятся сразу после оформления заказа. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
 if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }

@@ -1625,7 +1625,7 @@ $('f-phone-tg').hidden = !(inTg && tg.requestContact && tg.isVersionAtLeast && t
 function phoneFromTg(){
   try{ tg.requestContact((ok, res) => {
     const ph = res && res.responseUnsafe && res.responseUnsafe.contact && res.responseUnsafe.contact.phone_number;
-    if(ph){ $('f-phone').value = ph.charAt(0) === '+' ? ph : '+' + ph; formatPhone(); haptic('ok') }
+    if(ph){ $('f-phone').value = ph.charAt(0) === '+' ? ph : '+' + ph; formatPhone(); $('f-phone-tg').hidden = true; haptic('ok') }
     else if(!ok) toast('Можно вписать номер вручную');
   }) }catch(e){ toast('Впишите номер вручную') }
 }

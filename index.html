@@ -1046,7 +1046,7 @@ function buydayHTML(){
     <div class="cal"><span class="m">${month}</span><b>${d.getDate()}</b></div>
     <div class="t"><span class="k">закупка на Poizon</span><b>${when}</b>
       ${BUY ? `<span class="slots">${Array.from({ length:early }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</span>` : ''}
-      <span class="s">${n ? `в ней уже ${n} ${plural(n,['вещь','вещи','вещей'])} · ` : ''}наберётся ${early} ${plural(early,['вещь','вещи','вещей'])} — выкуплю раньше</span></div></div>`;
+      ${n ? `<span class="s">в ней уже ${n} ${plural(n,['вещь','вещи','вещей'])}</span>` : ''}</div></div>`;
 }
 
 /* ---------- цены и наличие товара ---------- */

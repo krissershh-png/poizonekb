@@ -269,13 +269,15 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .revimg img{width:100%;height:100%;object-fit:contain}
 .cart-revs .revimg{flex-basis:92px;height:128px;border-radius:12px}
 .trust{display:grid;gap:6px;margin-top:8px}
+.phone-row{display:flex;gap:8px;align-items:stretch}.phone-row input{flex:1;min-width:0}.phone-row .btn{flex:none;white-space:nowrap}
+.fit{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--bg)}
+.fit label{font-size:13px;font-weight:800;color:var(--ink)}
+.fit input{width:76px;padding:7px 10px;border-radius:10px;font-size:15px}
+.fit-out{font-size:13px;font-weight:800;color:var(--teal-d)}
+.fit-how{flex-basis:100%;font-size:11px;font-weight:600;color:var(--mute)}
 .paynum{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:8px 12px;border-radius:12px;background:var(--aqua);color:var(--ink);font-size:15px;font-weight:900;text-align:left}
 .paynum .num{white-space:nowrap}
-.paynum b{font-size:12px;color:var(--teal-d)}
-.anchor{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:13px;font-weight:700;color:var(--mute)}
-.anchor s{color:var(--ink-2);font-weight:800;text-decoration-thickness:1.5px}
-.anchor em{font-style:normal;font-size:11px}
-.popular{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--teal-d)}
+.paynum b{font-size:12px;color:var(--teal-d)}.popular{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--teal-d)}
 /* подсказка: чёрный пузырь как тост, рукописная подпись как в шапке, стрелка на элемент */
 .hint{position:fixed;z-index:30;width:min(272px,calc(100% - 24px));padding:11px 14px 10px;border-radius:16px;background:var(--ink);color:#fff;box-shadow:0 12px 30px rgba(10,30,36,.28);animation:hintIn .28s cubic-bezier(.2,.9,.3,1.3);text-align:left}
 .hint::after{content:'';position:absolute;left:calc(var(--ax,50%) - 7px);bottom:-6px;width:14px;height:14px;background:var(--ink);border-radius:2px;transform:rotate(45deg)}
@@ -736,7 +738,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="row sub" id="c-cert-row" hidden><span class="small">Сертификатом</span><b class="num" id="c-cert">0 ₽</b></div>
     <div class="row" style="border-top:2px dashed var(--line)"><span class="small">К оплате</span><b class="num" id="c-pay">0 ₽</b></div>
     <div class="field"><span>Имя</span><input id="f-name"></div>
-    <div class="field"><span>Телефон</span><input id="f-phone" type="tel" inputmode="tel" placeholder="+7"></div>
+    <div class="field"><span>Телефон</span><div class="phone-row"><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7"><button type="button" class="btn sm ghost" id="f-phone-tg" hidden onclick="phoneFromTg()">Из Telegram</button></div></div>
     <div class="field"><span>Город</span><div class="seg" id="f-city"></div></div>
     <div class="field"><span id="f-addr-l">Адрес</span><input id="f-addr"></div>
     <div class="field" id="f-ref-f"><span>Кто посоветовал? Ник друга</span><input id="f-ref" placeholder="Необязательно"></div>
@@ -815,6 +817,10 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <details><summary>Сколько ждать?</summary><p id="faq-wait"></p></details>
     <details><summary>Как получить?</summary><p>В Екатеринбурге и Верхней Пышме привезу домой. В другие города отправлю до пункта выдачи.</p></details>
     <details><summary>Можно вернуть?</summary><p>Нет. Товар выкупается под вас, поэтому размер подбираем вместе заранее.</p></details>
+    <details><summary>Что такое Poizon?</summary><p>Китайская площадка брендовых вещей, где продают только оригиналы. Перед отправкой каждую вещь проверяют эксперты Poizon: подлинность, брак и комплектность. Проверенная вещь приходит с пломбой и QR-биркой.</p></details>
+    <details><summary>Как оплатить?</summary><p id="faq-pay"></p></details>
+    <details><summary>Можно заказать то, чего нет в каталоге?</summary><p>Да, любую вещь с Poizon. Пришлите мне ссылку или скриншот — посчитаю цену. Или посчитайте сами в разделе «Расчёт».</p></details>
+    <details><summary>Как подобрать размер?</summary><p>Откройте кроссовки в каталоге и впишите длину стопы — подберу размер по сетке бренда. Сомневаетесь — напишите мне модель и длину стопы в сантиметрах.</p></details>
     <details><summary>Размерные сетки</summary><div id="size-all"></div></details>
   </div>
 
@@ -1024,7 +1030,7 @@ const itemKg = p => +p.kg || 1.55;
 /* ---------- закупка раз в месяц ---------- */
 let BUY = null;   // { n, next, early } из таблицы: сколько вещей уже ждут выкупа
 var DELIVERED = 0;   // сколько заказов привезено: из таблицы (выданные + CFG.deliveredBefore в bot/Code.gs)
-var RETAIL = {}, POPULAR = {};   // из таблицы: цены в обычных магазинах (проверены вручную) и сколько раз вещь заказывали
+var POPULAR = {};   // из таблицы: сколько раз вещь заказывали
 function nextBuy(){
   if(BUY && BUY.next) return new Date(BUY.next + 'T00:00:00');
   const p = CFG.purchase, t = new Date(); t.setHours(0,0,0,0);
@@ -1033,8 +1039,7 @@ function nextBuy(){
   return d;
 }
 const buyDate = () => nextBuy().toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-const buyShort = () => nextBuy().toLocaleDateString('ru-RU', { day:'numeric', month:'short' }).replace('.', '');
-/* плашка закупки: отрывной календарик с датой, сколько дней осталось. Клетки набора и «в ней уже N вещей» — только с таблицей */
+const buyShort = () => nextBuy().toLocaleDateString('ru-RU', { day:'numeric', month:'short' }).replace('.', '');/* плашка закупки: отрывной календарик с датой, сколько дней осталось. Клетки набора и «в ней уже N вещей» — только с таблицей */
 function buydayHTML(){
   const d = nextBuy(), t = new Date(); t.setHours(0,0,0,0);
   const days = Math.round((d - t) / DAY), n = BUY ? BUY.n : 0, early = (BUY && BUY.early) || CFG.purchase.early;
@@ -1334,13 +1339,15 @@ function openProduct(id){
       : `<div class="small" style="margin-top:8px">Наличие и цену уточню в личке</div>`);
   const chart = CHARTS[p.brand] && (p.cat==='shoes') ? `<details style="margin-top:12px"><summary>Сетка ${esc(p.brand)}</summary>${chartTable(CHARTS[p.brand])}</details>` : '';
   const mp = minPrice(p);
+  // подбор размера по длине стопы и сетке бренда: без возврата ошибка в размере стоит клиенту денег
+  const finder = CHARTS[p.brand] && p.cat === 'shoes' && !p.stock ? `<div class="fit"><label for="fit-cm">Длина стопы</label><input id="fit-cm" type="number" inputmode="decimal" step="0.1" min="18" max="33" placeholder="см" data-b="${esc(p.brand)}" oninput="fitSize(this)"><span class="fit-out" id="fit-out">подскажу размер ${esc(p.brand)}</span><span class="fit-how">Встаньте на лист бумаги пяткой к стене и отметьте самый длинный палец</span></div>` : '';
   // вещь открыли из подборки по вайбу (карточка или «Как носят»): сверху видимая кнопка обратно к подборке
   openSheet(`${VIBE_SHEET ? `<div class="sbar"><button class="sback" onclick="closeSheet()">${BACK_SVG}Назад к подборке</button></div>` : ''}<div class="gal">${p.img.map((i,k)=>`<img class="${studioAt(p,k)?'studio':''}" src="${i}" alt="" onerror="this.remove()">`).join('')}</div>
     <div class="brand" style="margin-top:14px">${esc(p.brand)}</div>
     <div class="h2" style="text-transform:none;font-size:16px;margin-top:2px">${esc(p.name)}</div>
     <div class="price num" id="p-price" style="font-size:26px">${mp ? (p.stock || p.post ? (p.stock ? '' : '<small>от </small>')+fmt(mp) : (() => { const mx = Math.max(...S.filter(x=>x.ok).map(x=>x.price)); return mx > mp ? fmt(mp)+' – '+fmt(mx) : fmt(mp) })()) : '<small>цена по запросу</small>'}</div>
     ${p.stock ? '' : `<div class="small buyl">Уедет в закупку ${buyDate()} · потом ${CFG.journey.text} в пути</div>`}
-    ${trustLine(p, mp)}${sizesHTML}${chart}
+    ${trustLine(p, mp)}${sizesHTML}${finder}${chart}
     ${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ''}
     <div class="attrs"><div class="h2" style="font-size:13px;margin-bottom:4px">Характеристики</div>
       ${(p.attrs||[]).map(a=>`<div class="ar"><span>${esc(a[0])}</span><b>${esc(a[1])}</b></div>`).join('')}
@@ -1352,13 +1359,26 @@ function openProduct(id){
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button></div>
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
   if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'На Poizon у каждого размера своя цена. Нажмите на размер — покажу цену именно для него.');
+  hint('fit', document.querySelector('#sheet .fit'), 'Не знаете размер? Впишите длину стопы — подберу по сетке этого бренда и сразу выберу размер.');
 }
-/* доверие в карточке: цена в обычном магазине (только если вы её проверили и у вас дешевле) и сколько раз вещь уже заказывали */
+/* длина стопы → размер по сетке бренда → ближайший размер, который есть в карточке */
+function fitSize(inp){
+  const out = $('fit-out'), cm = parseFloat(String(inp.value).replace(',', '.')), rows = CHARTS[inp.dataset.b] || [];
+  if(!cm || !rows.length){ out.textContent = `подскажу размер ${inp.dataset.b}`; return }
+  if(cm < rows[0][0] - 0.6 || cm > rows[rows.length - 1][0]){ out.textContent = 'вне сетки, напишите мне — подберу'; return }
+  const row = rows.find(r => r[0] >= cm - 0.05) || rows[rows.length - 1], eu = parseFloat(row[1]);
+  const btns = [...document.querySelectorAll('#sheet .sizes button')].filter(b => !b.classList.contains('no'));
+  let best = null, diff = 9;
+  btns.forEach(b => { const k = sizeKey(b.querySelector('b').textContent), d = k - eu; if(d > -0.2 && Math.abs(d) < diff){ diff = Math.abs(d); best = b } });
+  if(best && diff <= 0.4){
+    const s = best.querySelector('b').textContent;
+    pickSize(s, best); out.textContent = `ваш размер ${s} EU`;
+  } else out.textContent = `по сетке ${row[1]} EU — сейчас такого нет на Poizon`;
+}
+/* доверие в карточке: сколько раз вещь уже заказывали у меня. Цены других магазинов и ресейлеров не показываем нигде */
 function trustLine(p, mp){
-  const r = RETAIL[p.id], n = POPULAR[p.id] || 0;
-  const shop = r && mp && r.p > mp ? `<div class="anchor"><span>В магазинах${r.w ? ' · '+esc(r.w) : ''}</span><s class="num">${fmt(r.p)}</s>${r.d ? `<em>проверила ${esc(r.d)}</em>` : ''}</div>` : '';
-  const pop = n >= 2 ? `<div class="popular">${HOW_ICON_SVG('box')}Заказывали у меня ${n} ${plural(n,['раз','раза','раз'])}</div>` : '';
-  return shop || pop ? `<div class="trust">${shop}${pop}</div>` : '';
+  const n = POPULAR[p.id] || 0;
+  return n >= 2 ? `<div class="trust"><div class="popular">${HOW_ICON_SVG('box')}Заказывали у меня ${n} ${plural(n,['раз','раза','раз'])}</div></div>` : '';
 }
 const HOW_ICON_SVG = k => `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${HOW_ICON[k]}</svg>`;
 function pickSize(eu, el){
@@ -1597,6 +1617,25 @@ $('f-city').innerHTML = Object.entries(CITY).map(([k,v])=>`<button data-k="${k}"
 setCity('ekb');
 if(user) $('f-name').value = [user.first_name,user.last_name].filter(Boolean).join(' ');
 $('hours-note').textContent = `На связи ${CFG.hours} по Екатеринбургу`;
+$('faq-pay').textContent = `Переводом при оформлении: ${CFG.pay.bank}, по номеру ${CFG.pay.phone}, из другого банка — через СБП. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;
+/* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
+const CONTACT = load('contact', null);
+if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
+/* номер из Telegram одним нажатием; без поддержки кнопки нет */
+$('f-phone-tg').hidden = !(inTg && tg.requestContact && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
+function phoneFromTg(){
+  try{ tg.requestContact((ok, res) => {
+    const ph = res && res.responseUnsafe && res.responseUnsafe.contact && res.responseUnsafe.contact.phone_number;
+    if(ph){ $('f-phone').value = ph.charAt(0) === '+' ? ph : '+' + ph; formatPhone(); haptic('ok') }
+    else if(!ok) toast('Можно вписать номер вручную');
+  }) }catch(e){ toast('Впишите номер вручную') }
+}
+/* 89226662904 → +7 922 666-29-04: номер легче проверить глазами */
+function formatPhone(){
+  const d = $('f-phone').value.replace(/\D/g, ''), n = d.length === 11 && /^[78]/.test(d) ? d.slice(1) : d.length === 10 ? d : '';
+  if(n) $('f-phone').value = `+7 ${n.slice(0,3)} ${n.slice(3,6)}-${n.slice(6,8)}-${n.slice(8)}`;
+}
+$('f-phone').addEventListener('blur', formatPhone);
 const cartSum = () => cart.reduce((a,c)=>a+c.price,0);
 /* подарки: к заказу один самый выгодный купон; скидка за объём суммируется с ним; к оплате сертификатом скидок нет */
 const payByCert = () => !!($('f-cert') && $('f-cert').checked);
@@ -1681,7 +1720,7 @@ function renderCart(){
   $('f-cert-f').hidden = !cert;
   $('c-cert-row').hidden = !certUse; $('c-cert').textContent = '−'+fmt(certUse);
   $('c-pay').textContent = fmt(total - certUse);
-  hint('coupon', document.querySelector('#cart-coupons .coupon.sel'), 'Скидка применилась сама. К заказу идёт одна, самая выгодная.');
+  window.hint('coupon', document.querySelector('#cart-coupons .coupon.sel'), 'Скидка применилась сама. К заказу идёт одна, самая выгодная.');   // window: в renderCart есть своя переменная hint с текстом
 }
 /* оплата сертификатом: номер проверяет таблица, при оформлении сумма спишется сама, остаток сохранится на сертификате */
 var CERT = null, CERT_FAIL = '', certTimer = 0;   // var: renderCart может сработать раньше этой строки
@@ -1771,6 +1810,7 @@ function sendOrder(name, phone, addr, write){
   answer.then(r => {
     btn.disabled = false; btn.textContent = 'Оформить заказ';
     orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids }); save('orders', orders);
+    save('contact', { name, phone, city, addr });   // следующий заказ — без повторного ввода
     if(cp && cut){ cp.used = true }
     G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
     if(perk){ perk.used = true }
@@ -1796,6 +1836,12 @@ function orderDone(num, left, nb, rush){
     </dl></div></div>
     <div class="list" style="margin-top:16px">${left > 0 ? `<button class="btn block" onclick="openPay('${esc(num)}', ${left})">Оплатить ${fmt(left)}</button>` : ''}
       <button class="btn ghost block" onclick="closeSheet();go('me');scrollToId('orders-sec')">Мои заказы</button></div>`);
+  // магазин на экране телефона: возвращаться за статусом и новыми вещами проще, чем искать бота
+  if(inTg && tg.checkHomeScreenStatus && tg.addToHomeScreen) try{ tg.checkHomeScreenStatus(st => {
+    if(st !== 'missed') return;
+    const l = document.querySelector('#sheet .list');
+    if(l) l.insertAdjacentHTML('beforeend', `<button class="btn ghost block" onclick="tg.addToHomeScreen()">Добавить магазин на экран телефона</button>`);
+  }) }catch(e){}
 }
 
 /* ---------- профиль ---------- */
@@ -2386,7 +2432,6 @@ function register(){
     G.spinUntil = r.spinUntil || 0;
     G.certs = r.certs || [];
     if(r.delivered){ DELIVERED = r.delivered; renderRevs() }
-    if(r.retail) RETAIL = r.retail;
     if(r.popular) POPULAR = r.popular;
     if(r.purchase && r.purchase.next){ BUY = r.purchase; renderHome(); if($('s-cart').classList.contains('active')) renderCart() }   // закупка: дата и сколько вещей уже ждут выкупа
     if(r.vibe && VIBES[r.vibe] && !VIBE){ VIBE = { key:r.vibe, at:Date.now(), scores:{} }; save('vibe', VIBE); renderHome() }   // вайб из таблицы на новом телефоне

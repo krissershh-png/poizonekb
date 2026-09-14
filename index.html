@@ -934,9 +934,11 @@ const myTag = user ? (user.username || ('id'+user.id)) : '';
   if(sp === 'orders') setTimeout(()=>{ go('me'); scrollToId('orders') }, 300);   // кнопка «Мои заказы» из сообщения бота
   if(sp === 'wheel') setTimeout(()=>{ if(spinAvailable()) openWheel() }, 2500);   // кнопка «Крутить колесо»: ждём, пока таблица скажет, что колесо открыто
   if(sp === 'shelf') setTimeout(()=>{ go('me'); scrollToId('me-shelf') }, 300);   // «Моя полка» из сообщения бота
+  if(sp === 'calc') setTimeout(()=>go('calc'), 300);                                  // «Рассчитать цену» из меню бота
+  if(sp === 'stock') setTimeout(()=>{ go('home'); scrollToId('home-stock') }, 600);   // «В наличии» из меню бота
   const jm = /^j_(PZ-\d{4,6})$/i.exec(sp);                                         // «Путь посылки»: ждём заказы из таблицы
   if(jm){ const t0 = Date.now(), tick = () => { if(SRV_ORDERS) openJourney(jm[1].toUpperCase()); else if(Date.now() - t0 < 12000) setTimeout(tick, 400) }; setTimeout(tick, 600) }
-  if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe)$/i.test(sp) && !G.ref && sp !== myTag){
+  if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe|calc|stock)$/i.test(sp) && !G.ref && sp !== myTag){
     G.ref = sp.slice(0,40);
     G.coupons.push({ id:'friend', v:CFG.friend.value, min:CFG.friend.min, until:Date.now()+CFG.friend.days*DAY, why:'Подарок от друга', first:true });
     save('gifts', G);

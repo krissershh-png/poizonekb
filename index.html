@@ -268,6 +268,11 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .revimg{flex:0 0 172px;height:236px;border-radius:16px;overflow:hidden;background:#eef3f4;box-shadow:0 0 0 1.5px var(--line)}
 .revimg img{width:100%;height:100%;object-fit:contain}
 .cart-revs .revimg{flex-basis:92px;height:128px;border-radius:12px}
+.trust{display:grid;gap:6px;margin-top:8px}
+.anchor{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:13px;font-weight:700;color:var(--mute)}
+.anchor s{color:var(--ink-2);font-weight:800;text-decoration-thickness:1.5px}
+.anchor em{font-style:normal;font-size:11px}
+.popular{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--teal-d)}
 /* подсказка: чёрный пузырь как тост, рукописная подпись как в шапке, стрелка на элемент */
 .hint{position:fixed;z-index:30;width:min(272px,calc(100% - 24px));padding:11px 14px 10px;border-radius:16px;background:var(--ink);color:#fff;box-shadow:0 12px 30px rgba(10,30,36,.28);animation:hintIn .28s cubic-bezier(.2,.9,.3,1.3);text-align:left}
 .hint::after{content:'';position:absolute;left:calc(var(--ax,50%) - 7px);bottom:-6px;width:14px;height:14px;background:var(--ink);border-radius:2px;transform:rotate(45deg)}
@@ -1015,6 +1020,7 @@ const itemKg = p => +p.kg || 1.55;
 /* ---------- закупка раз в месяц ---------- */
 let BUY = null;   // { n, next, early } из таблицы: сколько вещей уже ждут выкупа
 var DELIVERED = 0;   // сколько заказов привезено: из таблицы (выданные + CFG.deliveredBefore в bot/Code.gs)
+var RETAIL = {}, POPULAR = {};   // из таблицы: цены в обычных магазинах (проверены вручную) и сколько раз вещь заказывали
 function nextBuy(){
   if(BUY && BUY.next) return new Date(BUY.next + 'T00:00:00');
   const p = CFG.purchase, t = new Date(); t.setHours(0,0,0,0);
@@ -1330,7 +1336,7 @@ function openProduct(id){
     <div class="h2" style="text-transform:none;font-size:16px;margin-top:2px">${esc(p.name)}</div>
     <div class="price num" id="p-price" style="font-size:26px">${mp ? (p.stock || p.post ? (p.stock ? '' : '<small>от </small>')+fmt(mp) : (() => { const mx = Math.max(...S.filter(x=>x.ok).map(x=>x.price)); return mx > mp ? fmt(mp)+' – '+fmt(mx) : fmt(mp) })()) : '<small>цена по запросу</small>'}</div>
     ${p.stock ? '' : `<div class="small buyl">Уедет в закупку ${buyDate()} · потом ${CFG.journey.text} в пути</div>`}
-    ${sizesHTML}${chart}
+    ${trustLine(p, mp)}${sizesHTML}${chart}
     ${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ''}
     <div class="attrs"><div class="h2" style="font-size:13px;margin-bottom:4px">Характеристики</div>
       ${(p.attrs||[]).map(a=>`<div class="ar"><span>${esc(a[0])}</span><b>${esc(a[1])}</b></div>`).join('')}
@@ -1343,6 +1349,14 @@ function openProduct(id){
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
   if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'На Poizon у каждого размера своя цена. Нажмите на размер — покажу цену именно для него.');
 }
+/* доверие в карточке: цена в обычном магазине (только если вы её проверили и у вас дешевле) и сколько раз вещь уже заказывали */
+function trustLine(p, mp){
+  const r = RETAIL[p.id], n = POPULAR[p.id] || 0;
+  const shop = r && mp && r.p > mp ? `<div class="anchor"><span>В магазинах${r.w ? ' · '+esc(r.w) : ''}</span><s class="num">${fmt(r.p)}</s>${r.d ? `<em>проверила ${esc(r.d)}</em>` : ''}</div>` : '';
+  const pop = n >= 2 ? `<div class="popular">${HOW_ICON_SVG('box')}Заказывали у меня ${n} ${plural(n,['раз','раза','раз'])}</div>` : '';
+  return shop || pop ? `<div class="trust">${shop}${pop}</div>` : '';
+}
+const HOW_ICON_SVG = k => `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${HOW_ICON[k]}</svg>`;
 function pickSize(eu, el){
   pick.size = eu; el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b===el));
   const s = sizesOf(pick.p).find(x=>x.eu===eu); if(s) $('p-price').innerHTML = (s.post?'<small>от </small>':'')+fmt(s.price); haptic('tick');
@@ -2357,6 +2371,8 @@ function register(){
     G.spinUntil = r.spinUntil || 0;
     G.certs = r.certs || [];
     if(r.delivered){ DELIVERED = r.delivered; renderRevs() }
+    if(r.retail) RETAIL = r.retail;
+    if(r.popular) POPULAR = r.popular;
     if(r.purchase && r.purchase.next){ BUY = r.purchase; renderHome(); if($('s-cart').classList.contains('active')) renderCart() }   // закупка: дата и сколько вещей уже ждут выкупа
     if(r.vibe && VIBES[r.vibe] && !VIBE){ VIBE = { key:r.vibe, at:Date.now(), scores:{} }; save('vibe', VIBE); renderHome() }   // вайб из таблицы на новом телефоне
     // курс из таблицы: сервер читает канал обменника сам, без браузерных прокси, которые могут не открыться

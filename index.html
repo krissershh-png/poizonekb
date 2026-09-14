@@ -267,7 +267,6 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .look .lb i{font-style:normal;font-family:var(--dela);font-weight:800;font-size:14px;margin-top:2px}
 .revimg{flex:0 0 172px;height:236px;border-radius:16px;overflow:hidden;background:#eef3f4;box-shadow:0 0 0 1.5px var(--line)}
 .revimg img{width:100%;height:100%;object-fit:contain}
-.cart-revs .revimg{flex-basis:92px;height:128px;border-radius:12px}
 .trust{display:grid;gap:6px;margin-top:8px}
 .phone-row{display:flex;gap:8px;align-items:stretch}.phone-row input{flex:1;min-width:0}.phone-row .btn{flex:none;white-space:nowrap}
 .fit{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--bg)}
@@ -744,9 +743,6 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="field"><span>Комментарий</span><textarea id="f-note"></textarea></div>
     <label class="check"><input type="checkbox" id="f-cert" onchange="renderCart()"><span>Оплачу сертификатом</span></label>
     <div class="field" id="f-cert-f" hidden><span>Номер сертификата</span><input id="f-cert-num" placeholder="SR-12345" autocapitalize="characters" autocomplete="off" oninput="certInput()" onblur="checkCert()"><div class="rule" id="f-cert-msg" hidden></div></div>
-    <!-- сомнение приходит в момент оплаты: настоящие отзывы прямо над согласием и кнопкой -->
-    <div class="sec" style="margin:18px 0 8px"><span class="small" id="cart-revs-t">Отзывы клиентов</span><button class="more" onclick="openRev(0)">Смотреть все</button></div>
-    <div class="hs cart-revs" id="cart-revs"></div>
     <div class="rule">Сомневаетесь в размере? Напишите мне до заказа, помогу подобрать.</div>
     <label class="check"><input type="checkbox" id="f-agree"><span>Размер проверен. Понимаю, что вещь выкупается под меня, поэтому возврата и обмена нет</span></label>
     <div class="rule">Трек-номер и статус посылки пришлю в Telegram сама, ничего спрашивать не нужно</div>
@@ -2610,10 +2606,7 @@ const REVIEWS = ['img/rev/new-1.jpg','img/rev/new-2.jpg','img/rev/new-3.jpg','im
 const IMG = s => (window.IMGPACK || {})[s] || s;
 function renderRevs(){
   const tile = (s,i) => `<button class="revimg" onclick="openRev(${i})"><img src="${IMG(s)}" alt="Отзыв клиента" loading="lazy"></button>`;
-  $('home-revs').innerHTML = REVIEWS.map(tile).join('');
-  $('cart-revs').innerHTML = REVIEWS.slice(0, 6).map(tile).join('');
-  // число привезённых заказов — только настоящее, из таблицы; пока меньше 20, не показываем
-  $('cart-revs-t').textContent = DELIVERED >= 20 ? `Привезла ${DELIVERED} ${plural(DELIVERED,['заказ','заказа','заказов'])} · отзывы клиентов` : 'Отзывы клиентов';
+  $('home-revs').innerHTML = REVIEWS.map(tile).join('');   // отзывы только на главной: в форме заказа они отвлекают
 }
 function openRev(i){
   openSheet(`<span class="hand">вы пишете</span><div class="h2" style="margin:4px 0 12px">Отзывы</div>

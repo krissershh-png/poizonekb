@@ -274,6 +274,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .revimg{flex:0 0 172px;height:236px;border-radius:16px;overflow:hidden;background:#eef3f4;box-shadow:0 0 0 1.5px var(--line)}
 .revimg img{width:100%;height:100%;object-fit:contain}
 .trust{display:grid;gap:6px;margin-top:8px}
+.ydw-box{margin:12px 0 0;min-height:360px;border-radius:16px;overflow:hidden;background:var(--bg)}
 .phone-row{display:flex;gap:8px;align-items:stretch}.phone-row input{flex:1;min-width:0}.phone-row .btn{flex:none;white-space:nowrap}
 .fit{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--bg)}
 .fit label{font-size:13px;font-weight:800;color:var(--ink)}
@@ -1471,7 +1472,7 @@ function cuCalc(){
   const { y, kg, n } = cuVals();
   $('cu-total').textContent = y ? fmt(priceFrom(y, kg, n)) : '—';
   // мелочь одна не везётся: подсказка, если в заказе ещё нет основной вещи
-  const note = y && n < 2 && y*rateFor(y) < CFG.minItemRub && !buyCount() ? `Отдельно такую мелочь не вожу. Добавьте к основной вещи — комиссия будет ${fmt(CFG.feeNext)}` : '';
+  const note = y && n < 2 && y*rateFor(y) < CFG.minItemRub && !buyCount() ? `Отдельно такую мелочь не вожу. Добавьте к основной вещи — вместе выйдет дешевле` : '';
   $('cu-note').textContent = note; $('cu-note').hidden = !note;
 }
 function addCustom(){
@@ -1493,11 +1494,12 @@ $('cats').innerHTML = catRows(calcCat, 'pickCalcCat');
 function calc(){
   const y = parseFloat($('yen').value) || 0, kg = catOf(calcCat).w, n = qtyVal($('qty').value);
   const msg = !y ? '' : y < CFG.minYen ? 'Посчитаю лично, напишите мне'
-    : n < 2 && y*rateFor(y) < CFG.minItemRub ? `Отдельно такую мелочь не вожу. Добавьте к основной вещи — комиссия будет ${fmt(CFG.feeNext)}` : '';
+    : n < 2 && y*rateFor(y) < CFG.minItemRub ? `Отдельно такую мелочь не вожу. Добавьте к основной вещи — вместе выйдет дешевле` : '';
   $('c-total').hidden = !!msg; $('c-total').textContent = y ? fmt(priceFrom(y, kg, n)) : '0 ₽';
   $('c-msg').hidden = !msg; $('c-msg-t').textContent = msg; $('c-write').hidden = !(y && y < CFG.minYen);
   $('c-note').textContent = y && !msg ? 'Итоговая цена — до двери в Екатеринбурге и Пышме, в другие города до пункта выдачи' : '';
-  $('rate-txt').textContent = RATE.live && y && !msg ? 'курс на ' + RATE.date : '';   // курс не подтянулся — ничего не пишем
+  // курс загружен только что из канала обменника — это курс на сегодня (в тексте их поста дата бывает старая). Не подтянулся — ничего не пишем
+  $('rate-txt').textContent = RATE.live && y && !msg ? 'курс на ' + new Date().toLocaleDateString('ru-RU', { day:'numeric', month:'long' }) : '';
 }
 function orderFromCalc(){ const y = parseFloat($('yen').value) || 0; if(!y){ toast('Введите цену в юанях'); return } openCustom({ yen:y, cat:calcCat, qty:qtyVal($('qty').value) }) }
 
@@ -1643,12 +1645,47 @@ function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.que
   $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Улица и дом пункта — скопируйте с карты' : 'Улица, дом, квартира' }
 /* пункты выдачи без договора со службой: официальная карта СДЭК или Яндекс Карты с пунктами Яндекса в нужном городе */
 const PVZ = { cdek:{ t:'СДЭК' }, yandex:{ t:'Яндекс' } };
+var PVZ_ID = '';   // код пункта Яндекса, выбранного на карте; ручная правка адреса его сбрасывает
 let pvz = 'cdek';
-function setPvz(k){ pvz = PVZ[k] ? k : 'cdek'; document.querySelectorAll('#f-pvz button').forEach(b => b.classList.toggle('on', b.dataset.k === pvz)) }
+function setPvz(k){ pvz = PVZ[k] ? k : 'cdek'; PVZ_ID = ''; document.querySelectorAll('#f-pvz button').forEach(b => b.classList.toggle('on', b.dataset.k === pvz)) }
+/* пункты Яндекса на карте прямо в магазине: официальный виджет Яндекс Доставки, ключ не нужен.
+   Не загрузился (нет связи с Яндексом) — кнопка на Яндекс Карты, адрес вставляют руками */
+function loadYaWidget(){
+  if(window.YaDelivery) return Promise.resolve(true);
+  if(loadYaWidget.p) return loadYaWidget.p;
+  const add = src => new Promise(res => { const s = document.createElement('script'); s.src = src; s.onload = () => res(!!window.YaDelivery); s.onerror = () => res(false); document.head.appendChild(s) });
+  return loadYaWidget.p = add('https://widget-pvz.dostavka.yandex.net/widget.js').then(ok => ok || add('https://ndd-widget.landpro.site/widget.js'));
+}
+function openYaWidget(town){
+  const id = 'ydw' + Date.now(), safeTown = town.replace(/['"<>\\]/g, '');
+  const mapsUrl = 'https://yandex.ru/maps/?text=' + encodeURIComponent('пункт выдачи Яндекс Маркет ' + safeTown);
+  openSheet(`<span class="hand">пункт выдачи</span><div class="h2" style="margin-top:4px">Яндекс · ${esc(safeTown)}</div>
+    <div class="small" style="margin-top:4px">Нажмите на точку и «Выбрать» — адрес встанет в заказ сам</div>
+    <div class="ydw-box" id="${id}"><div class="small" style="padding:16px">Загружаю карту…</div></div>
+    <div id="${id}-fail" hidden><div class="rule">Карта Яндекса не открылась. Найдите пункт в Яндекс Картах и вставьте адрес в форму.</div>
+      <button class="btn block" style="margin-top:10px" onclick="closeSheet();openTg('${mapsUrl}')">Открыть Яндекс Карты</button></div>`);
+  const fail = () => { const b = $(id); if(b) b.hidden = true; const f = $(id + '-fail'); if(f) f.hidden = false };
+  loadYaWidget().then(ok => {
+    const box = $(id); if(!box) return;
+    if(!ok) return fail();
+    box.innerHTML = '';
+    try{ window.YaDelivery.createWidget({ containerId: id, params: { city: safeTown, size: { height: Math.round(innerHeight * .62) + 'px', width: '100%' }, delivery_price: '', delivery_term: '',
+      show_select_button: true, filter: { type: ['pickup_point'], is_yandex_branded: false, payment_methods: ['already_paid'], payment_methods_filter: 'or' } } }) }catch(e){ return fail() }
+    setTimeout(() => { const b = $(id); if(b && !b.querySelector('ymaps, [class*="ymaps"], [data-pickpoint-id]')) fail() }, 15000);
+  });
+}
+document.addEventListener('YaNddWidgetPointSelected', e => {
+  const d = e.detail || {}, a = d.address || {};
+  const full = a.full_address || [a.locality, a.street, a.house].filter(Boolean).join(', ');
+  if(!full) return;
+  $('f-addr').value = full; PVZ_ID = String(d.id || '');
+  closeSheet(); haptic('ok'); toast('Пункт выбран');
+});
 const placeText = () => city === 'other' ? `Другой город, пункт выдачи ${PVZ[pvz].t}` : CITY[city].m;
 function openPvzMap(){
   const town = $('f-town').value.trim();
   if(!town){ haptic('medium'); $('f-town').focus(); return toast('Сначала впишите город') }
+  if(pvz === 'yandex') return openYaWidget(town);   // Яндекс — карта прямо в магазине; СДЭК — их официальная карта на сайте
   const url = pvz === 'cdek' ? 'https://www.cdek.ru/ru/offices' : 'https://yandex.ru/maps/?text=' + encodeURIComponent('пункт выдачи Яндекс Маркет ' + town);
   try{ if(inTg && tg.openLink) tg.openLink(url); else window.open(url, '_blank') }catch(e){ window.open(url, '_blank') }
   toast('Найдите пункт, скопируйте адрес и вставьте в поле ниже');
@@ -1684,6 +1721,7 @@ function formatPhone(){
   if(n) $('f-phone').value = `+7 ${n.slice(0,3)} ${n.slice(3,6)}-${n.slice(6,8)}-${n.slice(8)}`;
 }
 $('f-phone').addEventListener('blur', formatPhone);
+$('f-addr').addEventListener('input', () => { PVZ_ID = '' });   // адрес поправили руками — это уже не пункт с карты
 const cartSum = () => cart.reduce((a,c)=>a+c.price,0);
 /* подарки: к заказу один самый выгодный купон; скидка за объём суммируется с ним; к оплате сертификатом скидок нет */
 const payByCert = () => !!($('f-cert') && $('f-cert').checked);
@@ -1753,14 +1791,14 @@ function renderCart(){
       : 'Применяется самый выгодный подарок, этот останется на следующий заказ';
     return `<button class="coupon ${bi===i?'sel':''} ${ok&&!clash?'':'dim'}" onclick="toast('${msg}')"><span class="v">−${c.v} ₽</span><span class="t"><b>${esc(c.why)}</b>${c.min ? 'от '+fmt(c.min)+' · ' : ''}сгорит ${dmyhm(c.until)}</span></button>` }).join('')}</div></div>` : '';
   let hint = cert ? 'Купоны и подарки к сертификату не применяются: номинал уже фиксированный.'
-    : vol ? `Комиссия за вторую и следующие вещи ${fmt(CFG.feeNext)} вместо ${fmt(CFG.fee)}: минус ${fmt(vol)}. Уже применено.`
+    : vol ? `За вторую и следующие вещи цена ниже: минус ${fmt(vol)}. Уже применено.`
     : bi >= 0 && firstPair && !orderedBefore() ? 'Подарок от друга и скидка с колеса не суммируются: к первому заказу применяется одна скидка, самая выгодная.'
     : bi >= 0 && G.coupons.length > 1 ? 'К заказу применяется один подарок, самый выгодный.' : '';
-  if(nb === 1 && n === 1) hint += (hint ? ' ' : '') + `Вторая вещь — доставка от ${fmt(minShip())} и комиссия вдвое меньше.`;
+  if(nb === 1 && n === 1) hint += (hint ? ' ' : '') + `Добавьте вторую вещь — вместе выйдет дешевле.`;
   if(perk) hint += (hint ? ' ' : '') + 'В посылку положу подарок за «Вырасти пару».';
   $('c-hint').textContent = hint; $('c-hint').hidden = !hint;
   $('c-sum').textContent = fmt(sum) + (cart.some(c=>c.custom&&!c.price)?' +':'');
-  $('c-vol-row').hidden = !vol; $('c-vol-l').textContent = 'Комиссия со 2-й вещи'; $('c-vol').textContent = '−'+fmt(vol);
+  $('c-vol-row').hidden = !vol; $('c-vol-l').textContent = 'Скидка за вторую вещь'; $('c-vol').textContent = '−'+fmt(vol);
   $('c-cut-row').hidden = !cut; $('c-cut').textContent = '−'+fmt(cut);
   $('c-ship-row').hidden = !shipc; $('c-ship').textContent = '−'+fmt(shipc);
   $('c-rush-row').hidden = !rush; $('c-rush').textContent = '+'+fmt(rush);
@@ -1810,7 +1848,9 @@ function submitOrder(){
     if(CERT_FAIL === cn){ haptic('medium'); return toast($('f-cert-msg').textContent) }
     if(CFG.api && inTg && !(CERT && CERT.num === cn)){ haptic('medium'); checkCert(); return toast('Проверяю сертификат, нажмите ещё раз через пару секунд') }
   }
-  askWrite(write => sendOrder(name, phone, city === 'other' ? `${town}, ${addr}` : addr, write));
+    // пункт с карты Яндекса: полный адрес уже с городом, плюс код пункта
+  const place = city !== 'other' ? addr : PVZ_ID ? `${addr} (код пункта ${PVZ_ID})` : `${town}, ${addr}`;
+  askWrite(write => sendOrder(name, phone, place, write));
 }
 /* один раз спрашиваем разрешение, чтобы бот мог прислать трек и статусы посылки */
 function askWrite(cb){
@@ -1835,7 +1875,7 @@ function sendOrder(name, phone, addr, write){
   });
   const photos = cart.filter(c=>!c.custom).map(c=>photoUrl(CAT.find(x=>x.id===c.id)||{})).filter(u=>/^https?:/.test(u));
   const msg = [ `Заказ ${num}`, '', ...lines, '', `Товары: ${fmt(sum)}`,
-    vol ? `Комиссия со 2-й вещи: −${fmt(vol)}` : null,
+    vol ? `Скидка за вторую вещь: −${fmt(vol)}` : null,
     shipc ? `Доставка одной посылкой: −${fmt(shipc)}` : null,
     rush ? `Срочный выкуп отдельно: +${fmt(rush)}` : nb ? `В закупку ${buyDate()}` : null,
     cp && cut ? `Подарок: −${fmt(cut)} (${cp.why})` : null,

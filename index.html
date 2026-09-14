@@ -265,6 +265,12 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .look .lb b{font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
 .look .lb span{font-weight:800;font-size:13px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .look .lb i{font-style:normal;font-family:var(--dela);font-weight:800;font-size:14px;margin-top:2px}
+/* «Как носят» в подборке по вайбу: крупная сетка, первый образ на всю ширину */
+.vr-looks{display:grid;grid-template-columns:1fr 1fr;gap:16px 12px}
+.vr-looks .look{flex:none;min-width:0}
+.vr-looks .look:first-child{grid-column:1/-1}
+.vr-looks .look:first-child .lp{aspect-ratio:4/5}
+.vr-looks .look:first-child .lb span{font-size:15px}
 .revimg{flex:0 0 172px;height:236px;border-radius:16px;overflow:hidden;background:#eef3f4;box-shadow:0 0 0 1.5px var(--line)}
 .revimg img{width:100%;height:100%;object-fit:contain}
 .trust{display:grid;gap:6px;margin-top:8px}
@@ -1279,7 +1285,8 @@ let SHOP_REST = [];
 function shopMore(){ const b = $('shop-more'); if(!b) return; const next = SHOP_REST.slice(0,48); SHOP_REST = SHOP_REST.slice(48); b.insertAdjacentHTML('beforebegin', next.map(card).join('')); if(SHOP_REST.length) b.textContent = 'Показать ещё '+SHOP_REST.length; else b.remove() }
 function renderShop(){
   const q = ($('q').value||'').toLowerCase().trim(), sort = $('sort').value;
-  $('shop-chips').innerHTML = (VIBE ? `<button class="chip vibe ${vibeOn?'on':''}" onclick="vibeOn=!vibeOn;save('vibeOn',vibeOn);renderShop()">Мой вайб</button>` : '')
+  // «Мой вайб» всегда первой вкладкой: без вайба открывает тест, с вайбом включает и выключает подборку
+  $('shop-chips').innerHTML = (VIBE ? `<button class="chip vibe ${vibeOn?'on':''}" onclick="vibeOn=!vibeOn;save('vibeOn',vibeOn);renderShop()">Мой вайб</button>` : `<button class="chip vibe" onclick="openVibeQuiz()">Мой вайб</button>`)
     + [{id:'all',t:'Все'},{id:'stock',t:'В наличии'},{id:'fav',t:'Избранное'},...catsPresent()].map(c=>`<button class="chip ${shopCat===c.id?'on':''}" onclick="shopCat='${c.id}';shopSub='all';renderShop()">${c.t}</button>`).join('');
   /* подвкладки обуви и одежды */
   const subs = (SUBS[shopCat] || []).filter(s => CAT.some(p => p.cat===shopCat && p.sub===s.id));
@@ -1299,8 +1306,9 @@ function renderShop(){
   /* на слабом телефоне 300 карточек разом дёргают скролл: рисуем по 48, остальное по кнопке */
   SHOP_REST = list.slice(48);
   $('shop-grid').innerHTML = list.length ? list.slice(0,48).map(card).join('') + (SHOP_REST.length ? `<button class="btn ghost block" id="shop-more" style="grid-column:1/-1" onclick="shopMore()">Показать ещё ${SHOP_REST.length}</button>` : '') : `<div class="empty" style="grid-column:1/-1"><span class="hand">такого пока нет</span><div style="font-weight:800;margin:6px 0 12px;color:var(--ink-2)">Пришлите ссылку или скрин с Poizon, привезу</div><button class="btn sm" onclick="openCustom()">Заказ по ссылке</button></div>`;
-  hint('vibe', document.querySelector('#shop-chips .chip.vibe'), '«Мой вайб» — вещи под ваш стиль. Нажмите, чтобы выключить');
-  hint('fav', document.querySelector('#shop-grid .fav'), 'В избранное — напишу, если подешевеет');
+  if(VIBE) hint('vibe', document.querySelector('#shop-chips .chip.vibe'), '«Мой вайб» — вещи под ваш стиль. Нажмите, чтобы выключить');
+  else hint('vibe-quiz', document.querySelector('#shop-chips .chip.vibe'), 'Узнайте свой вайб — пройдите тест из 4 вопросов');
+  if(HINTS.vibe || HINTS['vibe-quiz']) hint('fav', document.querySelector('#shop-grid .fav'), 'В избранное — напишу, если подешевеет');   // сначала про вайб, сердечко потом
 }
 
 /* ---------- размерные сетки ---------- */
@@ -2555,21 +2563,25 @@ function vibePicks(k, n, fresh){
 }
 function openVibeResult(k, shared){
   const V = VIBES[k]; if(!V) return;
-  const items = vibePicks(k, 8), all = CAT.filter(p => p.look && inVibe(p, k) && minPrice(p)).sort((a,b) => (a.lk ?? 999) - (b.lk ?? 999));
-  const other = all.filter(p => !items.includes(p)), looks = (other.length >= 3 ? other : all).slice(0, 4);
+  // подборка побольше: 20 вещей и до 9 образов; первый образ крупно на всю ширину
+  const items = vibePicks(k, 20), all = CAT.filter(p => p.look && inVibe(p, k) && minPrice(p)).sort((a,b) => (a.lk ?? 999) - (b.lk ?? 999));
+  const other = all.filter(p => !items.includes(p)), looks = (other.length >= 6 ? other : all).slice(0, 9);
   const allFav = items.length && items.every(p => favs.includes(p.id));
   openSheet(`<div class="sbar"><button class="sback" onclick="closeSheet()">${BACK_SVG}Назад</button></div>
     <div class="vr-head" style="background:${V.bg};color:${V.ink}"><div class="dots"></div>
       <div class="vr-k">${shared ? 'подборка друга' : 'ваш вайб'}</div><div class="vr-t">${V.t}</div><div class="vr-l">${V.line}</div></div>
     <div class="grid" style="margin-top:14px">${items.map(card).join('')}</div>
-    ${looks.length ? `<div class="sec" style="margin-top:24px"><h2 class="h2">Как носят</h2></div><div class="hs">${looks.map(lookCard).join('')}</div>` : ''}
+    ${VIBE && VIBE.key === k ? `<button class="btn ghost block" style="margin-top:12px" onclick="vibeShowAll()">Все вещи в вайбе «${V.t}»</button>` : ''}
+    ${looks.length ? `<div class="sec" style="margin-top:26px"><h2 class="h2">Как носят</h2><span class="small">${looks.length} ${plural(looks.length,['образ','образа','образов'])}</span></div><div class="vr-looks">${looks.map(lookCard).join('')}</div>` : ''}
     <button class="btn teal block vr-fav" style="margin-top:18px" onclick="${allFav ? 'openFavs()' : `vibeWantAll('${k}')`}">${allFav ? 'Открыть избранное' : 'Добавить всё в избранное'}</button>
     ${shared ? `<button class="btn ghost block" style="margin-top:10px" onclick="openVibeQuiz()">Собрать свою подборку</button>`
       : `<button class="btn ghost block" style="margin-top:10px" onclick="shareVibe('${k}')">Поделиться</button><button class="vq-link" onclick="openVibeQuiz()">Пройти заново</button>`}`);
   VIBE_SHEET = { key:k, shared:!!shared };
 }
+/* весь каталог с фильтром «Мой вайб» */
+function vibeShowAll(){ sheetBack = null; closeSheet(); vibeOn = true; save('vibeOn', true); shopCat = 'all'; shopSub = 'all'; $('q').value = ''; go('shop') }
 function vibeWantAll(k){
-  const add = vibePicks(k, 8).filter(p => !favs.includes(p.id));
+  const add = vibePicks(k, 20).filter(p => !favs.includes(p.id));
   if(add.length){
     add.forEach(p => { favs.push(p.id); FP[p.id] = minPrice(p) || 0 });
     save('favs', favs); save('favp', FP); syncFavs(); haptic('ok');

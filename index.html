@@ -740,8 +740,9 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="row sub" id="c-rush-row" hidden><span class="small">Срочный выкуп отдельно</span><b class="num" id="c-rush">0 ₽</b></div>
     <div class="row sub" id="c-cert-row" hidden><span class="small">Сертификатом</span><b class="num" id="c-cert">0 ₽</b></div>
     <div class="row" style="border-top:2px dashed var(--line)"><span class="small">К оплате</span><b class="num" id="c-pay">0 ₽</b></div>
-    <div class="field"><span>Имя</span><input id="f-name"></div>
-    <div class="field"><span>Телефон</span><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00"></div>
+    <div class="field"><span>Имя</span><input id="f-name"><div class="small" id="f-nick" hidden style="margin-top:6px"></div></div>
+    <div class="field"><span>Телефон</span><div class="phone-row"><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00"><button type="button" class="btn sm ghost" id="f-phone-tg" hidden onclick="phoneFromTg()">Из Telegram</button></div>
+      <div class="small" id="f-phone-note" hidden style="margin-top:6px">Telegram спросит разрешение — нажмите «Поделиться»</div></div>
     <div class="field"><span>Город</span><div class="seg" id="f-city"></div></div>
     <!-- другой город: служба и пункт выдачи. Точный пункт человек находит на официальной карте службы и вставляет адрес -->
     <div class="field" id="f-pvz-f" hidden><span>Пункт выдачи</span><div class="seg" id="f-pvz" style="grid-template-columns:1fr 1fr"></div>
@@ -1664,7 +1665,21 @@ $('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из дру
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
 if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
-/* номер вводится один раз и запоминается. Кнопки «Из Telegram» нет: Telegram показывает пугающее системное окно и присылает карточку с номером в чат */
+/* ник из аккаунта Telegram: уходит в заказ сам, клиент видит, как с ним свяжутся */
+if(user){ $('f-nick').hidden = false; $('f-nick').textContent = user.username ? `Telegram: @${user.username} — свяжусь здесь` : 'В Telegram нет ника — свяжусь по телефону' }
+/* номер: из прошлого заказа (приходит из таблицы) или из аккаунта Telegram. Без разрешения Telegram номер не отдаёт —
+   поэтому кнопка и подсказка про окно «Поделиться»; карточку с номером бот убирает из чата сам */
+const canTgPhone = () => !!(inTg && tg.requestContact && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
+function phoneUi(){ const show = canTgPhone() && !$('f-phone').value.trim(); $('f-phone-tg').hidden = !show; $('f-phone-note').hidden = !show }
+function phoneFromTg(){
+  try{ tg.requestContact((ok, res) => {
+    const ph = res && res.responseUnsafe && res.responseUnsafe.contact && res.responseUnsafe.contact.phone_number;
+    if(ph){ $('f-phone').value = ph.charAt(0) === '+' ? ph : '+' + ph; formatPhone(); phoneUi(); haptic('ok') }
+    else if(!ok) toast('Можно вписать номер вручную');
+  }) }catch(e){ toast('Впишите номер вручную') }
+}
+$('f-phone').addEventListener('input', phoneUi);
+phoneUi();
 /* 89226662904 → +7 922 666-29-04: номер легче проверить глазами */
 function formatPhone(){
   const d = $('f-phone').value.replace(/\D/g, ''), n = d.length === 11 && /^[78]/.test(d) ? d.slice(1) : d.length === 10 ? d : '';
@@ -2469,6 +2484,7 @@ function register(){
     G.spinUntil = r.spinUntil || 0;
     G.certs = r.certs || [];
     if(r.delivered){ DELIVERED = r.delivered; renderRevs() }
+    if(r.phone && !$('f-phone').value.trim()){ $('f-phone').value = r.phone; formatPhone(); phoneUi() }   // номер из прошлого заказа или из Telegram — на любом телефоне
     if(r.popular) POPULAR = r.popular;
     if(r.purchase && r.purchase.next){ BUY = r.purchase; renderHome(); if($('s-cart').classList.contains('active')) renderCart() }   // закупка: дата и сколько вещей уже ждут выкупа
     if(r.vibe && VIBES[r.vibe] && !VIBE){ VIBE = { key:r.vibe, at:Date.now(), scores:{} }; save('vibe', VIBE); renderHome() }   // вайб из таблицы на новом телефоне

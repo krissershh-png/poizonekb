@@ -16,7 +16,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
-  --teal:#121212; --teal-d:#121212; --aqua:#f3f1f1; --aqua-2:#f8f7f7; --red:#c81717; --red-dk:#ff5d52;
+  --teal:#121212; --teal-d:#121212; --aqua:#f3f1f1; --aqua-2:#f8f7f7; --red:#c81717; --red-dk:#ff5d52; --amber:#ffb800; --amber-soft:#fff3d1; --amber-ink:#7a5200; --jade:#16804a; --jade-soft:#e2f4ea; --sky:#2f6fed; --sky-soft:#e8effd; --sky-ink:#1d4fb8;
   --ink:#121212; --ink-2:#3d3535; --mute:#7a6f6f; --line:#efe6e6;
   --orange:#c81717; --paper:#fff; --bg:#f8f5f5;
   --grad:linear-gradient(90deg,#121212,#121212);
@@ -120,7 +120,7 @@ a{color:inherit;text-decoration:none}
 .price{font-family:var(--dela);font-weight:800;font-size:15px;margin-top:4px}
 .price small{font-family:var(--body);font-weight:800;font-size:11px;color:var(--mute)}
 .tag{position:absolute;left:8px;top:8px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;background:var(--ink);color:#fff}
-.tag.stock{background:var(--grad);color:#ffffff}
+.tag.stock{background:var(--jade);color:#fff}
 .tag.off{background:#fff;color:var(--mute)}
 .fav{position:absolute;right:6px;top:6px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:#b9c3c5}
 .fav.on{color:#e0457b}
@@ -178,11 +178,11 @@ th{font-size:11px;color:var(--mute);font-weight:900}
 .list{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}   /* длинное название вещи не растягивает карточку заказа за экран */
 
 /* coupons */
-.coupon{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;background:var(--aqua);overflow:hidden}
+.coupon{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;background:var(--amber-soft);overflow:hidden}
 .coupon::before,.coupon::after{content:"";position:absolute;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:#fff}
 .coupon::before{left:-9px}.coupon::after{right:-9px}
 .coupon .v{font-family:var(--dela);font-weight:800;font-size:18px;color:var(--ink);white-space:nowrap}
-.coupon .t{flex:1;min-width:0;font-size:12px;font-weight:800;color:var(--mute)}
+.coupon .t{flex:1;min-width:0;font-size:12px;font-weight:800;color:var(--amber-ink)}
 .coupon .t b{display:block;font-size:14px;color:var(--ink);font-weight:900}
 .coupon.sel{background:var(--ink);color:#fff}.coupon.sel .v,.coupon.sel .t b{color:#fff}.coupon.sel .t{color:rgba(255,255,255,.72)}
 .coupon.dim{opacity:.45}
@@ -231,8 +231,8 @@ th{font-size:11px;color:var(--mute);font-weight:900}
 .tl div::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--line);flex:0 0 12px;position:relative;z-index:1}
 .tl div::after{content:"";position:absolute;left:5px;top:12px;bottom:0;width:2px;background:var(--line)}
 .tl div:last-child::after{display:none}
-.tl div.on{color:var(--ink)}.tl div.on::before{background:var(--teal)}
-.tl div.cur::before{background:var(--orange);box-shadow:0 0 0 4px rgba(200,23,23,.25)}
+.tl div.on{color:var(--ink)}.tl div.on::before{background:var(--jade)}
+.tl div.cur::before{background:var(--amber);box-shadow:0 0 0 4px rgba(255,184,0,.3)}
 .order{border-radius:16px;background:var(--bg);padding:14px}
 .status{padding:5px 10px;border-radius:999px;font-size:12px;font-weight:900;background:#fff}
 
@@ -372,12 +372,12 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .how div.st{display:flex;gap:12px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.35}
 .how i{width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:var(--aqua);color:var(--teal-d);font-style:normal;font-weight:900;font-size:12px;display:grid;place-items:center}
 /* скидка в профиле: крупно, в фирменном градиенте с точками */
-.pcard{position:relative;overflow:hidden;margin-top:12px;border-radius:22px;background:var(--grad);color:#ffffff;padding:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;box-shadow:0 10px 24px -12px rgba(200,23,23,.55)}
+.pcard{position:relative;overflow:hidden;margin-top:12px;border-radius:22px;background:var(--jade);color:#fff;padding:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;box-shadow:0 10px 24px -12px rgba(22,128,74,.45)}
 .pcard>:not(.dots){position:relative}
 .pcard .dots{right:-40px;top:-60px;width:220px;height:220px;opacity:.7;background-image:radial-gradient(circle,rgba(255,255,255,.75) 1.3px,transparent 1.7px)}
 .pcard .pr{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pcard .lbl{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;min-width:0}
-.pcard .left{padding:6px 11px;border-radius:999px;background:var(--orange);color:#fff;font-weight:900;font-size:12px;white-space:nowrap}
+.pcard .left{padding:6px 11px;border-radius:999px;background:#fff;color:var(--jade);font-weight:900;font-size:12px;white-space:nowrap}
 .pcard .big{font-family:var(--dela);font-weight:900;font-size:48px;line-height:1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 0 rgba(60,10,10,.2)}
 .pcard .when{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;line-height:1.3}
 .pcard .when svg{flex:0 0 16px}
@@ -391,7 +391,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .sback svg{width:18px;height:18px}
 .vcard{margin-top:14px;padding:12px 14px 14px;border-radius:var(--r);background:var(--aqua-2);box-shadow:inset 0 0 0 1.5px var(--line);display:grid;gap:12px}
 .vcard .in{display:flex;align-items:center;gap:12px}
-.vcard .ic{width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:var(--grad);display:grid;place-items:center}
+.vcard .ic{width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:var(--sky);display:grid;place-items:center}
 .vcard .t{flex:1;min-width:0;display:grid;gap:2px}
 .vcard .t b{font-weight:900;font-size:14px}
 .vcard .t span{font-size:12px;font-weight:700;color:var(--ink-2)}
@@ -412,7 +412,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .howrow::-webkit-scrollbar{display:none}
 .howcard{flex:0 0 74%;scroll-snap-align:start;position:relative;overflow:hidden;border-radius:var(--r);padding:16px;min-height:158px;display:grid;align-content:start;gap:6px;background:#fff;box-shadow:0 0 0 1.5px var(--line);transition:transform .35s ease,opacity .35s ease}   /* белая карточка с рамкой — как товары и отзывы */
 .howcard:not(.on){transform:scale(.95);opacity:.7}
-.howcard .hi{width:48px;height:48px;border-radius:14px;background:var(--grad);display:grid;place-items:center;color:#ffffff;margin-bottom:6px}
+.howcard .hi{width:48px;height:48px;border-radius:14px;background:var(--amber-soft);display:grid;place-items:center;color:var(--amber-ink);margin-bottom:6px}
 .howcard .hi svg{width:26px;height:26px}
 .howcard.on .hi{animation:howpop .6s cubic-bezier(.2,.8,.2,1.35)}
 .howcard b{font-family:var(--dela);font-weight:800;font-size:15px;line-height:1.15;text-transform:uppercase}
@@ -442,7 +442,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .intro-lead{margin:2px 0 0;padding-top:10px;border-top:1.5px dashed #d3dfe2;font-size:14px;font-weight:700;line-height:1.45;color:var(--ink-2);text-wrap:pretty}
 .intro-lead b{font-weight:900}
 /* плашка закупки: бирюзовый градиент с точками, отрывной календарик, клетки набора */
-.buyday{position:relative;overflow:hidden;margin-top:28px;display:flex;align-items:center;gap:14px;padding:14px 16px 14px 14px;border-radius:var(--r);background:var(--grad);color:#ffffff}
+.buyday{position:relative;overflow:hidden;margin-top:28px;display:flex;align-items:center;gap:14px;padding:14px 16px 14px 14px;border-radius:var(--r);background:var(--amber);color:#121212}
 .buyday>:not(.dots){position:relative}
 .buyday .dots{right:-40px;top:-50px;width:190px;height:190px;opacity:.75;background-image:radial-gradient(circle,rgba(255,255,255,.75) 1.3px,transparent 1.7px)}
 .buyday .cal{width:60px;flex:0 0 60px;border-radius:14px;background:#fff;overflow:hidden;text-align:center;box-shadow:0 8px 16px -10px rgba(60,10,10,.6);transform:rotate(-4deg)}
@@ -451,12 +451,12 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .buyday .k{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
 .buyday .t b{font-family:var(--dela);font-weight:900;font-size:18px;line-height:1.1;text-transform:uppercase}
 .buyday .slots{display:flex;gap:4px;margin:4px 0 2px}
-.buyday .slots i{width:15px;height:15px;border-radius:4px;background:rgba(255,255,255,.5)}
+.buyday .slots i{width:15px;height:15px;border-radius:4px;background:rgba(18,18,18,.14)}
 .buyday .slots i.on{background:#121212}
 .buyday .s{font-size:12px;font-weight:800;line-height:1.3}
 .buyl{margin-top:6px;color:var(--teal-d)}
 .vq-bar{height:5px;border-radius:3px;background:var(--bg);overflow:hidden}
-.vq-bar i{display:block;height:100%;background:var(--grad);border-radius:3px;transition:width .3s}
+.vq-bar i{display:block;height:100%;background:var(--sky);border-radius:3px;transition:width .3s}
 .vq-q{font-size:19px;text-transform:none;margin:14px 0 12px;text-wrap:balance}
 .vq-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .vq-o{position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#eef3f4;text-align:left;transition:transform .12s}
@@ -475,12 +475,12 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .vr-k{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
 .vr-t{font-family:var(--dela);font-weight:900;font-size:28px;line-height:1.05;text-transform:uppercase;margin-top:6px;text-wrap:balance}
 .vr-l{font-weight:800;font-size:14px;line-height:1.35;margin-top:8px;max-width:30ch}
-.tile.vibe{background:var(--grad);color:#ffffff}
+.tile.vibe{background:var(--sky);color:#fff}
 .tile.vibe .hand{color:#fff}
-.chip.vibe{box-shadow:inset 0 0 0 1.5px var(--teal)}
-.chip.vibe.on{background:var(--grad);color:#ffffff;box-shadow:none}
+.chip.vibe{box-shadow:inset 0 0 0 1.5px var(--sky)}
+.chip.vibe.on{background:var(--sky);color:#fff;box-shadow:none}
 .vrow{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:12px 14px;border-radius:var(--r);background:var(--aqua-2);box-shadow:inset 0 0 0 1.5px var(--line);text-align:left}
-.vrow .ic{width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:var(--grad);display:grid;place-items:center}
+.vrow .ic{width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:var(--sky);display:grid;place-items:center}
 .vrow .t{flex:1;min-width:0;display:grid;gap:2px}
 .vrow .t b{font-weight:900;font-size:14px}
 .vrow .t span{font-size:12px;font-weight:700;color:var(--ink-2)}
@@ -496,9 +496,9 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .oth img{width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;border-radius:12px}.oth img.life{object-fit:cover;padding:0}
 .ot{flex:1;min-width:0}.ot b{display:block;font-weight:900;font-size:14px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ot span{display:block;font-size:12px;font-weight:700;color:var(--mute);margin-top:2px}
-.obar{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-top:12px}.obar i{height:4px;border-radius:2px;background:#dfe7e8}.obar i.on{background:var(--teal)}
+.obar{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-top:12px}.obar i{height:4px;border-radius:2px;background:#dfe7e8}.obar i.on{background:var(--jade)}
 .ostage{margin-top:6px;font-size:12px;font-weight:800;color:var(--ink-2)}
-.status.go{background:var(--aqua);color:var(--ink)}
+.status.go{background:var(--sky-soft);color:var(--sky-ink)}
 /* полка: светлая ниша витрины с подсветкой сверху, белые подиумы с табличками (месяц или «+»); пустые места — пунктирные силуэты */
 .cap .cap-r{display:flex;align-items:center;gap:8px}
 .rack{position:relative;overflow-x:hidden;overflow-y:auto;max-height:300px;padding:7px;border-radius:24px;background:linear-gradient(180deg,#f5f1f1,#e7dede);box-shadow:inset 0 1px 0 #fff,0 14px 26px -18px rgba(50,25,25,.45);scrollbar-width:none}
@@ -528,7 +528,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 @keyframes spark{0%{opacity:0;transform:scale(.4) rotate(-20deg)}100%{opacity:1;transform:none}}
 .shelf-line{margin-top:8px;white-space:normal}
 @media (prefers-reduced-motion:reduce){.thing.pop .obj,.thing.pop .spark{animation:none;opacity:1}}
-.status.wait{background:#fbeded;color:var(--orange)}
+.status.wait{background:var(--amber-soft);color:var(--amber-ink)}
 /* полка: полученные заказы коробками */
 .shelf{padding:14px;border-radius:var(--r);background:var(--ink);color:#fff;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:12px}
 .shelf .top{display:flex;align-items:baseline;gap:10px}.shelf .top b{font-family:var(--dela);font-weight:800;font-size:17px;text-transform:uppercase}
@@ -545,7 +545,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .jr div{display:flex;gap:10px;align-items:center;font-weight:800;font-size:13px;color:var(--mute);padding:4px 0}
 .jr div i{width:16px;height:16px;flex:0 0 16px;border-radius:50%;border:2px solid var(--line)}
 .jr div.on{color:var(--ink)}.jr div.on i{background:#2fb36b;border-color:#2fb36b}
-.jr div.cur i{background:var(--orange);border-color:var(--orange);box-shadow:0 0 0 4px rgba(200,23,23,.2)}
+.jr div.cur i{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 4px rgba(255,184,0,.3)}
 .jr-ph{display:flex;gap:8px;overflow-x:auto;margin-top:8px;scrollbar-width:none}
 .jr-ph button{flex:0 0 96px;height:120px;border-radius:14px;overflow:hidden;background:var(--bg)}
 .jr-ph img{width:100%;height:100%;object-fit:cover}
@@ -566,7 +566,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .game .t b{font-family:var(--dela);font-weight:800;font-size:14px;text-transform:uppercase;line-height:1.1}
 .game .t .s{font-weight:800;font-size:13px;color:var(--ink-2)}
 .meter{display:block;height:8px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);overflow:hidden}
-.meter i{display:block;height:100%;background:var(--grad);border-radius:5px;transition:width .5s}
+.meter i{display:block;height:100%;background:var(--jade);border-radius:5px;transition:width .5s}
 .garden{position:relative;width:min(68vw,240px);margin:6px auto 8px}
 .garden svg{width:100%;display:block}
 /* росток чуть живёт: качается, горшок дышит, искры мерцают */
@@ -615,13 +615,13 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .trk{margin-top:12px;border-radius:var(--r);background:#fff;box-shadow:0 0 0 1.5px var(--line);padding:16px}
 .trk-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .trk-h b{font-family:var(--dela);font-weight:800;font-size:15px;letter-spacing:.02em}
-.trk-pill{padding:6px 11px;border-radius:999px;background:var(--aqua);color:var(--ink);font-weight:900;font-size:12px;white-space:nowrap}
+.trk-pill{padding:6px 11px;border-radius:999px;background:var(--sky-soft);color:var(--sky-ink);font-weight:900;font-size:12px;white-space:nowrap}
 .trk-pill.ok{background:#2fb36b;color:#fff}
 .trk-bar{display:flex;align-items:center;margin:18px 2px 0}
 .trk-bar i{flex:0 0 12px;height:12px;border-radius:50%;background:var(--line)}
 .trk-bar b{flex:1;height:3px;background:var(--line)}
 .trk-bar .on{background:#2fb36b}
-.trk-bar i.cur{background:var(--orange);box-shadow:0 0 0 4px rgba(200,23,23,.25)}
+.trk-bar i.cur{background:var(--amber);box-shadow:0 0 0 4px rgba(255,184,0,.3)}
 .trk-now{margin-top:16px;font-family:var(--dela);font-weight:800;font-size:17px;line-height:1.15;text-transform:uppercase}
 .trk-next{margin-top:4px;font-weight:800;font-size:13px;color:var(--ink-2)}
 .trk-list{display:grid;gap:9px;margin-top:14px;padding-top:14px;border-top:1.5px dashed var(--line)}
@@ -630,7 +630,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .trk-list .on{color:var(--ink)}
 .trk-list .on span{background:#2fb36b;border-color:#2fb36b}
 .trk-list .on span::after{content:"";width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
-.trk-list .cur span{background:var(--orange);border-color:var(--orange)}
+.trk-list .cur span{background:var(--amber);border-color:var(--amber)}
 .msgbox{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;margin-top:12px;padding:14px;border-radius:14px;background:var(--bg);font-weight:700;font-size:14px;line-height:1.45;max-height:42vh;overflow:auto}
 </style>
 </head>
@@ -1541,14 +1541,14 @@ function renderGiftBanner(){
 function wheelSVG(){
   const V = CFG.wheel, n = V.length, cx = 150, cy = 150, R = 124, step = 360/n;
   const top = Math.max(...V);
-  const fills = ['#121212','#ffffff','#c81717','#ece7e7','#121212','#ffffff','#ece7e7','#ffffff'];
+  const fills = ['#121212','#ffffff','#c81717','#ffb800','#16804a','#ffffff','#2f6fed','#fff3d1'];
   const pt = (a,r)=>[cx + r*Math.sin(a*Math.PI/180), cy - r*Math.cos(a*Math.PI/180)];
   let seg = '', txt = '';
   V.forEach((v,i)=>{
     const a0 = i*step, a1 = (i+1)*step, m = a0+step/2;
     const [x0,y0]=pt(a0,R), [x1,y1]=pt(a1,R);
     let f = fills[i%fills.length]; if(v===top) f = '#7a0d0d';
-    const dark = f==='#121212' || f==='#7a0d0d' || f==='#c81717';
+    const dark = f==='#121212' || f==='#7a0d0d' || f==='#c81717' || f==='#16804a' || f==='#2f6fed';
     seg += `<path d="M${cx} ${cy}L${x0.toFixed(2)} ${y0.toFixed(2)}A${R} ${R} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z" fill="${f}" stroke="#121212" stroke-width="2"/>`;
     const ty = cy - 84, turn = m > 180 ? 90 : -90;
     txt += `<g transform="rotate(${m} ${cx} ${cy})"><text transform="rotate(${turn} ${cx} ${ty})" x="${cx}" y="${ty}" text-anchor="middle" dominant-baseline="central" font-family="Unbounded, Arial Black, sans-serif" font-weight="800" font-size="${v>=1000?15:18}" fill="${dark?'#fff':'#121212'}">−${v}<tspan font-family="Golos Text, Arial, sans-serif" font-weight="800" font-size="12" dx="2">₽</tspan></text></g>`;
@@ -1636,7 +1636,7 @@ function confetti(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const c = $('fx'), ctx = c.getContext('2d'), dpr = devicePixelRatio||1;
   c.width = innerWidth*dpr; c.height = innerHeight*dpr; ctx.scale(dpr,dpr);
-  const cols = ['#c81717','#ff7a70','#c81717','#f6de7a','#f5b3c7','#121212'];
+  const cols = ['#c81717','#ffb800','#16804a','#2f6fed','#f5b3c7','#121212'];
   const st = ($('stage')||document.body).getBoundingClientRect(), ox = st.left+st.width/2, oy = st.top+st.height*0.45;
   const P = Array.from({length:140},()=>({ x:ox, y:oy, vx:(Math.random()*2-1)*7, vy:-Math.random()*11-3, r:Math.random()*6+4, a:Math.random()*6, va:(Math.random()*2-1)*.3, c:cols[Math.random()*cols.length|0], s:Math.random()<.5 }));
   const t0 = performance.now();
@@ -2660,7 +2660,7 @@ function renderMyLink(){
 /* ---------- подборка по вайбу: 4 вопроса → вещи и образы; дальше вайб работает как фильтр каталога ---------- */
 /* mix — из каких подкатегорий по очереди набирается подборка: в «Уюте» угги, пуховики и вязаное, а не одни шарфы */
 const VIBES = {
-  sport:   { t:'Спорт',      line:'Беговые силуэты и техничные кроссовки, в которых удобно весь день', bg:'var(--grad)', ink:'#ffffff', mix:['sneakers','sneakers','tees|hoodies|outer','sneakers','watch|hats'] },
+  sport:   { t:'Спорт',      line:'Беговые силуэты и техничные кроссовки, в которых удобно весь день', bg:'var(--sky)', ink:'#ffffff', mix:['sneakers','sneakers','tees|hoodies|outer','sneakers','watch|hats'] },
   street:  { t:'Улица',      line:'Данки, джорданы, ботинки и оверсайз', bg:'linear-gradient(135deg,#eceff0,#aab3b7)', ink:'#121212', mix:['sneakers','hoodies|outer|pants','boots','sneakers','hats|watch'] },
   minimal: { t:'Минимализм', line:'Кашемир, кожа и спокойные цвета без лишнего шума', bg:'linear-gradient(135deg,#f4f0e9,#d8cdbd)', ink:'#2b2622', mix:['bags','sneakers','knit','heels|keds','scarf|wallet|watch'] },
   y2k:     { t:'Y2K',        line:'Металлик, розовый, очки и Labubu — как в двухтысячных', bg:'linear-gradient(135deg,#ffc9e3,#c9d4ff)', ink:'#3a1030', mix:['glasses','sneakers','toys','heels|keds|boots','beauty|bags|watch'] },

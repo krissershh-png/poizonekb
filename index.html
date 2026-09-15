@@ -2406,7 +2406,7 @@ function plantSVG(s, tile){
     if(s === 3) plant += `<g class="fl"><g fill="#ffb36b" stroke="#f08a2e" stroke-width="1.2">${[0,72,144,216,288].map(a=>`<ellipse cx="100" cy="${top-14}" rx="5" ry="9" transform="rotate(${a} 100 ${top-5})"/>`).join('')}</g><circle cx="100" cy="${top-5}" r="5" fill="#c81717"/></g>`;
     if(s >= 4){ const sc = s===5 ? .95 : .7; plant += `<g class="fl" transform="translate(${(100-45*sc).toFixed(1)} ${(top-42*sc).toFixed(1)}) scale(${sc})">${SNEAKER}</g>` }
   }
-  const star = (x,y,r,d) => `<path class="sp" style="animation-delay:${d}s" d="M${x} ${y-r}q${r*.25} ${r*.75} ${r} ${r}q-${r*.75} ${r*.25} -${r} ${r}q-${r*.25} -${r*.75} -${r} -${r}q${r*.75} -${r*.25} ${r} -${r}z" fill="#fff" stroke="#f3d27a" stroke-width="1"/>`;
+  const star = (x,y,r,d) => `<path class="sp" style="animation-delay:${d}s" d="M${x} ${y-r}q${r*.25} ${r*.75} ${r} ${r}q-${r*.75} ${r*.25} -${r} ${r}q-${r*.25} -${r*.75} -${r} -${r}q${r*.75} -${r*.25} ${r} -${r}z" fill="#fff" stroke="#8fb3ff" stroke-width="1"/>`;
   const sparks = s >= 1 ? star(48,70,7,0) + star(152,58,9,.9) + star(160,104,5,1.6) + star(40,112,4,.5) + `<path class="ht" d="M138 82c-3-5-11-2-9 4 1 4 6 7 9 10 3-3 8-6 9-10 2-6-6-9-9-4z" fill="#fff" stroke="#f6a9b6" stroke-width="1.2"/>` : '';
   const pot = `<g class="pot"><path d="M58 130h84l-7 46c-1 6-5 9-11 9H76c-6 0-10-3-11-9z" fill="url(#pb)"/><path d="M64 134h10l-4 46c-3-1-5-4-5-8z" fill="#fff" opacity=".28"/>
     <rect x="49" y="114" width="102" height="22" rx="9" fill="url(#rm)"/><rect x="53" y="117" width="94" height="6" rx="3" fill="#fff" opacity=".12"/>

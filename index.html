@@ -243,8 +243,11 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-si
 nav button.on{color:var(--ink)}
 nav svg{width:24px;height:24px}
 nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--orange);color:#fff;font-size:10px;display:grid;place-items:center}
-.toast{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-weight:800;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:92%;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%) translateY(8px);width:max-content;max-width:min(300px,calc(100% - 32px));padding:9px 14px;border-radius:14px;background:rgba(18,18,18,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-weight:700;font-size:13px;line-height:1.3;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.12);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
 .toast.show{opacity:1;transform:translateX(-50%)}
+/* открыта шторка — сверху, чтобы не закрывать поля и кнопки */
+.toast.top{top:calc(14px + env(safe-area-inset-top,0px));bottom:auto;transform:translateX(-50%) translateY(-8px)}
+.toast.top.show{transform:translateX(-50%)}
 
 /* ---- карточки товаров v6 ---- */
 .card{border:0;border-radius:20px;background:#fff;box-shadow:0 0 0 1.5px var(--line),0 8px 20px rgba(18,18,18,.05);transition:transform .15s}
@@ -940,7 +943,7 @@ function cartSync(){
     .then(r => { if(r && r.ok) save('cartSent', key) });
 }
 function haptic(t){ try{ if(!tg||!tg.HapticFeedback) return; if(t==='ok') tg.HapticFeedback.notificationOccurred('success'); else if(t==='tick') tg.HapticFeedback.selectionChanged(); else tg.HapticFeedback.impactOccurred(t||'light') }catch(e){} }
-function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400) }
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.toggle('top', $('sheet-bg').classList.contains('open')); t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400) }
 /* inTg: приложение реально открыто внутри Telegram (в обычном браузере initData пустой) */
 const inTg = !!(tg && tg.initData);
 /* msg: готовый текст. Если браузер не дал открыть Telegram, показываем его с кнопками «Открыть» и «Скопировать» */
@@ -1660,44 +1663,38 @@ function pvzNearUi(){
   if(near) PVZ_ID = '';
 }
 function pvzNear(){ $('f-pvz-near').checked = true; pvzNearUi(); closeSheet(); setTimeout(() => $('f-addr').focus(), 300); toast('Напишите свой адрес — подберу ближайший пункт') }
-/* «Вставить»: адрес, скопированный в карточке пункта на карте. Telegram не всегда даёт читать буфер — тогда подсказка про долгое нажатие */
-function pvzPaste(){
-  const inp = $('pvz-addr-in'), manual = () => { inp.focus(); toast('Нажмите на поле и удерживайте — «Вставить»') };
-  try{
-    if(navigator.clipboard && navigator.clipboard.readText) return navigator.clipboard.readText()
-      .then(t => { t = String(t || '').trim(); if(t){ inp.value = t.slice(0, 200); haptic('tick') } else toast('Сначала скопируйте адрес в карточке пункта') })
-      .catch(manual);
-  }catch(e){}
-  manual();
-}
-/* пункты выдачи без договора со службой: официальная карта СДЭК или Яндекс Карты с пунктами Яндекса в нужном городе */
+/* пункты выдачи без договора со службой — выбираются на карте прямо в магазине, наружу никого не отправляем */
 const PVZ = { cdek:{ t:'СДЭК' }, yandex:{ t:'Яндекс' } };
 var PVZ_ID = '';   // код пункта СДЭК или Яндекса, выбранного на карте; ручная правка адреса его сбрасывает
 let pvz = 'cdek';
 function setPvz(k){ pvz = PVZ[k] ? k : 'cdek'; PVZ_ID = ''; document.querySelectorAll('#f-pvz button').forEach(b => b.classList.toggle('on', b.dataset.k === pvz)) }
 /* пункты Яндекса на карте прямо в магазине: официальный виджет Яндекс Доставки, ключ не нужен.
-   Не загрузился (нет связи с Яндексом) — кнопка на Яндекс Карты, адрес вставляют руками */
+   Не загрузился — повторить, выбрать пункт СДЭК на своей карте или «подберите пункт рядом» */
 function loadYaWidget(){
   if(window.YaDelivery) return Promise.resolve(true);
   if(loadYaWidget.p) return loadYaWidget.p;
-  const add = src => new Promise(res => { const s = document.createElement('script'); s.src = src; s.onload = () => res(!!window.YaDelivery); s.onerror = () => res(false); document.head.appendChild(s) });
-  return loadYaWidget.p = add('https://widget-pvz.dostavka.yandex.net/widget.js').then(ok => ok || add('https://ndd-widget.landpro.site/widget.js'));
+  const add = src => new Promise(res => { const s = document.createElement('script'); s.src = src; s.onload = () => res(!!window.YaDelivery); s.onerror = () => { s.remove(); res(false) }; document.head.appendChild(s) });
+  return loadYaWidget.p = add('https://widget-pvz.dostavka.yandex.net/widget.js').then(ok => ok || add('https://ndd-widget.landpro.site/widget.js'))
+    .then(ok => { if(!ok) loadYaWidget.p = null; return ok });   // «Попробовать ещё раз» загружает заново
 }
 function openYaWidget(town){
   const id = 'ydw' + Date.now(), safeTown = town.replace(/['"<>\\]/g, '');
   openSheet(`<span class="hand">пункт выдачи</span><div class="h2" style="margin-top:4px">Яндекс · ${esc(safeTown)}</div>
     <div class="small" style="margin-top:4px">Нажмите на точку и «Выбрать» — адрес встанет в заказ сам</div>
     <div class="ydw-box" id="${id}"><div class="small" style="padding:16px">Загружаю карту…</div></div>
-    <div id="${id}-fail" hidden><div class="rule">Карта с выбором точки не загрузилась. Откройте карту пунктов и впишите адрес — это займёт минуту.</div>
-      <button class="btn block" style="margin-top:10px" onclick="openSearchMap('yandex','${safeTown}')">Показать пункты на карте</button></div>`);
-  const fail = () => { const b = $(id); if(b) b.hidden = true; const f = $(id + '-fail'); if(f) f.hidden = false };
+    <div id="${id}-fail" hidden><div class="rule" style="margin-top:12px">Карта Яндекса сейчас не открылась.</div>
+      <button class="btn block" style="margin-top:12px" onclick="openYaWidget($('f-town').value.trim())">Попробовать ещё раз</button>
+      <button class="btn ghost block" style="margin-top:8px" onclick="setPvz('cdek'); openCdekMap($('f-town').value.trim())">Выбрать пункт СДЭК на карте</button>
+      <button class="vq-link" onclick="pvzNear()">Напишу свой адрес — подберите пункт рядом</button></div>`);
+  const fail = () => { const b = $(id); if(b){ b.hidden = true; if(b.previousElementSibling) b.previousElementSibling.hidden = true } const f = $(id + '-fail'); if(f) f.hidden = false };
   loadYaWidget().then(ok => {
     const box = $(id); if(!box) return;
     if(!ok) return fail();
     box.innerHTML = '';
     try{ window.YaDelivery.createWidget({ containerId: id, params: { city: safeTown, size: { height: Math.round(innerHeight * .62) + 'px', width: '100%' }, delivery_price: '', delivery_term: '',
       show_select_button: true, filter: { type: ['pickup_point'], is_yandex_branded: false, payment_methods: ['already_paid'], payment_methods_filter: 'or' } } }) }catch(e){ return fail() }
-    setTimeout(() => { const b = $(id); if(b && !b.querySelector('ymaps, [class*="ymaps"], [data-pickpoint-id]')) fail() }, 15000);
+    // мобильный интернет бывает медленным: ждём 25 с и не прячем карту, если хоть что-то от неё появилось
+    setTimeout(() => { const b = $(id); if(b && !b.querySelector('#ydw-map *, ymaps, [class*="ymaps"], [data-pickpoint-id]')) fail() }, 25000);
   });
 }
 document.addEventListener('YaNddWidgetPointSelected', e => {
@@ -1707,27 +1704,6 @@ document.addEventListener('YaNddWidgetPointSelected', e => {
   $('f-addr').value = full; PVZ_ID = String(d.id || '');
   closeSheet(); haptic('ok'); toast('Пункт выбран');
 });
-/* карта пунктов прямо в магазине: встроенная Яндекс Карта с поиском «СДЭК пункт выдачи <город>», ключ не нужен.
-   Выбрать точку карта не даёт, поэтому поле для адреса стоит сразу под ней */
-function openSearchMap(service, town){
-  const safeTown = String(town || '').replace(/['"<>\\]/g, ''), name = service === 'cdek' ? 'СДЭК' : 'Яндекс';
-  const q = (service === 'cdek' ? 'СДЭК пункт выдачи ' : 'пункт выдачи Яндекс Маркет ') + safeTown;
-  const src = 'https://yandex.ru/map-widget/v1/?text=' + encodeURIComponent(q) + '&z=12';
-  openSheet(`<span class="hand">пункт выдачи</span><div class="h2" style="margin-top:4px">${name} · ${esc(safeTown)}</div>
-    <div class="small" style="margin-top:4px">Нажмите на пункт на карте — появится его адрес</div>
-    <div class="ydw-box" style="min-height:0"><iframe src="${src}" title="Пункты выдачи ${name} на карте" loading="lazy" allow="geolocation"
-      style="display:block;width:100%;height:${Math.max(300, Math.round(innerHeight * .5))}px;border:0"></iframe></div>
-    <div class="field"><span>Адрес пункта ${name}</span><div class="phone-row"><input id="pvz-addr-in" placeholder="Например: ул. Баумана, 44" value="${esc(PVZ_ID || $('f-pvz-near').checked ? '' : $('f-addr').value)}"><button type="button" class="btn sm ghost" onclick="pvzPaste()">Вставить</button></div>
-      <div class="small" style="margin-top:6px">В карточке пункта скопируйте адрес и нажмите «Вставить»</div></div>
-    <button class="btn block" style="margin-top:12px" onclick="pvzAddrDone()">Готово</button>
-    <button class="vq-link" onclick="pvzNear()">Не хочу выбирать — подберите пункт рядом со мной</button>`);
-}
-function pvzAddrDone(){
-  const v = $('pvz-addr-in').value.trim();
-  if(!v){ haptic('medium'); $('pvz-addr-in').focus(); return toast('Впишите адрес пункта') }
-  $('f-addr').value = v; PVZ_ID = ''; $('f-pvz-near').checked = false; pvzNearUi();
-  closeSheet(); haptic('ok'); toast('Адрес пункта добавлен');
-}
 const placeText = () => city !== 'other' ? CITY[city].m : $('f-pvz-near') && $('f-pvz-near').checked ? `Другой город, ${PVZ[pvz].t}: подобрать пункт рядом с адресом` : `Другой город, пункт выдачи ${PVZ[pvz].t}`;
 function openPvzMap(){
   const town = $('f-town').value.trim();
@@ -1736,7 +1712,7 @@ function openPvzMap(){
   return pvz === 'yandex' ? openYaWidget(town) : openCdekMap(town);
 }
 /* СДЭК: своя карта в магазине. Пункты — открытый справочник СДЭК, GitHub раз в сутки кладёт его в pvz-cdek.json;
-   карта — Leaflet + OpenStreetMap, без ключей. Не загрузилось — запасной путь через Яндекс Карты */
+   карта — Leaflet + OpenStreetMap, без ключей. Не загрузилось — «Попробовать ещё раз» или «подберите пункт рядом» */
 function loadLeaflet(){
   if(window.L) return Promise.resolve(true);
   if(loadLeaflet.p) return loadLeaflet.p;
@@ -1751,7 +1727,7 @@ function openCdekMap(town){
   openSheet(`<span class="hand">пункт выдачи</span><div class="h2" id="cdek-h" style="margin-top:4px">СДЭК · ${esc(town)}</div><div id="cdek-box"><div class="small" style="padding:24px 0">Загружаю пункты…</div></div>`);
   Promise.all([loadCdek(), loadLeaflet()]).then(([cities, ok]) => {
     const box = $('cdek-box'); if(!box) return;
-    if(!cities || !ok) return cdekFallback(box, 'Карта не загрузилась — проверьте интернет или найдите пункт на Яндекс Картах.');
+    if(!cities || !ok) return cdekFallback(box, 'Карта не загрузилась — проверьте интернет.', true);
     const q = normTown(town);
     let found = cities.filter(c => normTown(c[0]) === q);
     if(!found.length && q.length > 2) found = cities.filter(c => normTown(c[0]).startsWith(q));
@@ -1762,10 +1738,11 @@ function openCdekMap(town){
       `<button type="button" class="cdek-row" onclick="cdekShow(${i})"><b>${esc(c[0])}</b><span>${esc(c[1])} · пунктов: ${c[2].length}</span></button>`).join('');
   });
 }
-function cdekFallback(box, msg){
+function cdekFallback(box, msg, retry){
   box.innerHTML = `<div class="rule" style="margin-top:12px">${msg}</div>
-    <button class="btn block" style="margin-top:12px" onclick="openSearchMap('cdek', $('f-town').value.trim())">Найти пункт на Яндекс Картах</button>
-    <button class="vq-link" onclick="pvzNear()">Не хочу выбирать — подберите пункт рядом со мной</button>`;
+    ${retry ? `<button class="btn block" style="margin-top:12px" onclick="openCdekMap($('f-town').value.trim())">Попробовать ещё раз</button>`
+      : `<button class="btn block" style="margin-top:12px" onclick="closeSheet(); setTimeout(() => $('f-town').focus(), 300)">Исправить город</button>`}
+    <button class="vq-link" onclick="pvzNear()">Напишу свой адрес — подберите пункт рядом</button>`;
 }
 function cdekShow(n){
   const c = CDEK_FOUND[n], box = $('cdek-box'); if(!c || !box) return;

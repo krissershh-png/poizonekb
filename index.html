@@ -632,6 +632,14 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .trk-list .on span::after{content:"";width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
 .trk-list .cur span{background:var(--amber);border-color:var(--amber)}
 .msgbox{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;margin-top:12px;padding:14px;border-radius:14px;background:var(--bg);font-weight:700;font-size:14px;line-height:1.45;max-height:42vh;overflow:auto}
+
+/* градиенты на крупных словах и цифрах в карточках — как «Баллы» у Unicorn; цвета подобраны под фон каждой карточки */
+.gift .t b{background:linear-gradient(90deg,#ffffff 0%,#ffd3cf 60%,#ff9a8f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.buyday .t b{background:linear-gradient(90deg,#ffffff 0%,#dce8ff 60%,#b3ccff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.pcard .big{background:linear-gradient(90deg,#ffffff 0%,#dff7e8 55%,#a8e6c1 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none}
+.hcard .big{background:linear-gradient(90deg,#ffffff 0%,#ffd3cf 60%,#ff9a8f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.coupon:not(.sel) .v{background:linear-gradient(90deg,#1d4fb8 0%,#2f6fed 55%,#6aa0ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.prize .big{background:linear-gradient(90deg,#b3121a 0%,#e0342a 55%,#ff6f5e 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 </style>
 </head>
 <body>

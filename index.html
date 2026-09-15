@@ -16,10 +16,10 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
-  --teal:#c81717; --teal-d:#a51212; --aqua:#fbeded; --aqua-2:#fdf6f6;
+  --teal:#121212; --teal-d:#121212; --aqua:#f3f1f1; --aqua-2:#f8f7f7; --red:#c81717; --red-dk:#ff5d52;
   --ink:#121212; --ink-2:#3d3535; --mute:#7a6f6f; --line:#efe6e6;
   --orange:#c81717; --paper:#fff; --bg:#f8f5f5;
-  --grad:linear-gradient(90deg,#c81717,#c81717);
+  --grad:linear-gradient(90deg,#121212,#121212);
   --r:18px; --safe-b:env(safe-area-inset-bottom,0px);
   --dela:Unbounded,"Arial Black",Arial,sans-serif;
   --body:"Golos Text","Segoe UI",Arial,sans-serif;
@@ -46,25 +46,25 @@ a{color:inherit;text-decoration:none}
 .dela{font-family:var(--dela);font-weight:800}
 .h1{font-family:var(--dela);font-weight:900;font-size:21px;line-height:1.12;letter-spacing:-.01em;text-transform:uppercase;margin:0}
 .h2{font-family:var(--dela);font-weight:800;font-size:14px;line-height:1.15;text-transform:uppercase;margin:0}
-.hand{font-family:var(--dela);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);line-height:1.3}
-.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hand{font-family:var(--dela);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);line-height:1.3}
+.grad{color:var(--red)}
 .small{font-size:12px;color:var(--mute);font-weight:700}
 .num{font-variant-numeric:tabular-nums}
 .sec{display:flex;align-items:center;justify-content:space-between;margin:28px 0 12px;gap:10px}
 .sec .more{font-size:13px;font-weight:800;color:var(--teal-d);white-space:nowrap}
-.dots{position:absolute;pointer-events:none;background-image:radial-gradient(circle,rgba(200,23,23,.32) 1.2px,transparent 1.6px);background-size:7px 7px;-webkit-mask-image:radial-gradient(ellipse at center,#000,transparent 70%);mask-image:radial-gradient(ellipse at center,#000,transparent 70%)}
+.dots{position:absolute;pointer-events:none;background-image:radial-gradient(circle,rgba(18,18,18,.13) 1.2px,transparent 1.6px);background-size:7px 7px;-webkit-mask-image:radial-gradient(ellipse at center,#000,transparent 70%);mask-image:radial-gradient(ellipse at center,#000,transparent 70%)}
 
 /* top */
 .top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;gap:10px}
 .logo{height:24px;width:auto}
-.ava{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid var(--teal);flex:0 0 40px;background:var(--aqua)}
+.ava{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid var(--red);flex:0 0 40px;background:var(--aqua)}
 .ava img{width:100%;height:100%;object-fit:cover}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;font-weight:900;font-size:15px;background:var(--ink);color:#fff;white-space:nowrap;transition:transform .12s}
 .btn:active{transform:scale(.97)}
 .btn.ghost{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
-.btn.teal{background:var(--grad);color:#ffffff}
+.btn.teal{background:var(--red);color:#fff}
 .btn.sm{min-height:38px;padding:0 15px;font-size:13px}
 .btn.block{width:100%}
 .btn[disabled]{opacity:.35;pointer-events:none}
@@ -78,13 +78,13 @@ a{color:inherit;text-decoration:none}
 /* gift banner */
 .gift{position:relative;overflow:hidden;margin-top:12px;border-radius:var(--r);background:var(--ink);color:#fff;padding:16px;display:flex;align-items:center;gap:14px;width:100%;text-align:left}
 .gift .dots{right:-40px;top:-50px;width:190px;height:190px;opacity:.45}
-.gift .ic{width:54px;height:54px;flex:0 0 54px;border-radius:50%;background:var(--grad);display:grid;place-items:center;position:relative}
+.gift .ic{width:54px;height:54px;flex:0 0 54px;border-radius:50%;background:var(--red);display:grid;place-items:center;position:relative}
 .gift .ic svg{width:30px;height:30px}
-.gift .ic::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--teal);animation:ring 1.8s ease-out infinite}
+.gift .ic::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--red);animation:ring 1.8s ease-out infinite}
 @keyframes ring{from{opacity:.9;transform:scale(.9)}to{opacity:0;transform:scale(1.35)}}
 .gift .t{flex:1;min-width:0;position:relative}
 .gift .t b{font-family:var(--dela);font-weight:800;font-size:13px;display:block;text-transform:uppercase;line-height:1.15}
-.gift .t span{font-size:12px;color:#ff9a92}
+.gift .t span{font-size:12px;color:rgba(255,255,255,.72)}
 
 /* chips & cats */
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
@@ -161,7 +161,7 @@ a{color:inherit;text-decoration:none}
 .sizes button{padding:9px 0 8px;border-radius:12px;background:var(--bg);display:grid;gap:1px}
 .sizes button b{font-weight:900;font-size:15px}
 .sizes button small{font-size:11px;font-weight:800;color:var(--mute)}
-.sizes button.on{background:var(--ink);color:#fff}.sizes button.on small{color:#ff9a92}
+.sizes button.on{background:var(--ink);color:#fff}.sizes button.on small{color:rgba(255,255,255,.72)}
 .sizes button.no{opacity:.4;text-decoration:line-through;pointer-events:none}
 .specs{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .specs span{padding:6px 10px;border-radius:999px;background:var(--bg);font-size:12px;font-weight:800;color:var(--ink-2)}
@@ -182,9 +182,9 @@ th{font-size:11px;color:var(--mute);font-weight:900}
 .coupon::before,.coupon::after{content:"";position:absolute;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:#fff}
 .coupon::before{left:-9px}.coupon::after{right:-9px}
 .coupon .v{font-family:var(--dela);font-weight:800;font-size:18px;color:var(--ink);white-space:nowrap}
-.coupon .t{flex:1;min-width:0;font-size:12px;font-weight:800;color:#a51212}
+.coupon .t{flex:1;min-width:0;font-size:12px;font-weight:800;color:var(--mute)}
 .coupon .t b{display:block;font-size:14px;color:var(--ink);font-weight:900}
-.coupon.sel{background:var(--ink);color:#fff}.coupon.sel .v,.coupon.sel .t b{color:#fff}.coupon.sel .t{color:#ff9a92}
+.coupon.sel{background:var(--ink);color:#fff}.coupon.sel .v,.coupon.sel .t b{color:#fff}.coupon.sel .t{color:rgba(255,255,255,.72)}
 .coupon.dim{opacity:.45}
 
 /* wheel */
@@ -257,7 +257,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .gal img{object-fit:contain}
 .item .th img{object-fit:contain;background:#fff}
 .mylink{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;text-align:left}
-.mylink span{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff9a92}
+.mylink span{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,.72)}
 .mylink b{font-size:12px;font-weight:900;white-space:nowrap}
 [hidden]{display:none!important}   /* иначе .chips с display:flex показывает скрытую «Вся одежда» в аксессуарах */
 .look{flex:0 0 47%;display:grid;gap:7px;align-content:start;text-align:left}
@@ -326,31 +326,31 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .hcard .nm{min-width:0}.hcard .nm b{display:block;font-weight:900;font-size:15px;line-height:1.25}
 .hcard .nm span{display:block;font-size:12px;font-weight:700;color:#aab4b6;margin-top:3px}
 .hcard .seg8{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
-.hcard .seg8 i{height:5px;border-radius:3px;background:#3a4043}.hcard .seg8 i.on{background:var(--teal)}
+.hcard .seg8 i{height:5px;border-radius:3px;background:#3a4043}.hcard .seg8 i.on{background:var(--red)}
 .hcard .st{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .hcard .st b{display:block;font-weight:900;font-size:15px}.hcard .st span{display:block;font-size:12px;font-weight:700;color:#aab4b6;margin-top:2px}
 .hcard .note{font-size:13px;font-weight:700;color:#d5dcdd;line-height:1.4}
 .hcard .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #2c3133;padding-top:12px;font-size:13px;font-weight:700;color:#d5dcdd}
-.hcard .foot b{color:#ff7a70;font-weight:900}
+.hcard .foot b{color:#fff;font-weight:900}
 .hcard .big{font-family:var(--dela);font-weight:900;font-size:44px;line-height:1;letter-spacing:-.02em}
 .hcard .btn.light{background:#fff;color:var(--ink);min-height:52px}
 .hcard .link-w{background:none;color:#aab4b6;font-weight:800;font-size:13px;justify-self:center;padding:0}
 /* карточка заказа: точки в углу как у шапки и плашки закупки, наклонённое фото на белой плитке, размер и номер ярлычками, сумма крупно */
 .hcard{position:relative;overflow:hidden}
-.hcard>.dots{position:absolute;left:auto;bottom:auto;right:-46px;top:-56px;width:190px;height:190px;pointer-events:none;opacity:.5;background-image:radial-gradient(circle,rgba(255,122,112,.55) 1.3px,transparent 1.7px);background-size:10px 10px;-webkit-mask-image:radial-gradient(circle at 70% 30%,#000 0,transparent 68%);mask-image:radial-gradient(circle at 70% 30%,#000 0,transparent 68%)}
+.hcard>.dots{position:absolute;left:auto;bottom:auto;right:-46px;top:-56px;width:190px;height:190px;pointer-events:none;opacity:.5;background-image:radial-gradient(circle,rgba(255,255,255,.28) 1.3px,transparent 1.7px);background-size:10px 10px;-webkit-mask-image:radial-gradient(circle at 70% 30%,#000 0,transparent 68%);mask-image:radial-gradient(circle at 70% 30%,#000 0,transparent 68%)}
 .hcard>:not(.dots){position:relative}
 .hcard .row1 .ph{width:72px;height:72px;flex:0 0 72px;background:#fff;transform:rotate(-4deg);box-shadow:0 10px 18px -12px rgba(0,0,0,.8)}
 .hcard .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .hcard .tags i{font-style:normal;padding:3px 9px;border-radius:999px;background:#2a3033;color:#d5dcdd;font-size:11px;font-weight:800;line-height:1.35}
 .hcard .st .sum{margin-top:0;font-family:var(--dela);font-weight:900;font-size:19px;line-height:1;color:#fff;white-space:nowrap}   /* сильнее общего .hcard .st span — иначе сумма серая и мелкая */
-.hcard .seg8 i.on{background:var(--grad)}
+.hcard .seg8 i.on{background:var(--red)}
 .hcard .btn.light .ico{width:18px;height:18px;margin-right:8px;vertical-align:-3px}
 /* второстепенные действия заказа — одной строкой под тонкой линией, а не столбиком ссылок */
 .hcard .acts{display:flex;justify-content:space-between;gap:12px;margin-top:-2px;padding-top:12px;border-top:1px solid #2c3133}
 .hcard .acts button{background:none;border:0;padding:2px 0;font:inherit;font-size:13px;font-weight:800;color:#aab4b6;cursor:pointer}
 .hcard .acts button:hover{color:#fff}
 .pill-o{padding:5px 10px;border-radius:999px;background:var(--orange);color:#fff;font-weight:900;font-size:12px;white-space:nowrap}
-.chip-drops{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;border:1.5px solid #3a4043;color:#ff7a70;font-weight:900;font-size:12px;white-space:nowrap}
+.chip-drops{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;border:1.5px solid #3a4043;color:#fff;font-weight:900;font-size:12px;white-space:nowrap}
 .ccard{margin-top:12px;display:flex;align-items:center;gap:14px;padding:14px 14px 14px 18px;border-radius:18px;background:#fff;box-shadow:0 0 0 1.5px var(--line);position:relative}
 .ccard::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--orange)}
 .ccard b{display:block;font-weight:900;font-size:14px;line-height:1.25}
@@ -488,7 +488,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .vnudge{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + var(--safe-b));z-index:15;width:min(448px,calc(100% - 24px));display:flex;align-items:center;gap:10px;padding:12px 10px 12px 16px;border-radius:18px;background:var(--ink);color:#fff;box-shadow:0 12px 30px -10px rgba(0,0,0,.45)}
 .vnudge .t{flex:1;min-width:0;display:grid;gap:2px}
 .vnudge .t b{font-weight:900;font-size:14px}
-.vnudge .t span{font-size:12px;font-weight:700;color:#ff9a92}
+.vnudge .t span{font-size:12px;font-weight:700;color:rgba(255,255,255,.72)}
 .vnudge .x{width:32px;height:32px;flex:0 0 32px;border-radius:50%;background:#2b3034;color:#fff;font-size:18px;line-height:1}
 .coupon .t .left{color:var(--orange)}
 .orow{display:flex;align-items:center;gap:10px}
@@ -498,7 +498,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .ot span{display:block;font-size:12px;font-weight:700;color:var(--mute);margin-top:2px}
 .obar{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-top:12px}.obar i{height:4px;border-radius:2px;background:#dfe7e8}.obar i.on{background:var(--teal)}
 .ostage{margin-top:6px;font-size:12px;font-weight:800;color:var(--ink-2)}
-.status.go{background:var(--aqua);color:#a51212}
+.status.go{background:var(--aqua);color:var(--ink)}
 /* полка: светлая ниша витрины с подсветкой сверху, белые подиумы с табличками (месяц или «+»); пустые места — пунктирные силуэты */
 .cap .cap-r{display:flex;align-items:center;gap:8px}
 .rack{position:relative;overflow-x:hidden;overflow-y:auto;max-height:300px;padding:7px;border-radius:24px;background:linear-gradient(180deg,#f5f1f1,#e7dede);box-shadow:inset 0 1px 0 #fff,0 14px 26px -18px rgba(50,25,25,.45);scrollbar-width:none}
@@ -521,25 +521,25 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .ped span{flex:1;min-width:0;height:17px;border-radius:5px;background:#fff;box-shadow:0 1px 2px rgba(40,20,20,.12);display:flex;align-items:center;justify-content:center;gap:4px;font-size:10px;font-weight:800;line-height:1;color:#7f7272;white-space:nowrap}
 .ped span svg{width:11px;height:11px;flex:0 0 11px}
 .thing.ghost .ped span{font-size:15px;font-weight:500;color:#8a9ca0}
-.thing .spark{position:absolute;z-index:2;left:-1px;top:4px;width:22px;height:22px;color:var(--teal);opacity:0;pointer-events:none}
+.thing .spark{position:absolute;z-index:2;left:-1px;top:4px;width:22px;height:22px;color:var(--red);opacity:0;pointer-events:none}
 .thing.last .spark{opacity:1}
 .thing.pop .obj{animation:pop .45s cubic-bezier(.2,1.4,.4,1) both}
 .thing.pop .spark{animation:spark .5s .25s ease-out both}
 @keyframes spark{0%{opacity:0;transform:scale(.4) rotate(-20deg)}100%{opacity:1;transform:none}}
 .shelf-line{margin-top:8px;white-space:normal}
 @media (prefers-reduced-motion:reduce){.thing.pop .obj,.thing.pop .spark{animation:none;opacity:1}}
-.status.wait{background:#fff1e6;color:var(--orange)}
+.status.wait{background:#fbeded;color:var(--orange)}
 /* полка: полученные заказы коробками */
 .shelf{padding:14px;border-radius:var(--r);background:var(--ink);color:#fff;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:12px}
 .shelf .top{display:flex;align-items:baseline;gap:10px}.shelf .top b{font-family:var(--dela);font-weight:800;font-size:17px;text-transform:uppercase}
-.shelf .top span{font-weight:800;font-size:13px;color:#ff9a92;margin-left:auto;text-align:right}
-.shelf .nx{font-weight:800;font-size:13px;color:#ff9a92}
+.shelf .top span{font-weight:800;font-size:13px;color:rgba(255,255,255,.72);margin-left:auto;text-align:right}
+.shelf .nx{font-weight:800;font-size:13px;color:rgba(255,255,255,.72)}
 .shelf .row{display:flex;gap:8px;flex-wrap:wrap}.shelf .row .btn{background:#fff;color:var(--ink)}
 .boxes{display:flex;gap:6px;overflow-x:auto;padding:6px 2px 8px;border-bottom:5px solid #3a4043;scrollbar-width:none}
 .boxes::-webkit-scrollbar{display:none}
 .boxes .box{flex:0 0 72px;display:grid;gap:2px;justify-items:center;background:none;color:#fff;border:0;padding:0;box-shadow:none;min-height:0;border-radius:0}
 .boxes .box svg{width:72px;height:64px;display:block}
-.boxes .box span{font-weight:800;font-size:11px;color:#ff9a92;min-height:14px}
+.boxes .box span{font-weight:800;font-size:11px;color:rgba(255,255,255,.72);min-height:14px}
 /* путь посылки */
 .jr{display:grid;margin-top:14px}
 .jr div{display:flex;gap:10px;align-items:center;font-weight:800;font-size:13px;color:var(--mute);padding:4px 0}
@@ -589,7 +589,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .rule{margin-top:12px;font-weight:700;font-size:13px;line-height:1.4;color:var(--ink-2)}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .opts button{min-height:56px;border-radius:14px;background:var(--bg);font-family:var(--dela);font-weight:800;font-size:15px}
-.opts button.right{background:var(--grad);color:#ffffff}
+.opts button.right{background:#2fb36b;color:#fff}
 .opts button.wrong{background:var(--ink);color:#fff;opacity:.55}
 .hero-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r);background:#fff;box-shadow:0 0 0 1.5px var(--line)}
 .hero-card .pic{width:72px;height:72px;flex:0 0 72px;border-radius:50%;overflow:hidden;border:2px solid var(--ink)}
@@ -615,7 +615,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .trk{margin-top:12px;border-radius:var(--r);background:#fff;box-shadow:0 0 0 1.5px var(--line);padding:16px}
 .trk-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .trk-h b{font-family:var(--dela);font-weight:800;font-size:15px;letter-spacing:.02em}
-.trk-pill{padding:6px 11px;border-radius:999px;background:var(--aqua);color:#a51212;font-weight:900;font-size:12px;white-space:nowrap}
+.trk-pill{padding:6px 11px;border-radius:999px;background:var(--aqua);color:var(--ink);font-weight:900;font-size:12px;white-space:nowrap}
 .trk-pill.ok{background:#2fb36b;color:#fff}
 .trk-bar{display:flex;align-items:center;margin:18px 2px 0}
 .trk-bar i{flex:0 0 12px;height:12px;border-radius:50%;background:var(--line)}
@@ -713,7 +713,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <button class="x" onclick="$('vibe-nudge').hidden=true" aria-label="Закрыть">×</button>
   </div>
   <div class="box" style="margin-top:20px;background:var(--aqua);border:0">
-    <span class="hand" style="color:#a51212">нет нужной вещи в каталоге?</span>
+    <span class="hand">нет нужной вещи в каталоге?</span>
     <div class="h2" style="margin:6px 0 14px">Привезу любую вещь с Poizon</div>
     <button class="btn" onclick="openCustom()">Заказ по ссылке</button>
   </div>
@@ -804,8 +804,8 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 
   <div class="cap" id="ref"><span>Приведи друга</span></div>
   <div class="tile dark" style="width:100%;flex:none;min-height:0;gap:14px">
-    <div style="font-weight:800;font-size:15px;line-height:1.35">Другу <span class="dela" style="color:#ff7a70">−500 ₽</span> на первый заказ, вам <span class="dela" style="color:#ff7a70">−500 ₽</span> на следующий</div>
-    <div style="font-weight:700;font-size:13px;color:#ff9a92">Ссылка только ваша. Другу подарок, если он пришёл впервые, на заказ от 10 000 ₽. Ваши −500 ₽ придут сами, когда друг оплатит заказ</div>
+    <div style="font-weight:800;font-size:15px;line-height:1.35">Другу <span class="dela" style="color:var(--red-dk)">−500 ₽</span> на первый заказ, вам <span class="dela" style="color:var(--red-dk)">−500 ₽</span> на следующий</div>
+    <div style="font-weight:700;font-size:13px;color:rgba(255,255,255,.72)">Ссылка только ваша. Другу подарок, если он пришёл впервые, на заказ от 10 000 ₽. Ваши −500 ₽ придут сами, когда друг оплатит заказ</div>
     <div id="my-link"></div>
     <button class="btn teal" onclick="shareRef()">Отправить ссылку другу</button>
   </div>
@@ -1541,7 +1541,7 @@ function renderGiftBanner(){
 function wheelSVG(){
   const V = CFG.wheel, n = V.length, cx = 150, cy = 150, R = 124, step = 360/n;
   const top = Math.max(...V);
-  const fills = ['#c81717','#ffffff','#121212','#ff7a70','#c81717','#ffffff','#121212','#ff7a70'];
+  const fills = ['#121212','#ffffff','#c81717','#ece7e7','#121212','#ffffff','#ece7e7','#ffffff'];
   const pt = (a,r)=>[cx + r*Math.sin(a*Math.PI/180), cy - r*Math.cos(a*Math.PI/180)];
   let seg = '', txt = '';
   V.forEach((v,i)=>{
@@ -2196,12 +2196,12 @@ const boxDate = (o, long) => o.doneAt ? new Date(o.doneAt).toLocaleDateString('r
 /* коробка POIZON: у каждой свой градиент, чтобы рисовалась и на скрытом экране */
 function boxSVG(label, on){
   const id = 'bx' + Math.random().toString(36).slice(2,8);
-  return `<svg viewBox="0 0 74 66" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" x2="1"><stop offset="0" stop-color="#f08a84"/><stop offset=".45" stop-color="#d6332a"/><stop offset="1" stop-color="#a51212"/></linearGradient></defs>
+  return `<svg viewBox="0 0 74 66" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#f1eded"/><stop offset="1" stop-color="#d9d1d1"/></linearGradient></defs>
     <ellipse cx="37" cy="62" rx="30" ry="3" fill="#000" opacity=".3"/>
     <path d="M10 22h54l-3 35c-.3 3-2.5 5-5.5 5h-37c-3 0-5.2-2-5.5-5z" fill="${on ? `url(#${id})` : '#3b4144'}"/>
     <rect x="6" y="13" width="62" height="12" rx="4" fill="${on ? '#2b3034' : '#32383b'}"/>
-    <rect x="32" y="13" width="10" height="49" fill="#fff" opacity="${on ? '.22' : '.05'}"/>
-    ${label !== '' ? `<text x="37" y="48" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="14" fill="#fff">${label}</text>` : ''}</svg>`;
+    <rect x="34.5" y="13" width="5" height="49" fill="${on ? '#c81717' : '#fff'}" opacity="${on ? '1' : '.05'}"/>
+    ${label !== '' ? `<text x="37" y="48" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="14" fill="${on ? '#121212' : '#fff'}">${label}</text>` : ''}</svg>`;
 }
 /* полка в профиле — тихая строка внизу: коробки по месяцам, «эта в пути» и что откроет следующая */
 /* силуэты пустых мест: generic-формы без деталей, по кругу — кроссовок, ботинок, сумка, флакон */
@@ -2416,7 +2416,7 @@ function plantSVG(s, tile){
     <path d="M92 160q8 10 16 0z" fill="#1d2b2e"/><path d="M96 164q4 3 8 0z" fill="#f6a9b6"/>
     <ellipse cx="76" cy="161" rx="6" ry="3.5" fill="#f6a9b6" opacity=".85"/><ellipse cx="124" cy="161" rx="6" ry="3.5" fill="#f6a9b6" opacity=".85"/></g>`;
   const defs = `<defs><radialGradient id="gl" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#fff1cf" stop-opacity=".95"/><stop offset=".7" stop-color="#fff6e3" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <linearGradient id="pb" x1="0" x2="1"><stop offset="0" stop-color="#f08a84"/><stop offset=".45" stop-color="#d6332a"/><stop offset="1" stop-color="#a51212"/></linearGradient>
+    <linearGradient id="pb" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#f1eded"/><stop offset="1" stop-color="#d9d1d1"/></linearGradient>
     <linearGradient id="rm" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4a4f55"/><stop offset="1" stop-color="#23272b"/></linearGradient>
     <radialGradient id="so" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#a5673f"/><stop offset="1" stop-color="#5e3a22"/></radialGradient>
     <linearGradient id="lf" x1="0" x2="1" y1="1" y2="0"><stop offset="0" stop-color="#5aa832"/><stop offset="1" stop-color="#a6d95a"/></linearGradient>

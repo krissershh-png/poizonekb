@@ -276,6 +276,14 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .trust{display:grid;gap:6px;margin-top:8px}
 .ydw-box{margin:12px 0 0;min-height:360px;border-radius:16px;overflow:hidden;background:var(--bg)}
 .phone-row{display:flex;gap:8px;align-items:stretch}.phone-row input{flex:1;min-width:0}.phone-row .btn{flex:none;white-space:nowrap}
+.cdek-map-wrap{position:relative;margin-top:12px;border-radius:18px;overflow:hidden;background:var(--aqua-2);isolation:isolate}
+#cdek-map{width:100%;background:var(--aqua-2)}
+.cdek-me{position:absolute;z-index:500;right:10px;bottom:24px;width:42px;height:42px;border-radius:50%;background:#fff;color:var(--teal-d);display:grid;place-items:center;box-shadow:0 4px 14px rgba(10,50,60,.2)}
+.cdek-card{display:grid;gap:10px;margin-top:10px;padding:12px;border-radius:16px;background:var(--aqua-2);box-shadow:inset 0 0 0 1.5px var(--teal)}
+.cdek-card b,.cdek-row b{display:block;font-size:15px;font-weight:900;line-height:1.25}
+.cdek-card span,.cdek-row span{display:block;margin-top:3px;font-size:12px;font-weight:700;line-height:1.35;color:var(--mute)}
+.cdek-row{display:block;width:100%;padding:11px 2px;border-bottom:1px solid var(--line);background:none;text-align:left}
+.cdek-row.on b{color:var(--teal-d)}
 .fit{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--bg)}
 .fit label{font-size:13px;font-weight:800;color:var(--ink)}
 .fit input{width:76px;padding:7px 10px;border-radius:10px;font-size:15px}
@@ -1643,12 +1651,12 @@ function confetti(){
    ===================================================================== */
 const CITY = { ekb:{t:'Екатеринбург', m:'Екатеринбург, до двери', l:'Адрес'}, pyshma:{t:'Верх. Пышма', m:'Верхняя Пышма, до двери', l:'Адрес'}, other:{t:'Другой город', m:'Другой город, пункт выдачи', l:'Адрес пункта выдачи'} };
 function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.querySelectorAll('#f-city button').forEach(b=>b.classList.toggle('on', b.dataset.k===k));
-  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Улица и дом пункта — скопируйте с карты' : 'Улица, дом, квартира'; if($('f-pvz-near')) pvzNearUi() }
+  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Выберите пункт на карте' : 'Улица, дом, квартира'; if($('f-pvz-near')) pvzNearUi() }
 /* «подберите пункт рядом со мной»: клиент пишет свой адрес, ближайший пункт выбирает Кристина при отправке */
 function pvzNearUi(){
   const near = city === 'other' && $('f-pvz-near').checked;
   $('f-pvz-map').hidden = near;
-  if(city === 'other'){ $('f-addr-l').textContent = near ? 'Ваш адрес — подберу ближайший пункт' : CITY.other.l; $('f-addr').placeholder = near ? 'Улица, дом' : 'Улица и дом пункта — скопируйте с карты' }
+  if(city === 'other'){ $('f-addr-l').textContent = near ? 'Ваш адрес — подберу ближайший пункт' : CITY.other.l; $('f-addr').placeholder = near ? 'Улица, дом' : 'Выберите пункт на карте' }
   if(near) PVZ_ID = '';
 }
 function pvzNear(){ $('f-pvz-near').checked = true; pvzNearUi(); closeSheet(); setTimeout(() => $('f-addr').focus(), 300); toast('Напишите свой адрес — подберу ближайший пункт') }
@@ -1664,7 +1672,7 @@ function pvzPaste(){
 }
 /* пункты выдачи без договора со службой: официальная карта СДЭК или Яндекс Карты с пунктами Яндекса в нужном городе */
 const PVZ = { cdek:{ t:'СДЭК' }, yandex:{ t:'Яндекс' } };
-var PVZ_ID = '';   // код пункта Яндекса, выбранного на карте; ручная правка адреса его сбрасывает
+var PVZ_ID = '';   // код пункта СДЭК или Яндекса, выбранного на карте; ручная правка адреса его сбрасывает
 let pvz = 'cdek';
 function setPvz(k){ pvz = PVZ[k] ? k : 'cdek'; PVZ_ID = ''; document.querySelectorAll('#f-pvz button').forEach(b => b.classList.toggle('on', b.dataset.k === pvz)) }
 /* пункты Яндекса на карте прямо в магазине: официальный виджет Яндекс Доставки, ключ не нужен.
@@ -1724,8 +1732,101 @@ const placeText = () => city !== 'other' ? CITY[city].m : $('f-pvz-near') && $('
 function openPvzMap(){
   const town = $('f-town').value.trim();
   if(!town){ haptic('medium'); $('f-town').focus(); return toast('Сначала впишите город') }
-  // Яндекс — виджет с выбором точки; СДЭК — карта пунктов СДЭК прямо в магазине (без договора виджета СДЭК с выбором нет)
-  return pvz === 'yandex' ? openYaWidget(town) : openSearchMap('cdek', town);
+  // Яндекс — виджет Яндекс Доставки; СДЭК — своя карта по справочнику пунктов СДЭК. В обоих нажали на точку — адрес в заказе
+  return pvz === 'yandex' ? openYaWidget(town) : openCdekMap(town);
+}
+/* СДЭК: своя карта в магазине. Пункты — открытый справочник СДЭК, GitHub раз в сутки кладёт его в pvz-cdek.json;
+   карта — Leaflet + OpenStreetMap, без ключей. Не загрузилось — запасной путь через Яндекс Карты */
+function loadLeaflet(){
+  if(window.L) return Promise.resolve(true);
+  if(loadLeaflet.p) return loadLeaflet.p;
+  const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.appendChild(css);
+  return loadLeaflet.p = new Promise(res => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    s.onload = () => res(!!window.L); s.onerror = () => { loadLeaflet.p = null; s.remove(); res(false) }; document.head.appendChild(s) });
+}
+function loadCdek(){ return loadCdek.p = loadCdek.p || fetch('pvz-cdek.json').then(r => r.ok ? r.json() : Promise.reject()).then(j => j.c).catch(() => { loadCdek.p = null; return null }) }
+const normTown = s => String(s || '').toLowerCase().replace(/ё/g, 'е').replace(/^\s*(г\.|город)\s*/, '').replace(/[\s\-–]+/g, ' ').trim();
+let CDEK = null, CDEK_FOUND = [];   // открытая карта: город, пункты, карта Leaflet, выбранный пункт
+function openCdekMap(town){
+  openSheet(`<span class="hand">пункт выдачи</span><div class="h2" id="cdek-h" style="margin-top:4px">СДЭК · ${esc(town)}</div><div id="cdek-box"><div class="small" style="padding:24px 0">Загружаю пункты…</div></div>`);
+  Promise.all([loadCdek(), loadLeaflet()]).then(([cities, ok]) => {
+    const box = $('cdek-box'); if(!box) return;
+    if(!cities || !ok) return cdekFallback(box, 'Карта не загрузилась — проверьте интернет или найдите пункт на Яндекс Картах.');
+    const q = normTown(town);
+    let found = cities.filter(c => normTown(c[0]) === q);
+    if(!found.length && q.length > 2) found = cities.filter(c => normTown(c[0]).startsWith(q));
+    if(!found.length) return cdekFallback(box, `Не нашла пункты СДЭК в городе «${esc(town)}». Проверьте, как написан город.`);
+    CDEK_FOUND = found.sort((a, b) => b[2].length - a[2].length).slice(0, 8);
+    if(CDEK_FOUND.length === 1) return cdekShow(0);
+    box.innerHTML = `<div class="small" style="margin-top:4px">Нашла несколько — какой ваш?</div>` + CDEK_FOUND.map((c, i) =>
+      `<button type="button" class="cdek-row" onclick="cdekShow(${i})"><b>${esc(c[0])}</b><span>${esc(c[1])} · пунктов: ${c[2].length}</span></button>`).join('');
+  });
+}
+function cdekFallback(box, msg){
+  box.innerHTML = `<div class="rule" style="margin-top:12px">${msg}</div>
+    <button class="btn block" style="margin-top:12px" onclick="openSearchMap('cdek', $('f-town').value.trim())">Найти пункт на Яндекс Картах</button>
+    <button class="vq-link" onclick="pvzNear()">Не хочу выбирать — подберите пункт рядом со мной</button>`;
+}
+function cdekShow(n){
+  const c = CDEK_FOUND[n], box = $('cdek-box'); if(!c || !box) return;
+  if(CDEK && CDEK.map) CDEK.map.remove();
+  const pts = c[2].map(p => ({ code: p[0], addr: p[1], lat: p[2], lon: p[3], post: !!p[4], time: p[5] }));
+  $('cdek-h').textContent = 'СДЭК · ' + c[0];
+  box.innerHTML = `<div class="small" style="margin-top:4px">Нажмите на точку на карте или выберите пункт из списка</div>
+    <div class="cdek-map-wrap"><div id="cdek-map" style="height:${Math.max(260, Math.round(innerHeight * .42))}px"></div>
+      <button type="button" class="cdek-me" onclick="cdekLocate()" aria-label="Показать пункты рядом со мной"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button></div>
+    <div id="cdek-sel"></div>
+    <input id="cdek-q" type="search" placeholder="Поиск по улице" oninput="cdekList()" style="margin-top:12px">
+    <div class="small" id="cdek-cap" style="margin-top:10px">Ближе всего к центру карты</div>
+    <div id="cdek-list"></div>
+    <button class="vq-link" onclick="pvzNear()">Не хочу выбирать — подберите пункт рядом со мной</button>`;
+  const map = L.map('cdek-map', { preferCanvas: true, renderer: L.canvas({ tolerance: 10 }) });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+  pts.forEach((p, i) => { p.m = L.circleMarker([p.lat, p.lon], { radius: 8, weight: 2, color: '#fff', fillColor: p.post ? '#34393a' : '#1a95a5', fillOpacity: 1 }).addTo(map).on('click', () => cdekFocus(i, false)) });
+  CDEK = { city: c[0], pts, map, sel: null, me: null };
+  map.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])), { padding: [24, 24], maxZoom: 15 });
+  map.on('moveend', cdekList);
+  setTimeout(() => { if(CDEK && CDEK.map === map) map.invalidateSize() }, 300);   // шторка ещё выезжала, когда карта мерила размер
+  cdekList();
+}
+function cdekList(){
+  if(!CDEK || !$('cdek-list')) return;
+  const q = normTown($('cdek-q').value), c = CDEK.map.getCenter(), k = Math.cos(c.lat * Math.PI / 180);
+  const d = p => (p.lat - c.lat) ** 2 + ((p.lon - c.lng) * k) ** 2;
+  let arr = CDEK.pts.map((p, i) => [p, i]);
+  if(q) arr = arr.filter(([p]) => normTown(p.addr).includes(q));
+  arr.sort((a, b) => d(a[0]) - d(b[0]));
+  $('cdek-cap').textContent = q ? `Нашлось: ${arr.length}` : 'Ближе всего к центру карты';
+  $('cdek-list').innerHTML = arr.slice(0, 20).map(([p, i]) => `<button type="button" class="cdek-row${i === CDEK.sel ? ' on' : ''}" onclick="cdekFocus(${i}, true)">
+    <b>${esc(p.addr)}</b><span>${p.post ? 'Постамат' : 'Пункт выдачи'}${p.time ? ' · ' + esc(p.time) : ''}</span></button>`).join('')
+    || '<div class="small" style="padding:10px 0">Такой улицы нет в списке — попробуйте часть названия</div>';
+}
+function cdekFocus(i, fromList){
+  const p = CDEK && CDEK.pts[i]; if(!p) return;
+  const old = CDEK.pts[CDEK.sel]; if(old) old.m.setRadius(8).setStyle({ color: '#fff', weight: 2 });
+  CDEK.sel = i; p.m.setRadius(12).setStyle({ color: '#121212', weight: 3 }).bringToFront();
+  $('cdek-sel').innerHTML = `<div class="cdek-card"><div><b>${esc(p.addr)}</b><span>${p.post ? 'Постамат' : 'Пункт выдачи'} · код ${esc(p.code)}${p.time ? '<br>' + esc(p.time) : ''}</span></div>
+    <button class="btn block" onclick="cdekPick(${i})">Забрать здесь</button></div>`;
+  haptic('tick');
+  if(fromList){   // из списка — показываем пункт на карте и поднимаем шторку к карте
+    CDEK.map.setView([p.lat, p.lon], Math.max(CDEK.map.getZoom(), 15));
+    const sh = $('sheet'); sh.scrollTo({ top: sh.scrollTop + $('cdek-map').getBoundingClientRect().top - sh.getBoundingClientRect().top - 60, behavior: 'smooth' });
+  } else cdekList();
+}
+function cdekPick(i){
+  const p = CDEK && CDEK.pts[i]; if(!p) return;
+  $('f-town').value = CDEK.city; $('f-addr').value = `${CDEK.city}, ${p.addr}${p.post ? ' (постамат)' : ''}`;
+  $('f-pvz-near').checked = false; pvzNearUi(); PVZ_ID = p.code;
+  closeSheet(); haptic('ok'); toast('Пункт СДЭК выбран');
+}
+function cdekLocate(){
+  if(!navigator.geolocation) return toast('Геолокация недоступна — найдите пункт на карте');
+  navigator.geolocation.getCurrentPosition(pos => {
+    if(!CDEK || !$('cdek-map')) return;
+    const ll = [pos.coords.latitude, pos.coords.longitude];
+    if(CDEK.me) CDEK.me.setLatLng(ll); else CDEK.me = L.circleMarker(ll, { radius: 7, weight: 3, color: '#fff', fillColor: '#2f7cf6', fillOpacity: 1, interactive: false }).addTo(CDEK.map);
+    CDEK.map.setView(ll, 15); haptic('tick');
+  }, () => toast('Не получилось определить, где вы — найдите пункт на карте'), { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
 }
 $('f-city').innerHTML = Object.entries(CITY).map(([k,v])=>`<button data-k="${k}" onclick="setCity('${k}')">${v.t}</button>`).join('');
 $('f-pvz').innerHTML = Object.entries(PVZ).map(([k,v])=>`<button type="button" data-k="${k}" onclick="setPvz('${k}')">${v.t}</button>`).join('');
@@ -1736,7 +1837,7 @@ $('hours-note').textContent = `На связи ${CFG.hours} по Екатери�
 $('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из другого банка — через СБП. Реквизиты появятся сразу после оформления заказа. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
-if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.near) $('f-pvz-near').checked = true; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
+if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.near) $('f-pvz-near').checked = true; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr; if(CONTACT.pvzId && CONTACT.addr) PVZ_ID = CONTACT.pvzId }
 /* ник из аккаунта Telegram: уходит в заказ сам, клиент видит, как с ним свяжутся */
 if(user){ $('f-nick').hidden = false; $('f-nick').textContent = user.username ? `Telegram: @${user.username} — свяжусь здесь` : 'В Telegram нет ника — свяжусь по телефону' }
 /* номер: из прошлого заказа (приходит из таблицы) или из аккаунта Telegram. Без разрешения Telegram номер не отдаёт —
@@ -1886,7 +1987,8 @@ function submitOrder(){
     if(CFG.api && inTg && !(CERT && CERT.num === cn)){ haptic('medium'); checkCert(); return toast('Проверяю сертификат, нажмите ещё раз через пару секунд') }
   }
     // пункт с карты Яндекса: полный адрес уже с городом, плюс код пункта
-  const place = city !== 'other' ? addr : PVZ_ID ? `${addr} (код пункта ${PVZ_ID})` : `${town}, ${addr}`;
+  const withTown = normTown(addr).startsWith(normTown(town)) ? addr : `${town}, ${addr}`;
+  const place = city !== 'other' ? addr : PVZ_ID ? `${withTown} (код пункта ${PVZ_ID})` : withTown;
   askWrite(write => sendOrder(name, phone, place, write));
 }
 /* один раз спрашиваем разрешение, чтобы бот мог прислать трек и статусы посылки */
@@ -1937,7 +2039,7 @@ function sendOrder(name, phone, addr, write){
   answer.then(r => {
     btn.disabled = false; btn.textContent = 'Оформить заказ';
     orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids }); save('orders', orders);
-    save('contact', { name, phone, city, addr: $('f-addr').value.trim(), town: $('f-town').value.trim(), pvz, near: $('f-pvz-near').checked });   // следующий заказ — без повторного ввода
+    save('contact', { name, phone, city, addr: $('f-addr').value.trim(), town: $('f-town').value.trim(), pvz, pvzId: PVZ_ID, near: $('f-pvz-near').checked });   // следующий заказ — без повторного ввода
     if(cp && cut){ cp.used = true }
     G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
     if(perk){ perk.used = true }

@@ -1,0 +1,37 @@
+name: Пункты выдачи СДЭК
+
+on:
+  schedule:
+    - cron: '30 1 * * *'   # раз в сутки, 06:30 по Екатеринбургу
+  workflow_dispatch:       # кнопка «Run workflow» для запуска вручную
+
+permissions:
+  contents: write
+
+# не отправляем одновременно с обновлением цен
+concurrency:
+  group: prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Обновить pvz-cdek.json
+        run: node update-pvz.js
+      - name: Сохранить изменения
+        run: |
+          git config user.name "prices-bot"
+          git config user.email "prices-bot@users.noreply.github.com"
+          git add pvz-cdek.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Пункты СДЭК на $(date +%d.%m)"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 15
+          done
+          exit 1

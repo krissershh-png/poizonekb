@@ -12,7 +12,7 @@
 <meta property="og:image" content="https://krissershh-png.github.io/poizonekb/img/bot-welcome.jpg">
 <link rel="icon" href="img/mascot-round.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
@@ -23,7 +23,7 @@
   --r:18px; --safe-b:env(safe-area-inset-bottom,0px);
   --dela:Unbounded,"Arial Black",Arial,sans-serif;
   --body:"Golos Text","Segoe UI",Arial,sans-serif;
-  --hand:Unbounded,"Arial Black",Arial,sans-serif;
+  --hand:Caveat,cursive;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -46,7 +46,7 @@ a{color:inherit;text-decoration:none}
 .dela{font-family:var(--dela);font-weight:800}
 .h1{font-family:var(--dela);font-weight:900;font-size:21px;line-height:1.12;letter-spacing:-.01em;text-transform:uppercase;margin:0}
 .h2{font-family:var(--dela);font-weight:800;font-size:14px;line-height:1.15;text-transform:uppercase;margin:0}
-.hand{font-family:var(--dela);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);line-height:1.3}
+.hand{font-family:var(--hand);color:var(--red);font-size:27px;line-height:1}
 .grad{color:var(--red)}
 .small{font-size:12px;color:var(--mute);font-weight:700}
 .num{font-variant-numeric:tabular-nums}
@@ -424,7 +424,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .slip{position:relative;padding:12px 16px 22px;background:#fff;border-radius:6px 6px 0 0;
   -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 8px repeat-x;
   mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 8px repeat-x}
-.slip .hand{display:block;font-size:12px;margin-bottom:6px}
+.slip .hand{display:block;font-size:24px;margin-bottom:4px}
 .slip dl{margin:0}
 .slip .row{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:10px 0;border-top:1.5px dashed #d3dfe2}
 .slip dt{font-size:13px;font-weight:900;line-height:1.35;color:var(--ink)}
@@ -507,7 +507,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .board:last-child{margin-bottom:0}
 .board::before{content:'';position:absolute;top:6px;left:14%;right:14%;height:3px;border-radius:2px;background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.95),0 4px 22px 6px rgba(255,255,255,.7)}   /* светодиодная лента */
 .board::after{content:'';position:absolute;z-index:-1;left:0;right:0;bottom:0;height:22px;background:linear-gradient(180deg,#e9f1f3,#f5f9fa);box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}   /* пол ниши */
-.board .note{position:absolute;right:10px;top:13px;font-family:var(--dela);font-weight:800;font-size:10px;text-transform:uppercase;line-height:1;color:#2a1a1a;opacity:.14;transform:rotate(-7deg);pointer-events:none}
+.board .note{position:absolute;right:10px;top:13px;font-family:var(--hand);font-size:15px;line-height:1;color:#2a1a1a;opacity:.14;transform:rotate(-7deg);pointer-events:none}
 .things{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .thing{position:relative;min-width:0;display:flex;flex-direction:column;align-items:stretch;background:none;border:0;padding:0;font:inherit;color:inherit}
 .thing .obj{position:relative;height:66px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px}
@@ -562,7 +562,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .game .pic svg{width:100%;height:100%}
 .game .pic img{width:100%;height:100%;object-fit:contain;padding:8px;mix-blend-mode:multiply}
 .game .t{flex:1;min-width:0;display:grid;gap:4px}
-.game .t .hand{font-size:12px}
+.game .t .hand{font-size:21px}
 .game .t b{font-family:var(--dela);font-weight:800;font-size:14px;text-transform:uppercase;line-height:1.1}
 .game .t .s{font-weight:800;font-size:13px;color:var(--ink-2)}
 .meter{display:block;height:8px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);overflow:hidden}

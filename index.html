@@ -47,7 +47,7 @@ a{color:inherit;text-decoration:none}
 .h1{font-family:var(--dela);font-weight:900;font-size:21px;line-height:1.12;letter-spacing:-.01em;text-transform:uppercase;margin:0}
 .h2{font-family:var(--dela);font-weight:800;font-size:14px;line-height:1.15;text-transform:uppercase;margin:0}
 .hand{font-family:var(--hand);color:var(--red);font-size:27px;line-height:1}
-.grad{color:var(--red)}
+.grad{background:linear-gradient(90deg,#b3121a 0%,#e0342a 55%,#ff6f5e 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .small{font-size:12px;color:var(--mute);font-weight:700}
 .num{font-variant-numeric:tabular-nums}
 .sec{display:flex;align-items:center;justify-content:space-between;margin:28px 0 12px;gap:10px}
@@ -2596,7 +2596,7 @@ function heroSave(){ HERO = { ...heroDraft }; save('hero', HERO); paintAvatars()
 function paintAvatars(){ if(HERO) document.querySelectorAll('.ava').forEach(a=>a.innerHTML = heroSVG(HERO)) }
 function renderHeroCard(){
   $('me-hero').innerHTML = `<div class="hero-card"><div class="pic">${heroSVG(HERO||HERO_DEF)}</div>
-    <div class="t"><span class="hand">${HERO ? 'мой герой' : 'создайте героя'}</span><b>${esc(user && user.first_name || 'Гость')}</b>
+    <div class="t"><span class="hand" style="color:var(--sky)">${HERO ? 'мой герой' : 'создайте героя'}</span><b>${esc(user && user.first_name || 'Гость')}</b>
     <span class="s">Открыто вещей: ${Object.keys(UNL_NAME).filter(hasUnl).length} из ${Object.keys(UNL_NAME).length}</span></div>
     <button class="btn sm" onclick="openHero()">${HERO ? 'Изменить' : 'Создать'}</button></div>`;
 }

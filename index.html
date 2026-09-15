@@ -748,7 +748,8 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <!-- другой город: служба и пункт выдачи. Точный пункт человек находит на официальной карте службы и вставляет адрес -->
     <div class="field" id="f-pvz-f" hidden><span>Пункт выдачи</span><div class="seg" id="f-pvz" style="grid-template-columns:1fr 1fr"></div>
       <input id="f-town" placeholder="Город, например Казань" autocomplete="address-level2" style="margin-top:8px">
-      <button type="button" class="btn sm ghost block" style="margin-top:8px" onclick="openPvzMap()">Выбрать пункт на карте</button></div>
+      <button type="button" class="btn sm ghost block" id="f-pvz-map" style="margin-top:8px" onclick="openPvzMap()">Выбрать пункт на карте</button>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="f-pvz-near" onchange="pvzNearUi()"><span>Подберите пункт рядом со мной — напишу свой адрес</span></label></div>
     <div class="field"><span id="f-addr-l">Адрес</span><input id="f-addr"></div>
     <div class="field" id="f-ref-f"><span>Кто посоветовал? Ник друга</span><input id="f-ref" placeholder="Необязательно"></div>
     <div class="field"><span>Комментарий</span><textarea id="f-note"></textarea></div>
@@ -1642,7 +1643,25 @@ function confetti(){
    ===================================================================== */
 const CITY = { ekb:{t:'Екатеринбург', m:'Екатеринбург, до двери', l:'Адрес'}, pyshma:{t:'Верх. Пышма', m:'Верхняя Пышма, до двери', l:'Адрес'}, other:{t:'Другой город', m:'Другой город, пункт выдачи', l:'Адрес пункта выдачи'} };
 function setCity(k){ city=k; $('f-addr-l').textContent = CITY[k].l; document.querySelectorAll('#f-city button').forEach(b=>b.classList.toggle('on', b.dataset.k===k));
-  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Улица и дом пункта — скопируйте с карты' : 'Улица, дом, квартира' }
+  $('f-pvz-f').hidden = k !== 'other'; $('f-addr').placeholder = k === 'other' ? 'Улица и дом пункта — скопируйте с карты' : 'Улица, дом, квартира'; if($('f-pvz-near')) pvzNearUi() }
+/* «подберите пункт рядом со мной»: клиент пишет свой адрес, ближайший пункт выбирает Кристина при отправке */
+function pvzNearUi(){
+  const near = city === 'other' && $('f-pvz-near').checked;
+  $('f-pvz-map').hidden = near;
+  if(city === 'other'){ $('f-addr-l').textContent = near ? 'Ваш адрес — подберу ближайший пункт' : CITY.other.l; $('f-addr').placeholder = near ? 'Улица, дом' : 'Улица и дом пункта — скопируйте с карты' }
+  if(near) PVZ_ID = '';
+}
+function pvzNear(){ $('f-pvz-near').checked = true; pvzNearUi(); closeSheet(); setTimeout(() => $('f-addr').focus(), 300); toast('Напишите свой адрес — подберу ближайший пункт') }
+/* «Вставить»: адрес, скопированный в карточке пункта на карте. Telegram не всегда даёт читать буфер — тогда подсказка про долгое нажатие */
+function pvzPaste(){
+  const inp = $('pvz-addr-in'), manual = () => { inp.focus(); toast('Нажмите на поле и удерживайте — «Вставить»') };
+  try{
+    if(navigator.clipboard && navigator.clipboard.readText) return navigator.clipboard.readText()
+      .then(t => { t = String(t || '').trim(); if(t){ inp.value = t.slice(0, 200); haptic('tick') } else toast('Сначала скопируйте адрес в карточке пункта') })
+      .catch(manual);
+  }catch(e){}
+  manual();
+}
 /* пункты выдачи без договора со службой: официальная карта СДЭК или Яндекс Карты с пунктами Яндекса в нужном городе */
 const PVZ = { cdek:{ t:'СДЭК' }, yandex:{ t:'Яндекс' } };
 var PVZ_ID = '';   // код пункта Яндекса, выбранного на карте; ручная правка адреса его сбрасывает
@@ -1687,19 +1706,21 @@ function openSearchMap(service, town){
   const q = (service === 'cdek' ? 'СДЭК пункт выдачи ' : 'пункт выдачи Яндекс Маркет ') + safeTown;
   const src = 'https://yandex.ru/map-widget/v1/?text=' + encodeURIComponent(q) + '&z=12';
   openSheet(`<span class="hand">пункт выдачи</span><div class="h2" style="margin-top:4px">${name} · ${esc(safeTown)}</div>
-    <div class="small" style="margin-top:4px">Нажмите на пункт на карте — появится адрес. Впишите его ниже</div>
+    <div class="small" style="margin-top:4px">Нажмите на пункт на карте — появится его адрес</div>
     <div class="ydw-box" style="min-height:0"><iframe src="${src}" title="Пункты выдачи ${name} на карте" loading="lazy" allow="geolocation"
       style="display:block;width:100%;height:${Math.max(300, Math.round(innerHeight * .5))}px;border:0"></iframe></div>
-    <div class="field"><span>Адрес пункта ${name}</span><input id="pvz-addr-in" placeholder="Например: ул. Баумана, 44" value="${esc(PVZ_ID ? '' : $('f-addr').value)}"></div>
-    <button class="btn block" style="margin-top:12px" onclick="pvzAddrDone()">Готово</button>`);
+    <div class="field"><span>Адрес пункта ${name}</span><div class="phone-row"><input id="pvz-addr-in" placeholder="Например: ул. Баумана, 44" value="${esc(PVZ_ID || $('f-pvz-near').checked ? '' : $('f-addr').value)}"><button type="button" class="btn sm ghost" onclick="pvzPaste()">Вставить</button></div>
+      <div class="small" style="margin-top:6px">В карточке пункта скопируйте адрес и нажмите «Вставить»</div></div>
+    <button class="btn block" style="margin-top:12px" onclick="pvzAddrDone()">Готово</button>
+    <button class="vq-link" onclick="pvzNear()">Не хочу выбирать — подберите пункт рядом со мной</button>`);
 }
 function pvzAddrDone(){
   const v = $('pvz-addr-in').value.trim();
   if(!v){ haptic('medium'); $('pvz-addr-in').focus(); return toast('Впишите адрес пункта') }
-  $('f-addr').value = v; PVZ_ID = '';
+  $('f-addr').value = v; PVZ_ID = ''; $('f-pvz-near').checked = false; pvzNearUi();
   closeSheet(); haptic('ok'); toast('Адрес пункта добавлен');
 }
-const placeText = () => city === 'other' ? `Другой город, пункт выдачи ${PVZ[pvz].t}` : CITY[city].m;
+const placeText = () => city !== 'other' ? CITY[city].m : $('f-pvz-near') && $('f-pvz-near').checked ? `Другой город, ${PVZ[pvz].t}: подобрать пункт рядом с адресом` : `Другой город, пункт выдачи ${PVZ[pvz].t}`;
 function openPvzMap(){
   const town = $('f-town').value.trim();
   if(!town){ haptic('medium'); $('f-town').focus(); return toast('Сначала впишите город') }
@@ -1715,7 +1736,7 @@ $('hours-note').textContent = `На связи ${CFG.hours} по Екатери�
 $('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из другого банка — через СБП. Реквизиты появятся сразу после оформления заказа. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
-if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
+if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.near) $('f-pvz-near').checked = true; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr }
 /* ник из аккаунта Telegram: уходит в заказ сам, клиент видит, как с ним свяжутся */
 if(user){ $('f-nick').hidden = false; $('f-nick').textContent = user.username ? `Telegram: @${user.username} — свяжусь здесь` : 'В Telegram нет ника — свяжусь по телефону' }
 /* номер: из прошлого заказа (приходит из таблицы) или из аккаунта Telegram. Без разрешения Telegram номер не отдаёт —
@@ -1856,7 +1877,7 @@ function submitOrder(){
   if(phone.replace(/\D/g,'').length < 10){ haptic('medium'); return toast('Проверьте номер телефона') }
   const town = $('f-town').value.trim();
   if(city==='other' && !town){ haptic('medium'); $('f-town').focus(); return toast('Впишите город') }
-  if(!addr) return toast(city==='other'?'Вставьте адрес пункта выдачи':'Укажите адрес');
+  if(!addr) return toast(city !== 'other' ? 'Укажите адрес' : $('f-pvz-near').checked ? 'Впишите свой адрес' : 'Вставьте адрес пункта выдачи');
   if(!$('f-agree').checked){ haptic('medium'); return toast('Отметьте, что возврата нет') }
   if(payByCert()){
     const cn = certNorm();
@@ -1916,7 +1937,7 @@ function sendOrder(name, phone, addr, write){
   answer.then(r => {
     btn.disabled = false; btn.textContent = 'Оформить заказ';
     orders.unshift({ num, date:new Date().toLocaleDateString('ru-RU'), sum:pay, n, at:Date.now(), ids }); save('orders', orders);
-    save('contact', { name, phone, city, addr: $('f-addr').value.trim(), town: $('f-town').value.trim(), pvz });   // следующий заказ — без повторного ввода
+    save('contact', { name, phone, city, addr: $('f-addr').value.trim(), town: $('f-town').value.trim(), pvz, near: $('f-pvz-near').checked });   // следующий заказ — без повторного ввода
     if(cp && cut){ cp.used = true }
     G.coupons.forEach(c=>{ if(c.first) c.used = true });   // после первого заказа второй подарок «на первый заказ» сгорает, скидки не суммируются
     if(perk){ perk.used = true }

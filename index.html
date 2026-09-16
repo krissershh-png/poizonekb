@@ -75,7 +75,16 @@ a{color:inherit;text-decoration:none}
 .hero .txt{position:relative;z-index:1;min-width:0}
 .hero .cta{margin-top:16px;display:flex;gap:8px;flex-wrap:nowrap;width:max-content;position:relative;z-index:2}
 .hero .cta .btn.sm{padding:0 12px}
-.hero .mascot{width:156px;max-width:none;margin:-8px -16px -18px -8px;position:relative;z-index:1}
+.hero .mascot-wrap{display:block;width:156px;max-width:none;margin:-8px -16px -18px -8px;padding:0;border:0;background:none;position:relative;z-index:1;align-self:end;-webkit-tap-highlight-color:transparent;cursor:pointer}
+/* живой маскот: дышит, иногда подпрыгивает с коробкой; нажали — прыжок и сердечки */
+.hero .mascot{display:block;width:100%;max-width:none;margin:0;transform-origin:50% 100%;animation:breathe 3.8s ease-in-out infinite}
+.hero .mascot-wrap.hop .mascot{animation:hop .75s cubic-bezier(.3,1.5,.5,1)}
+@keyframes breathe{0%,100%{transform:translateY(0) rotate(0) scale(1)}50%{transform:translateY(-3px) rotate(-1.2deg) scale(1.012)}}
+@keyframes hop{0%{transform:none}18%{transform:translateY(3px) scale(1.05,.94)}48%{transform:translateY(-18px) rotate(2.5deg) scale(.97,1.04)}74%{transform:translateY(1px) scale(1.03,.97)}100%{transform:none}}
+.m-fx{position:absolute;left:46%;bottom:34%;width:22px;height:22px;pointer-events:none;animation:mfx 1.05s cubic-bezier(.2,.7,.3,1) forwards}
+.m-fx svg{display:block;width:100%;height:100%}
+@keyframes mfx{0%{opacity:0;transform:translate(0,0) scale(.3)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.15) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){.hero .mascot,.hero .mascot-wrap.hop .mascot{animation:none}.m-fx{display:none}}
 /* gift banner */
 .gift{position:relative;overflow:hidden;margin-top:12px;border-radius:var(--r);background:var(--ink);color:#fff;padding:16px;display:flex;align-items:center;gap:14px;width:100%;text-align:left}
 .gift .dots{right:-40px;top:-50px;width:190px;height:190px;opacity:.45}
@@ -452,6 +461,38 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 @media (prefers-reduced-motion:reduce){.ribbon .rt{animation:none}}
 .intro .slip.under{border-radius:0}
 .intro .slip.under .intro-lead{border-top:0;padding-top:2px;margin:0}
+/* касса: чёрная щель, из неё выезжает чек, сверху падает печать */
+.intro .printer{position:relative;z-index:2;height:14px;margin:0 -8px;border-radius:9px;background:linear-gradient(#3a3a3a,#121212);box-shadow:inset 0 -4px 0 #000,0 4px 8px -4px rgba(0,0,0,.4)}
+.intro .slip.receipt{margin-top:-7px;padding-top:22px;border-radius:0}
+.intro .slip.receipt .intro-lead{margin-top:2px}
+.stamp{position:relative;display:inline-grid;justify-items:center;gap:4px;margin:0 0 12px 4px;padding:9px 16px 8px;color:var(--red);border:3px solid currentColor;border-radius:10px;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px currentColor;transform:rotate(-5deg);transform-origin:50% 60%}
+.stamp b{font-family:var(--dela);font-weight:900;font-size:18px;line-height:1;letter-spacing:.14em;text-transform:uppercase}
+.stamp i{font-style:normal;font-family:var(--dela);font-weight:800;font-size:11px;line-height:1;letter-spacing:.42em;text-transform:uppercase;margin-right:-.42em}
+.stamp::after{content:"";position:absolute;inset:-6px;border-radius:14px;background:radial-gradient(circle,rgba(200,23,23,.28) 0 40%,transparent 70%);opacity:0;pointer-events:none}
+.intro.play .slip.receipt{animation:receipt 1.15s cubic-bezier(.25,.8,.25,1) both}
+.intro.play .stamp{animation:stampdown .55s cubic-bezier(.2,1.5,.45,1) 1.1s both}
+.intro.play .stamp::after{animation:inkburst .6s ease-out 1.28s both}
+.intro.play .printer{animation:printbuzz .16s linear 0s 6}
+.intro.play{animation:thump .3s ease 1.3s}
+@keyframes receipt{0%{clip-path:inset(0 0 100% 0);transform:translateY(-30px)}100%{clip-path:inset(0 0 -30px 0);transform:none}}
+@keyframes stampdown{0%{opacity:0;transform:scale(2.4) rotate(-16deg)}55%{opacity:1;transform:scale(.92) rotate(-4deg)}100%{opacity:1;transform:scale(1) rotate(-5deg)}}
+@keyframes inkburst{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes printbuzz{50%{transform:translateX(1px)}}
+@keyframes thump{40%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.intro.play .slip.receipt,.intro.play .stamp,.intro.play .stamp::after,.intro.play .printer,.intro.play{animation:none}}
+/* ползунок цены «от — до» */
+.fgrp .fh b{font-size:13px;font-weight:800;letter-spacing:0;text-transform:none;color:var(--ink)}
+.range2{position:relative;height:40px;margin:2px 11px 0}
+.range2 .track{position:absolute;left:0;right:0;top:17px;height:6px;border-radius:3px;background:var(--line)}
+.range2 .track i{position:absolute;top:0;bottom:0;left:0;right:0;border-radius:3px;background:var(--red)}
+.range2 input{position:absolute;left:-11px;right:-11px;top:6px;width:calc(100% + 22px);height:28px;margin:0;padding:0;border:0;background:none;box-shadow:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+.range2 input:focus{outline:none;box-shadow:none}
+.range2 input::-webkit-slider-runnable-track{background:none;border:0}
+.range2 input::-moz-range-track{background:none;border:0}
+.range2 input::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--red);box-shadow:0 3px 8px rgba(0,0,0,.2);cursor:grab}
+.range2 input::-moz-range-thumb{pointer-events:auto;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--red);box-shadow:0 3px 8px rgba(0,0,0,.2);cursor:grab}
+.range2 input:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(200,23,23,.25)}
+.range-ends{display:flex;justify-content:space-between;margin-top:2px;font-size:12px;font-weight:700;color:var(--mute)}
 /* заказ по ссылке в корзине: красная плашка с юанем вместо серого квадрата */
 .item .th.link{position:relative;background:linear-gradient(140deg,#ef4a3d 0%,#c81717 55%,#8f0e14 100%);color:#fff;overflow:hidden}
 .item .th.link::before{content:"";position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.28) 1px,transparent 1.3px) 0 0/7px 7px;opacity:.55}
@@ -737,7 +778,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
         <button class="btn sm ghost" onclick="go('calc')">Расчёт</button>
       </div>
     </div>
-    <img class="mascot" src="img/mascot.png" alt="">
+    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><img class="mascot" src="img/mascot.png" alt=""></button>
   </div>
 
   <!-- вводная о магазине — реплика Крис под шапкой: кто она, что такое Poizon и три факта -->
@@ -1317,13 +1358,41 @@ const HOW_ICON = {
   card:  '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15h4"/>',
   box:   '<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/>',
 };
+/* маскот на главной: прыжок с коробкой; по нажатию ещё и сердечки с искрами */
+const FX_SVG = [
+  '<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.4 12 21 12 21z" fill="#c81717"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.4 12 21 12 21z" fill="#ff5d52"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M12 1q1.6 9.4 11 11-9.4 1.6-11 11-1.6-9.4-11-11 9.4-1.6 11-11z" fill="#2f6fed"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M12 1q1.6 9.4 11 11-9.4 1.6-11 11-1.6-9.4-11-11 9.4-1.6 11-11z" fill="#121212"/></svg>',
+];
+function mascotHop(){
+  const m = $('mascot'); if(!m || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop');
+  setTimeout(() => m.classList.remove('hop'), 800);
+}
+function mascotTap(){
+  mascotHop(); haptic('light');
+  const m = $('mascot'); if(!m) return;
+  for(let i = 0; i < 6; i++){
+    const s = document.createElement('span'); s.className = 'm-fx'; s.innerHTML = FX_SVG[i % FX_SVG.length];
+    s.style.setProperty('--dx', (Math.round(Math.random() * 120) - 70) + 'px');
+    s.style.setProperty('--dy', -(60 + Math.round(Math.random() * 70)) + 'px');
+    s.style.setProperty('--r', (Math.round(Math.random() * 80) - 40) + 'deg');
+    s.style.animationDelay = (i * 45) + 'ms';
+    m.appendChild(s); setTimeout(() => s.remove(), 1400);
+  }
+}
+// сам подпрыгивает при открытии и потом раз в 8 секунд, пока главная на экране
+setTimeout(mascotHop, 1200);
+setInterval(() => { if(!document.hidden && $('s-home') && $('s-home').classList.contains('active')) mascotHop() }, 8000);
 /* вводная под шапкой — слова из описания канала, коротко */
 const INTRO = 'Онлайн-магазин оригинальной продукции из приложения Poizon. Привезу всё — от часов до кроссовок — и сэкономлю ваши деньги.';
 function renderFacts(){
   const e = $('facts'); if(!e || e.childElementCount) return;
-  // две одинаковые половины ленты: сдвиг на половину ширины даёт бесконечный бег без рывка. ?rb=white — белый текст вместо красного
-  const words = Array(8).fill('<span>надёжный посредник</span>').join('');
-  e.innerHTML = `<div class="ribbon ${/[?&]rb=white/.test(location.search) ? 'white' : ''}" role="img" aria-label="надёжный посредник"><div class="rt">${words}</div></div><div class="slip under"><p class="intro-lead">${INTRO}</p></div>`;
+  // чек «печатается» из щели кассы, потом на него ложится печать «надёжный посредник»; проигрывается, когда блок виден
+  e.innerHTML = `<div class="printer" aria-hidden="true"></div><div class="slip receipt"><span class="stamp" role="img" aria-label="надёжный посредник"><b>надёжный</b><i>посредник</i></span><p class="intro-lead">${INTRO}</p></div>`;
+  const play = () => { e.classList.remove('play'); void e.offsetWidth; e.classList.add('play') };
+  if('IntersectionObserver' in window){ const io = new IntersectionObserver(es => { if(es.some(x => x.isIntersecting)){ io.disconnect(); play() } }, { threshold:.5 }); io.observe(e) } else play();
 }
 function renderHow(){
   const row = $('how-row'); if(!row) return;
@@ -1419,10 +1488,11 @@ function mixCats(list){
   return out.concat(list.filter(p=>!CATS.some(c=>c.id===p.cat)));
 }
 /* ---------- фильтры каталога: размер, бренд, цвет, цена. Запоминаются: «до 10 000 ₽ в моём размере» ставится один раз ---------- */
-let FLT = load('flt', { sizes:[], brands:[], colors:[], max:0 });
+let FLT = load('flt', { sizes:[], brands:[], colors:[], pmin:0, pmax:0 });
+if(FLT.max && !FLT.pmax) FLT.pmax = FLT.max;   // раньше цена была кнопками «до 10 000 ₽»
+FLT.pmin = FLT.pmin || 0; FLT.pmax = FLT.pmax || 0; delete FLT.max;
 const SHOE_SIZES = ['35','35.5','36','36.5','37','37.5','38','38.5','39','39.5','40','40.5','41','41.5','42','42.5','43','43.5','44','44.5','45','46'];
 const CLOTH_SIZES = ['XS','S','M','L','XL','XXL'];
-const PRICE_MAX = [0, 7000, 10000, 15000, 20000];
 // цвет — из характеристики «Цвет» и названия («White Grey»)
 const COLORS = [
   ['white','Белый','#ffffff',/бел|молочн|крем|white|sail|ivory|cream|bone/],
@@ -1452,7 +1522,7 @@ function sizeNorm(eu){
   const v = parseFloat(String(eu).replace('⅓','.33').replace('⅔','.67').replace(',','.'));
   return isNaN(v) ? '' : String(Math.round(v*2)/2);
 }
-const fltCount = () => FLT.sizes.length + FLT.brands.length + FLT.colors.length + (FLT.max ? 1 : 0);
+const fltCount = () => FLT.sizes.length + FLT.brands.length + FLT.colors.length + (FLT.pmin || FLT.pmax ? 1 : 0);
 function passFilters(p){
   if(FLT.brands.length && !FLT.brands.includes(p.brand)) return false;
   if(FLT.colors.length && !colorsOf(p).some(c => FLT.colors.includes(c))) return false;
@@ -1462,21 +1532,42 @@ function passFilters(p){
     S = S.filter(s => FLT.sizes.includes(sizeNorm(s.eu)));
     if(!S.length) return false;
   }
-  if(FLT.max){ const m = S.length ? Math.min(...S.map(s => s.price || 0).filter(Boolean)) : minPrice(p); if(!m || m > FLT.max) return false }
+  if(FLT.pmin || FLT.pmax){
+    const m = S.length ? Math.min(...S.map(s => s.price || 0).filter(Boolean)) : minPrice(p);
+    if(!m || m === Infinity || (FLT.pmin && m < FLT.pmin) || (FLT.pmax && m > FLT.pmax)) return false;
+  }
   return true;
+}
+/* ползунок цены «от — до»: шкала нелинейная, большинство вещей 7–20 тыс., там шаг мельче */
+const PRICE_STEPS = 200;
+function priceBounds(){
+  const ps = shopBase().map(minPrice).filter(v => v > 0);
+  const lo = ps.length ? Math.floor(Math.min(...ps) / 1000) * 1000 : 0, hi = ps.length ? Math.ceil(Math.max(...ps) / 1000) * 1000 : 100000;
+  return { lo, hi: Math.max(hi, lo + 1000) };
+}
+const posToPrice = (t, b) => Math.round((b.lo + (b.hi - b.lo) * Math.pow(t / PRICE_STEPS, 2.2)) / 500) * 500;
+const priceToPos = (v, b) => Math.round(Math.pow(Math.max(0, Math.min(1, (v - b.lo) / (b.hi - b.lo))), 1 / 2.2) * PRICE_STEPS);
+let PB = null, priceSyncT = null;
+function fltPrice(){
+  const a = $('flt-pmin'), z = $('flt-pmax'); let ta = +a.value, tz = +z.value;
+  if(ta > tz - 4){ if(document.activeElement === a){ ta = tz - 4; a.value = ta } else { tz = ta + 4; z.value = tz } }
+  const vmin = posToPrice(ta, PB), vmax = posToPrice(tz, PB);
+  FLT.pmin = ta <= 0 ? 0 : vmin; FLT.pmax = tz >= PRICE_STEPS ? 0 : vmax;
+  $('flt-fill').style.left = (ta / PRICE_STEPS * 100) + '%'; $('flt-fill').style.right = (100 - tz / PRICE_STEPS * 100) + '%';
+  $('flt-price-t').textContent = !FLT.pmin && !FLT.pmax ? 'любая' : `${FLT.pmin ? fmt(FLT.pmin) : fmt(PB.lo)} — ${FLT.pmax ? fmt(FLT.pmax) : fmt(PB.hi) + '+'}`;
+  clearTimeout(priceSyncT); priceSyncT = setTimeout(() => { save('flt', FLT); const n = shopBase().filter(passFilters).length, b = $('flt-show'); if(b) b.textContent = n ? `Показать ${n} ${plural(n,['товар','товара','товаров'])}` : 'Ничего не нашлось' }, 120);
 }
 function fltToggle(kind, val, el){
   const a = FLT[kind], i = a.indexOf(val);
   i >= 0 ? a.splice(i, 1) : a.push(val);
   el.classList.toggle('on', i < 0); fltSync();
 }
-function fltMax(v, el){ FLT.max = v; el.parentNode.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b === el)); fltSync() }
 function fltSync(){
   save('flt', FLT); haptic('tick');
   const n = shopBase().filter(passFilters).length, b = $('flt-show');
   if(b) b.textContent = n ? `Показать ${n} ${plural(n,['товар','товара','товаров'])}` : 'Ничего не нашлось';
 }
-function fltClear(){ FLT = { sizes:[], brands:[], colors:[], max:0 }; save('flt', FLT) }
+function fltClear(){ FLT = { sizes:[], brands:[], colors:[], pmin:0, pmax:0 }; save('flt', FLT) }
 function fltReset(){ fltClear(); openFilters() }
 /* что осталось в выбранной вкладке без учёта фильтров: от этого считаются бренды и «Показать N» */
 function shopBase(){
@@ -1485,6 +1576,7 @@ function shopBase(){
 }
 function openFilters(){
   const base = shopBase(), cnt = {};
+  PB = priceBounds();
   base.forEach(p => { cnt[p.brand] = (cnt[p.brand]||0) + 1 });
   FLT.brands.forEach(b => { if(!cnt[b]) cnt[b] = 0 });
   const brands = Object.keys(cnt).sort((a,b) => cnt[b] - cnt[a] || a.localeCompare(b));
@@ -1494,14 +1586,17 @@ function openFilters(){
   openSheet(`<span class="hand">фильтры</span>
     <div class="fgrp"><div class="fh"><span>Размер</span><span>${clothes ? 'одежда' : shoes ? 'EU' : 'EU и одежда'}</span></div>
       <div class="fwrap">${sizes.map(s => chip('sizes', s, s.replace('.', ','))).join('')}</div></div>
-    <div class="fgrp"><div class="fh"><span>Цена</span></div>
-      <div class="fwrap">${PRICE_MAX.map(v => `<button class="chip ${FLT.max===v?'on':''}" onclick="fltMax(${v},this)">${v ? 'до '+fmt(v) : 'Любая'}</button>`).join('')}</div></div>
+    <div class="fgrp"><div class="fh"><span>Цена</span><b id="flt-price-t" class="num"></b></div>
+      <div class="range2"><div class="track"><i id="flt-fill"></i></div>
+        <input type="range" id="flt-pmin" min="0" max="${PRICE_STEPS}" step="1" value="${FLT.pmin ? priceToPos(FLT.pmin, PB) : 0}" oninput="fltPrice()" aria-label="Цена от">
+        <input type="range" id="flt-pmax" min="0" max="${PRICE_STEPS}" step="1" value="${FLT.pmax ? priceToPos(FLT.pmax, PB) : PRICE_STEPS}" oninput="fltPrice()" aria-label="Цена до"></div>
+      <div class="range-ends num"><span>${fmt(PB.lo)}</span><span>${fmt(PB.hi)}</span></div></div>
     <div class="fgrp"><div class="fh"><span>Цвет</span></div>
       <div class="fwrap">${COLORS.map(c => chip('colors', c[0], `<i style="background:${c[2]}"></i>${c[1]}`, 'sw')).join('')}</div></div>
     <div class="fgrp"><div class="fh"><span>Бренд</span><span>${brands.length}</span></div>
       <div class="fwrap">${brands.map(b => chip('brands', b, esc(b))).join('')}</div></div>
     <div class="fbar"><button class="btn ghost" onclick="fltReset()">Сбросить</button><button class="btn" id="flt-show" onclick="closeSheet();renderShop()">Показать</button></div>`);
-  fltSync();
+  fltPrice(); fltSync();
 }
 let SHOP_REST = [];
 function shopMore(){ const b = $('shop-more'); if(!b) return; const next = SHOP_REST.slice(0,48); SHOP_REST = SHOP_REST.slice(48); b.insertAdjacentHTML('beforebegin', next.map(card).join('')); if(SHOP_REST.length) b.textContent = 'Показать ещё '+SHOP_REST.length; else b.remove() }

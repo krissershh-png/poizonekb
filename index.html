@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16p';
+const BUILD = '2026-09-17a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -118,6 +118,17 @@ a{color:inherit;text-decoration:none}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hs{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}
 .hs::-webkit-scrollbar{display:none}
+/* расцветки модели в карточке: миниатюры в ряд, текущая обведена */
+.vrs{margin-top:12px}
+.vrs-h{font-size:12px;font-weight:800;color:var(--mute);margin-bottom:6px}
+.vrs .hs{gap:8px}
+.vr{flex:0 0 64px;display:grid;gap:3px;padding:0;border:0;background:none;cursor:pointer;text-align:center}
+.vr img{width:64px;height:64px;object-fit:cover;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line)}
+.vr img.studio{object-fit:contain;padding:4px}
+.vr small{font-size:10px;font-weight:800;color:var(--ink-2);white-space:nowrap}
+.vr.on img{outline:2px solid var(--ink);outline-offset:1px}
+.sim-h{font-size:15px;margin:22px 0 10px}
+.grid.sim{padding-bottom:8px}
 /* стрелки у горизонтальных лент — только там, где мышка (компьютер, ноутбук, Telegram Desktop). На телефоне листают пальцем */
 .arr-wrap{position:relative}
 .arr{display:none}
@@ -1689,7 +1700,7 @@ function openProduct(id){
     <div class="h2" style="text-transform:none;font-size:16px;margin-top:2px">${esc(p.name)}</div>
     <div class="price num" id="p-price" style="font-size:26px">${mp ? (p.stock || p.post ? (p.stock ? '' : '<small>от </small>')+fmt(mp) : (() => { const mx = Math.max(...S.filter(x=>x.ok).map(x=>x.price)); return mx > mp ? fmt(mp)+' – '+fmt(mx) : fmt(mp) })()) : '<small>цена по запросу</small>'}</div>
     ${rusLine(p, mp)}${p.stock ? '' : `<div class="small buyl">Уедет в закупку ${buyDate()} · приедет примерно ${arrivalText()}</div>`}
-    ${trustLine(p, mp)}${sizesHTML}${finder}${chart}
+    ${variantsHTML(p)}${trustLine(p, mp)}${sizesHTML}${finder}${chart}
     ${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ''}
     <div class="attrs"><div class="h2" style="font-size:13px;margin-bottom:4px">Характеристики</div>
       ${(p.attrs||[]).map(a=>`<div class="ar"><span>${esc(a[0])}</span><b>${esc(a[1])}</b></div>`).join('')}
@@ -1698,9 +1709,48 @@ function openProduct(id){
       <div class="ar"><span>Срок доставки</span><b>${p.stock ? 'в Екатеринбурге, сегодня' : `примерно ${arrivalText()}`}</b></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button></div>
+    ${similarHTML(p)}
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
   if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');
   hint('fit', document.querySelector('#sheet .fit'), 'Впишите длину стопы — подберу размер');
+}
+/* ---------- расцветки одной модели и похожие вещи в карточке ----------
+   модель = бренд + название без цвета: «Dunk Low Retro «Panda»» и «Dunk Low «Fossil Rose»» — одна модель, если одно название начинается с другого */
+const COLOR_WORDS = /^(white|black|grey|gray|silver|navy|brown|beige|pink|red|green|blue|yellow|purple|cream|ivory|sail|gum|gold|metallic|orange|tan|khaki|olive|burgundy|maroon|camel|chestnut|sand|smoke|chocolate|mocha|light|dark|deep|triple|multi|and|university|panda|putty|off|bone|oatmeal|heather)$/i;
+// хвосты, которые не меняют модель: «Dunk Low» и «Dunk Low Retro» — одно; «Air Jordan 1» и «Air Jordan 1 Low» — уже нет
+const EDITION_WORDS = /^(retro|og|se|wmns|gs|ps|remastered|lx|ess|prm|premium|07|ex|v2)$/i;
+const MODEL_CACHE = {};
+function modelOf(p){
+  if(MODEL_CACHE[p.id]) return MODEL_CACHE[p.id];
+  let s = String(p.name).replace(/«[^»]*»/g, ' ').replace(/[()"“”]/g, ' ').replace(/[’']07\b/g, '07');
+  const type = (/^([а-яё]+)\s+(?=[A-Za-z0-9])/i.exec(s) || [])[1] || '';   // «Худи», «Кроссовки» — тип вещи: худи и футболка одной линии не расцветки
+  s = s.replace(/^[а-яё]+(\s+[а-яё]+)*\s+(?=[A-Za-z0-9])/i, '');
+  const t = s.split(/\s+/).filter(Boolean).map(w => w.toLowerCase());
+  while(t.length > 1 && (COLOR_WORDS.test(t[t.length - 1]) || /^[а-яё]+$/i.test(t[t.length - 1]))) t.pop();   // хвост из цветов и «мужские/женские»
+  return MODEL_CACHE[p.id] = { t, type: type.toLowerCase() };
+}
+function sameModel(a, b){
+  if(a.id === b.id || a.brand !== b.brand || a.cat !== b.cat) return false;
+  const A = modelOf(a), B = modelOf(b);
+  if(A.type && B.type && A.type !== B.type) return false;
+  const [s, l] = A.t.length <= B.t.length ? [A.t, B.t] : [B.t, A.t];
+  if(!s.length || !(s.length >= 2 || /\d/.test(s[0]))) return false;   // одно слово без цифр («Сумка») — не модель
+  return s.every((w, i) => w === l[i]) && l.slice(s.length).every(w => EDITION_WORDS.test(w));
+}
+const visible = q => !q.post && (q.stock || minPrice(q) > 0);
+function variantsHTML(p){
+  const vs = CAT.filter(q => visible(q) && sameModel(p, q)).slice(0, 12);
+  if(!vs.length) return '';
+  const cell = (q, on) => `<button class="vr ${on ? 'on' : ''}" ${on ? 'aria-current="true"' : `onclick="openProduct('${q.id}')"`} aria-label="${esc(q.name)}"><img class="${studioAt(q,0) ? 'studio' : ''}" src="${q.img[0]}" alt="" loading="lazy"><small class="num">${q.stock ? 'в наличии' : fmt(minPrice(q))}</small></button>`;
+  return `<div class="vrs"><div class="vrs-h">Расцветки · ${vs.length + 1}</div><div class="hs">${cell(p, true)}${vs.map(q => cell(q, false)).join('')}</div></div>`;
+}
+/* похожие: та же категория и подкатегория; выше тот же бренд, тот же цвет и цена рядом */
+function similarHTML(p){
+  const mp = minPrice(p) || 1, col = new Set(colorsOf(p));
+  const list = CAT.filter(q => q.id !== p.id && visible(q) && q.cat === p.cat && !sameModel(p, q) && (!p.sub || !q.sub || q.sub === p.sub))
+    .map(q => { const qp = minPrice(q) || mp; return { q, s: (q.brand === p.brand ? 2 : 0) + (colorsOf(q).some(c => col.has(c)) ? 1 : 0) + (q.stock ? .5 : 0) - Math.abs(Math.log(qp / mp)) * 2 } })
+    .sort((a, b) => b.s - a.s).slice(0, 10).map(x => x.q);
+  return list.length ? `<div class="h2 sim-h">Похожие товары</div><div class="grid sim">${list.map(card).join('')}</div>` : '';
 }
 /* длина стопы → размер по сетке бренда → ближайший размер, который есть в карточке */
 function fitSize(inp){

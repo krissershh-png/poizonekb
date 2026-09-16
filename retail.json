@@ -1,12 +1,72 @@
 {
-  "updated": "16.09.2026",
+  "updated": "17.09.2026",
   "note": "Цены проверены вручную в российских магазинах, ссылки для перепроверки в поле url",
   "items": {
-    "3739":     { "p": 11890, "w": "Brandshop",   "d": "16.09", "url": "https://brandshop.ru/goods/492735/id1481/" },
-    "n1075817": { "p": 61550, "w": "ЦУМ",         "d": "16.09", "url": "https://www.tsum.ru/product/7036445-kashemirovyi-sharf-burberry-chernyi/" },
-    "3075":     { "p": 19570, "w": "Rendez-Vous", "d": "16.09", "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1116109_temno_korichnevyy-3083793/" },
-    "n5253317": { "p": 37790, "w": "Superstep",   "d": "16.09", "url": "https://superstep.ru/product/NF0A3C8D_GOE1/" },
-    "n3690919": { "p": 18650, "w": "ЦУМ",         "d": "16.09", "url": "https://www.tsum.ru/product/7119755-sumka-le-pliage-original-small-longchamp-temno-bezhevyi/" },
-    "3942":     { "p": 20999, "w": "Street Beat", "d": "16.09", "url": "https://street-beat.ru/d/krossovki-nike-cw2288-111/" }
+    "3075": {
+      "p": 19570,
+      "w": "Rendez-Vous",
+      "d": "16.09",
+      "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1116109_temno_korichnevyy-3083793/"
+    },
+    "3245": {
+      "p": 20999,
+      "w": "Street Beat",
+      "d": "17.09",
+      "url": "https://street-beat.ru/d/krossovki-nike-dd1391-100/"
+    },
+    "3407": {
+      "p": 17499,
+      "w": "Street Beat",
+      "d": "17.09",
+      "url": "https://street-beat.ru/d/krossovki-nike-bv1358-001/"
+    },
+    "3739": {
+      "p": 11890,
+      "w": "Brandshop",
+      "d": "16.09",
+      "url": "https://brandshop.ru/goods/492735/id1481/"
+    },
+    "3749": {
+      "p": 21999,
+      "w": "Street Beat",
+      "d": "17.09",
+      "url": "https://street-beat.ru/d/krossovki-new_balance-mr530sg/"
+    },
+    "3942": {
+      "p": 20999,
+      "w": "Street Beat",
+      "d": "16.09",
+      "url": "https://street-beat.ru/d/krossovki-nike-cw2288-111/"
+    },
+    "4152": {
+      "p": 13986,
+      "w": "Lacoste",
+      "d": "17.09",
+      "url": "https://lacoste.ru/catalog/tolstovki-muzhchiny/muzhskoy_flisovyy_svitshot_lacoste_klassicheskogo_kroya_color_70V/"
+    },
+    "4159": {
+      "p": 17499,
+      "w": "Street Beat",
+      "d": "17.09",
+      "url": "https://street-beat.ru/d/krossovki-nike-bv1358-001/"
+    },
+    "n1075817": {
+      "p": 61550,
+      "w": "ЦУМ",
+      "d": "16.09",
+      "url": "https://www.tsum.ru/product/7036445-kashemirovyi-sharf-burberry-chernyi/"
+    },
+    "n5253317": {
+      "p": 37790,
+      "w": "Superstep",
+      "d": "16.09",
+      "url": "https://superstep.ru/product/NF0A3C8D_GOE1/"
+    },
+    "n3690919": {
+      "p": 18650,
+      "w": "ЦУМ",
+      "d": "16.09",
+      "url": "https://www.tsum.ru/product/7119755-sumka-le-pliage-original-small-longchamp-temno-bezhevyi/"
+    }
   }
 }

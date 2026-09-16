@@ -13,6 +13,19 @@
 <link rel="icon" href="img/mascot-round.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
+<script>
+/* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
+const BUILD = '2026-09-16d';
+(function(){
+  try{
+    const u = new URL(location.href), key = 'pz5_reloadFor';
+    fetch(u.pathname + '?nc=' + Date.now(), { cache:'no-store' }).then(r => r.ok ? r.text() : '').then(t => {
+      const m = /const BUILD = '([^']+)'/.exec(t); if(!m || m[1] === BUILD || sessionStorage.getItem(key) === m[1]) return;
+      sessionStorage.setItem(key, m[1]); u.searchParams.set('v', m[1]); location.replace(u.toString());
+    }).catch(() => {});
+  }catch(e){}
+})();
+</script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
@@ -764,7 +777,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
         <button class="btn sm ghost" onclick="go('calc')">Расчёт</button>
       </div>
     </div>
-    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><img class="mascot" src="img/mascot.png" alt=""></button>
+    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><img class="mascot" src="img/mascot.png?v=2" alt=""></button>
   </div>
 
   <!-- вводная о магазине — реплика Крис под шапкой: кто она, что такое Poizon и три факта -->

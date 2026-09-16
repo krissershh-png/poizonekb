@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16g';
+const BUILD = '2026-09-16h';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2478,6 +2478,12 @@ function openPay(num, sum){
     </dl></div></div>
     <div class="list" style="margin-top:16px"><button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(shot)}')">Отправить скриншот</button></div>`);
 }
+/* отменённый заказ: вернуть вещи в корзину выбора (открываем карточку первой вещи) или убрать строку насовсем */
+function orderAgain(num){
+  const o = myOrders().find(x => x.num === num), its = o ? itemsOf(o) : [];
+  if(its.length) openProduct(its[0].id); else { shopCat = 'all'; go('shop') }
+}
+function dropCancelled(num){ const g = load('goneOrders', []); if(!g.includes(num)){ g.push(num); save('goneOrders', g) } renderOrders(); toast('Убрала из списка') }
 function hideOrder(num){ const o = orders.find(x=>x.num===num); if(o){ o.hidden = true; save('orders', orders) } renderMeView(); renderGiftBanner(); toast('Убрала из списка') }
 const thumb = it => it && it.img ? `<img class="${isStudio(it.img) ? '' : 'life'}" src="${it.img}" alt="">` : `<span class="pzbox">${boxSVG('', true)}</span>`;   // заказ по ссылке без фото: коробка прямо на фоне карточки
 function orderTitle(o){ const its = itemsOf(o), k = Math.max(o.n||0, its.length); return its.length ? its[0].title + (k > 1 ? ` и ещё ${k-1}` : '') : `Заказ ${o.num}` }
@@ -2575,7 +2581,8 @@ function renderOrders(){
   renderShelf();
   // сначала неоплаченные, потом в пути, потом полученные
   const rank = o => o.st === 'новый' || pendingLocal(o) ? 0 : PAID_ST.includes(o.st) ? 1 : 2;
-  const list = myOrders().filter(o => o.num !== FEATURED).sort((a,b) => rank(a) - rank(b));
+  const gone = load('goneOrders', []);   // отменённые, которые клиент убрал из списка
+  const list = myOrders().filter(o => o.num !== FEATURED && !(o.st === 'отменён' && gone.includes(o.num))).sort((a,b) => rank(a) - rank(b));
   const certs = (G.certs||[]).filter(s => s.status === 'заявка' && s.mine !== false);
   $('orders-sec').hidden = $('orders').hidden = !list.length && !certs.length;   // нет заказов — нет пустого блока
   $('orders').innerHTML = certs.map(s => { const n = esc(s.num);
@@ -2588,7 +2595,7 @@ function renderOrders(){
       <div class="ostage">${esc(S[j])} · этап ${j+1} из ${S.length}${leftText(o) ? ' · '+esc(leftText(o)) : ''}${d && !stock ? ` · ${d} ${plural(d,['капля','капли','капель'])}` : ''}</div>` : '';
     const btns = o.local ? `<button class="btn sm" onclick="payOrder('${n}')">Написать Кристине</button><button class="btn sm ghost" onclick="reportGot('${n}')">Уже получили?</button><button class="btn sm ghost" onclick="hideOrder('${n}')">Убрать</button>`
       : wait ? `<button class="btn sm" onclick="payOrder('${n}')">Оплатить</button><button class="btn sm ghost" onclick="cancelOrder('${n}')">Отменить</button>`
-      : o.st === 'отменён' ? ''
+      : o.st === 'отменён' ? `<button class="btn sm" onclick="orderAgain('${n}')">Заказать снова</button><button class="btn sm ghost" onclick="dropCancelled('${n}')">Убрать из списка</button>`
       : o.st === 'выдан' ? `<button class="btn sm teal" onclick="openBox('${n}',0)">${(o.n||1) > 1 ? 'Коробки на полке' : 'Коробка на полке'}</button>`
       : `<button class="btn sm teal" onclick="openTrack('${n}')">Путь посылки</button>`;
     return `<div class="order"><div class="orow"><div class="oth">${thumb(its[0])}</div><div class="ot"><b>${esc(orderTitle(o))}</b><span>${n} · ${esc(o.date||'')} · ${fmt(o.pay||0)}</span></div><span class="status ${wait || pendingLocal(o) ? 'wait' : moving ? 'go' : ''}">${esc(label)}</span></div>

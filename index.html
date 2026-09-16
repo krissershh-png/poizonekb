@@ -693,6 +693,25 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 /* закрытый сертификат — просто карточка без рамки вокруг */
 .cert-form:not(.open){padding:0;border:0;background:none;box-shadow:none;overflow:visible}
 .cert-form:not(.open) .certcard{margin:0}
+/* форма электронного сертификата: живая картинка, дизайны лентой, надписи чипами */
+.cert-form.open .certcard{display:none}
+#cert-box,#cert-body,#cert-body .field{min-width:0;max-width:100%}
+.cert-img{display:block;width:100%;max-width:100%;min-width:0;height:auto;aspect-ratio:1280/800;margin-top:8px;border-radius:14px;background:var(--bg);box-shadow:0 16px 28px -18px rgba(40,10,10,.55)}
+.cert-note{margin:8px 0 2px;white-space:normal}
+.cdz{display:grid;grid-auto-flow:column;grid-auto-columns:128px;gap:10px;overflow-x:auto;padding:4px 4px 8px;margin:0 -4px;scrollbar-width:none}
+.cdz::-webkit-scrollbar{display:none}
+.cdz button{display:grid;gap:6px;padding:0;background:none;text-align:left;font-size:12px;font-weight:800;color:var(--ink-2)}
+.cdz canvas{display:block;width:128px;height:80px;border-radius:10px;outline:1.5px solid var(--line)}
+.cdz button.on canvas{outline:3px solid var(--red);outline-offset:2px}
+.cdz button.on span{color:var(--ink)}
+.cins-g{margin-top:8px}
+.cins-g>span{display:block;margin-bottom:6px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.cins{display:flex;flex-wrap:wrap;gap:6px}
+.cins button{padding:7px 12px;border-radius:999px;background:var(--bg);font-family:var(--hand);font-weight:700;font-size:20px;line-height:1;color:var(--ink)}
+.cins button.own{font-family:var(--body);font-size:13px;font-weight:800}
+.cins button.on{background:var(--ink);color:#fff}
+.cert-row{align-items:center}
+.cert-row .btn{margin-left:auto;flex:0 0 auto}
 .certcard{cursor:pointer}
 .cert-form.open .certcard{cursor:default}
 .cc-go{margin-left:auto;padding:5px 12px;border-radius:999px;background:#fff;color:var(--red);font-family:var(--dela);font-weight:800;font-size:11px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
@@ -883,13 +902,17 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
       <div class="cc-foot"><span class="cc-pill">Бессрочно</span><span class="cc-kind" id="cc-kind">электронный</span><span class="cc-go" id="cc-go">Подарить →</span></div>
     </div>
     <div id="cert-body" hidden>
-    <div class="seg" id="denoms" style="grid-template-columns:repeat(4,1fr);margin-top:14px"></div>
+    <span class="hand" style="font-size:24px">электронный сертификат</span>
+    <canvas class="cert-img" id="cert-canvas" width="1280" height="800" aria-label="Так будет выглядеть сертификат"></canvas>
+    <div class="small cert-note">Так его увидит получатель. Номер появится после оформления</div>
+    <div class="field"><span>Сумма</span><div class="seg" id="denoms" style="grid-template-columns:repeat(4,1fr)"></div></div>
     <div class="field"><span>Или своя сумма</span><input id="cert-custom" type="number" inputmode="numeric" min="500" step="100" placeholder="от 500 ₽" oninput="certCustom()"></div>
-    <div class="field"><span>Какой</span><div class="seg" id="cert-kind" style="grid-template-columns:1fr 1fr"></div></div>
-    <div class="field"><span>Кому</span><input id="cert-to" placeholder="Имя получателя" oninput="certPreview()"></div>
-    <div class="field"><span>От кого</span><input id="cert-from" oninput="certPreview()"></div>
-    <div class="field"><span>Пожелание на сертификате</span><textarea id="cert-wish" placeholder="Необязательно" style="min-height:64px"></textarea></div>
-    <button class="btn block" style="margin-top:14px" onclick="buyCert()">Заказать</button>
+    <div class="field"><span>Дизайн</span><div class="cdz" id="cert-designs"></div></div>
+    <div class="field"><span>Надпись</span><div id="cert-ins"></div><input id="cert-ins-own" maxlength="22" placeholder="Своя надпись, до 22 знаков" oninput="certInsInput()" hidden style="margin-top:8px"></div>
+    <div class="field"><span>Кому</span><input id="cert-to" placeholder="Имя получателя, необязательно" maxlength="24" oninput="certPreview()"></div>
+    <div class="field"><span>От кого</span><input id="cert-from" maxlength="24" oninput="certPreview()"></div>
+    <div class="field"><span>Поздравление</span><textarea id="cert-wish" placeholder="Придёт получателю вместе с сертификатом, необязательно" maxlength="300" style="min-height:64px"></textarea></div>
+    <button class="btn block" id="cert-buy" style="margin-top:14px" onclick="buyCert()">Оформить сертификат</button>
     </div>
   </div>
 
@@ -1072,6 +1095,7 @@ const myTag = user ? (user.username || ('id'+user.id)) : '';
   if(sp === 'calc') setTimeout(()=>go('calc'), 300);                                  // «Рассчитать цену» из меню бота
   if(sp === 'stock') setTimeout(()=>{ go('home'); scrollToId('home-stock') }, 600);   // «В наличии» из меню бота
   if(sp === 'cart') setTimeout(()=>go('cart'), 300);                                  // «Открыть заказ» из напоминания о корзине
+  if(sp === 'certs' || /^c_SR-/i.test(sp)) certDeepLink(sp);                          // «Мои сертификаты» из бота и ссылка на сертификат
   const jm = /^j_(PZ-\d{4,6})$/i.exec(sp);                                         // «Путь посылки»: ждём заказы из таблицы
   if(jm){ const t0 = Date.now(), tick = () => { if(SRV_ORDERS) openTrack(jm[1].toUpperCase()); else if(Date.now() - t0 < 12000) setTimeout(tick, 400) }; setTimeout(tick, 600) }
   if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe|calc|stock|cart)$/i.test(sp) && !G.ref && sp !== myTag){
@@ -2242,7 +2266,7 @@ function renderMeView(){
   const rest = G.coupons.filter(c => !(best && c.id === best.id && (!guest || true)));   // лучший купон уже показан наверху
   $('my-coupons').innerHTML = rest.map(c=>`<div class="coupon"><span class="v">−${c.v} ₽</span><span class="t"><b>${esc(c.why)}</b>${c.min ? 'от '+fmt(c.min)+' · ' : ''}сгорит ${dmyhm(c.until)}</span></div>`).join('')
     + perks.map(x=>`<div class="coupon"><span class="v">+</span><span class="t"><b>Подарок в посылку</b>к следующему заказу</span></div>`).join('');
-  $('my-certs').innerHTML = (G.certs||[]).map(s=>`<div class="coupon"><span class="v">${fmt(s.rest)}</span><span class="t"><b>Сертификат ${esc(s.num)}</b>остаток из ${fmt(s.value)}</span></div>`).join('');
+  renderMyCerts();
   $('me-spin').hidden = !spinAvailable() || (guest && !best);   // у гостя кнопка колеса уже в главной карточке
   $('gifts-sec').hidden = !rest.length && !perks.length && !(G.certs||[]).length && $('me-spin').hidden;
   renderHeroCard(); renderGames(); renderMyLink(); renderOrders(); renderVibeRow();
@@ -2557,64 +2581,263 @@ async function shareRef(){
   else copyText(text+' '+url);
   api('share');
 }
-$('denoms').innerHTML = CFG.certDenoms.map(d=>`<button class="${d===certDenom?'on':''}" onclick="certDenom=${d};$('cert-custom').value='';$('cert-amt').textContent=fmt(${d});this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===this))">${d/1000}к</button>`).join('');
-let certKind = 'Электронный';
-$('cert-kind').innerHTML = [['Электронный','Электронный'],['Печатный','Печатный']].map(([k,t])=>`<button class="${k===certKind?'on':''}" onclick="certKind='${k}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===this));certPreview()">${t}</button>`).join('');
-if(user && user.first_name) $('cert-from').value = user.first_name;
-/* карточка сертификата повторяет то, что вписали: кому, от кого и какой */
-function certPreview(){
-  $('cc-to').textContent = $('cert-to').value.trim() || '—';
-  $('cc-from').textContent = $('cert-from').value.trim() || '—';
-  $('cc-kind').textContent = certKind === 'Электронный' ? 'электронный' : 'печатный';
+/* ---------- электронный подарочный сертификат ----------
+   Покупатель выбирает сумму, дизайн и надпись и сразу видит картинку. Картинка с номером уходит боту вместе с заявкой:
+   Кристина нажимает «Оплачен» — бот отправляет её покупателю с кнопкой «Подарить», получатель открывает ссылку — сертификат у него в профиле */
+const CERT_INS = [
+  { t:'Любой повод', list:['Это тебе','Выбирай сама','Выбирай сам','Порадуй себя','Ты заслужила','Ты заслужил','Просто так','С любовью','Спасибо!'] },
+  { t:'Кому', list:['Любимой подруге','Лучшей подруге','Любимой маме','Любимой сестрёнке','Любимой','Любимому','Для самой стильной','Для самого стильного','Коллеге'] },
+  { t:'Праздник', list:['С днём рождения!','С Новым годом!','С 8 Марта!','С 23 Февраля!'] },
+];
+let certDesign = 'red', certIns = 'Это тебе';
+const CW = 1280, CH = 800;
+/* общие элементы рисунка: точки, текст с градиентом, разрядка, бант, плашка */
+const cDots = (x, cx, cy, r, color, step = 18, rad = 2.6) => { x.save(); x.fillStyle = color; for(let yy = cy - r; yy < cy + r; yy += step) for(let xx = cx - r; xx < cx + r; xx += step){ const d = Math.hypot(xx - cx, yy - cy); if(d < r){ x.globalAlpha = (1 - d / r) * .9; x.beginPath(); x.arc(xx, yy, rad, 0, 7); x.fill() } } x.restore() };
+const cGrad = (x, t, px, py, font, stops) => { x.font = font; const w = x.measureText(t).width, g = x.createLinearGradient(px, 0, px + w, 0); stops.forEach(([o, c]) => g.addColorStop(o, c)); x.fillStyle = g; x.fillText(t, px, py); return w };
+const cSpaced = (x, t, px, py, sp) => { let cx = px; for(const ch of t){ x.fillText(ch, cx, py); cx += x.measureText(ch).width + sp } return cx - px };
+function cBow(x, cx, cy, s, color, knot){ x.save(); x.translate(cx, cy); x.scale(s, s); x.fillStyle = color;
+  const loop = d => { x.beginPath(); x.moveTo(0, 0); x.bezierCurveTo(d*20, -60, d*95, -70, d*90, -18); x.bezierCurveTo(d*86, 18, d*30, 14, 0, 0); x.fill() }; loop(-1); loop(1);
+  x.beginPath(); x.moveTo(-6, 6); x.quadraticCurveTo(-30, 60, -52, 92); x.lineTo(-28, 90); x.quadraticCurveTo(-10, 56, 4, 10); x.fill();
+  x.beginPath(); x.moveTo(6, 6); x.quadraticCurveTo(30, 60, 52, 92); x.lineTo(28, 90); x.quadraticCurveTo(10, 56, -4, 10); x.fill();
+  x.fillStyle = knot || color; x.beginPath(); x.roundRect(-20, -18, 40, 36, 12); x.fill(); x.restore() }
+function cPill(x, t, px, py, fill, color, border){ x.save(); x.font = '800 22px Unbounded'; const w = cSpaced(x, t, -9999, -9999, 2); x.beginPath(); x.roundRect(px, py, w + 44, 48, 24);
+  if(fill){ x.fillStyle = fill; x.fill() } if(border){ x.strokeStyle = border; x.lineWidth = 3; x.stroke() } x.fillStyle = color; x.textBaseline = 'middle'; cSpaced(x, t, px + 22, py + 25, 2); x.restore(); return w + 44 }
+const cFit = (x, t, weight, size, family, maxW, min = 56) => { let fs = size; x.font = `${weight} ${fs}px ${family}`; while(x.measureText(t).width > maxW && fs > min){ fs -= 4; x.font = `${weight} ${fs}px ${family}` } return fs };
+/* «начинка» большинства дизайнов: метка, надпись, сумма, кому/от кого, бессрочно и номер */
+function cBody(x, d, col, ox = 80, oy = 0, maxW = 900){
+  x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+  x.fillStyle = col.label; x.font = '800 24px Unbounded'; cSpaced(x, 'POIZON.EKB  ·  ПОДАРОЧНЫЙ СЕРТИФИКАТ', ox, oy + 110, 3);
+  cFit(x, d.ins, 700, 120, 'Caveat', maxW); x.fillStyle = col.ins; x.fillText(d.ins, ox - 4, oy + 250);
+  cFit(x, d.amount, 900, 124, 'Unbounded', maxW, 80); cGrad(x, d.amount, ox - 2, oy + 430, x.font, col.amt);
+  const who = [['Кому', d.to], ['От кого', d.from]].filter(p => p[1]);
+  who.forEach(([k, v], i) => { const px = ox + i * 300; x.font = '600 28px "Golos Text"'; x.fillStyle = col.mute; x.fillText(k, px, oy + 525);
+    cFit(x, v, 800, 38, '"Golos Text"', 280, 24); x.fillStyle = col.text; x.fillText(v, px, oy + 572) });
+  const pw = cPill(x, 'БЕССРОЧНО', ox, oy + 640, col.pillFill, col.pillText, col.pillBorder);
+  x.font = '800 26px "Golos Text"'; x.fillStyle = col.mute; x.fillText('№ ' + d.num, ox + pw + 20, oy + 674);
 }
-certPreview();
+const heartPath = (x, hx, hy, s) => { x.save(); x.translate(hx, hy); x.scale(s, s); x.beginPath(); x.moveTo(0, 30); x.bezierCurveTo(-46, 2, -38, -40, 0, -18); x.bezierCurveTo(38, -40, 46, 2, 0, 30); x.closePath(); x.restore() };
+const CERT_DESIGNS = [
+  { id:'red', t:'Красный', draw(x, d){
+    const g = x.createLinearGradient(0, 0, CW, CH); g.addColorStop(0, '#ef4a3d'); g.addColorStop(.5, '#c81717'); g.addColorStop(1, '#8f0e14'); x.fillStyle = g; x.fillRect(0, 0, CW, CH);
+    cDots(x, 120, 820, 300, 'rgba(255,255,255,.3)');
+    x.fillStyle = 'rgba(255,255,255,.2)'; x.fillRect(1030, 0, 78, CH); x.fillRect(930, 470, 350, 78); x.fillStyle = 'rgba(255,255,255,.12)'; x.fillRect(1030, 0, 24, CH);
+    cBow(x, 1069, 509, 1.5, 'rgba(255,255,255,.95)', '#ffffff');
+    cBody(x, d, { label:'rgba(255,255,255,.85)', ins:'#ffffff', amt:[[0,'#ffffff'],[.6,'#ffe1dc'],[1,'#ffb4aa']], mute:'rgba(255,255,255,.75)', text:'#ffffff', pillBorder:'rgba(255,255,255,.8)', pillText:'#fff' }, 80, 0, 860) } },
+  { id:'party', t:'Праздник', draw(x, d){
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, CW, CH);
+    const cols = ['#c81717','#121212','#2f6fed','#16804a','#ff5d52']; let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for(let i = 0; i < 90; i++){ const px = 700 + rnd() * 600, py = rnd() * CH; if(px < 760 && py > 120) continue;
+      x.save(); x.translate(px, py); x.rotate(rnd() * 6.3); x.fillStyle = x.strokeStyle = cols[i % cols.length]; const k = i % 3;
+      if(k === 0) x.fillRect(-12, -5, 24, 10); else if(k === 1){ x.beginPath(); x.arc(0, 0, 7, 0, 7); x.fill() } else { x.lineWidth = 5; x.beginPath(); x.moveTo(-14, 0); x.quadraticCurveTo(0, -12, 14, 0); x.stroke() }
+      x.restore() }
+    cBody(x, d, { label:'#7a6f6f', ins:'#c81717', amt:[[0,'#121212'],[1,'#3d3535']], mute:'#7a6f6f', text:'#121212', pillFill:'#c81717', pillText:'#fff' }, 80, 0, 640) } },
+  { id:'night', t:'Ночь', draw(x, d){
+    x.fillStyle = '#121212'; x.fillRect(0, 0, CW, CH); cDots(x, 1200, 720, 380, 'rgba(255,75,62,.3)', 20, 2.6);
+    x.save(); x.translate(1040, 400); x.rotate(-1.2); x.fillStyle = '#c81717'; x.fillRect(-700, -46, 1400, 92);
+    x.fillStyle = '#fff'; x.font = '800 30px Unbounded'; x.textBaseline = 'middle'; for(let cx = -700; cx < 700; cx += 290){ cSpaced(x, 'POIZON.EKB', cx, 3, 4); x.beginPath(); x.arc(cx + 264, 3, 5, 0, 7); x.fill() } x.restore();
+    const star = (sx, sy, r) => { x.beginPath(); x.moveTo(sx, sy - r); x.quadraticCurveTo(sx + r*.2, sy - r*.2, sx + r, sy); x.quadraticCurveTo(sx + r*.2, sy + r*.2, sx, sy + r); x.quadraticCurveTo(sx - r*.2, sy + r*.2, sx - r, sy); x.quadraticCurveTo(sx - r*.2, sy - r*.2, sx, sy - r); x.fill() };
+    x.fillStyle = '#fff'; star(880, 150, 26); star(930, 610, 16); star(1210, 110, 14); x.fillStyle = '#ff5d52'; star(820, 420, 12);
+    cBody(x, d, { label:'rgba(255,255,255,.6)', ins:'#ff5d52', amt:[[0,'#ffffff'],[.7,'#ffd3cf'],[1,'#ff9a8f']], mute:'rgba(255,255,255,.6)', text:'#fff', pillFill:'#c81717', pillText:'#fff' }, 80, 0, 700) } },
+  { id:'hearts', t:'Сердечки', draw(x, d){
+    x.fillStyle = '#ffe7ea'; x.fillRect(0, 0, CW, CH); cDots(x, 80, 780, 300, 'rgba(200,23,23,.22)', 20, 2.6);
+    const heart = (hx, hy, s, fill, stroke) => { heartPath(x, hx, hy, s); if(fill){ x.fillStyle = fill; x.fill() } if(stroke){ x.lineWidth = 4; x.strokeStyle = stroke; x.stroke() } };
+    heart(1030, 400, 6.2, '#c81717'); heart(1030, 400, 7.6, null, '#c81717');
+    heart(1215, 110, 1.3, '#ff5d52'); heart(1100, 120, 1.0, null, '#c81717'); heart(1180, 720, 1.9, null, '#121212'); heart(880, 680, 1.1, '#121212');
+    x.fillStyle = '#fff'; x.font = '700 64px Caveat'; x.textAlign = 'center'; x.fillText('с любовью', 1030, 415); x.textAlign = 'left';
+    cBody(x, d, { label:'#9a6b70', ins:'#c81717', amt:[[0,'#b3121a'],[.55,'#e0342a'],[1,'#ff6f5e']], mute:'#9a6b70', text:'#121212', pillFill:'#c81717', pillText:'#fff' }, 80, 0, 640) } },
+  { id:'minimal', t:'Минимализм', draw(x, d){
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, CW, CH); x.strokeStyle = '#121212'; x.lineWidth = 2; x.strokeRect(36, 36, CW - 72, CH - 72);
+    x.fillStyle = '#c81717'; x.beginPath(); x.arc(1160, 120, 22, 0, 7); x.fill();
+    x.fillStyle = '#121212'; x.font = '800 22px Unbounded'; cSpaced(x, 'POIZON.EKB', 90, 118, 6);
+    x.fillStyle = '#7a6f6f'; x.font = '600 26px "Golos Text"'; x.fillText('подарочный сертификат', 90, 160);
+    cFit(x, d.ins, 700, 88, 'Caveat', 1000); x.fillStyle = '#c81717'; x.fillText(d.ins, 86, 300);
+    cFit(x, d.amount, 900, 190, 'Unbounded', 1100, 90); x.fillStyle = '#121212'; x.fillText(d.amount, 84, 520);
+    x.fillRect(90, 580, CW - 180, 2);
+    const cols = [['кому', d.to], ['от кого', d.from], ['номер', d.num]].filter(p => p[1]);
+    cols.forEach(([k, v], i) => { const px = 90 + [0, 340, 710][i]; x.font = '600 26px "Golos Text"'; x.fillStyle = '#7a6f6f'; x.fillText(k, px, 640); cFit(x, v, 800, 36, '"Golos Text"', 320, 22); x.fillStyle = '#121212'; x.fillText(v, px, 690) }) } },
+  { id:'china', t:'Китай', draw(x, d){
+    const g = x.createLinearGradient(0, 0, CW, CH); g.addColorStop(0, '#d62020'); g.addColorStop(1, '#9e1015'); x.fillStyle = g; x.fillRect(0, 0, CW, CH);
+    const gold = '#ffd9a8';
+    x.strokeStyle = 'rgba(255,217,168,.55)'; x.lineWidth = 3; x.strokeRect(28, 28, CW - 56, CH - 56); x.strokeRect(40, 40, CW - 80, CH - 80);
+    const fret = (fx, fy, sx, sy) => { x.save(); x.translate(fx, fy); x.scale(sx, sy); x.beginPath(); x.moveTo(0, 0); x.lineTo(60, 0); x.lineTo(60, 60); x.lineTo(20, 60); x.lineTo(20, 20); x.lineTo(40, 20); x.lineTo(40, 40); x.lineWidth = 6; x.strokeStyle = gold; x.stroke(); x.restore() };
+    fret(56, 56, 1, 1); fret(CW - 56, 56, -1, 1); fret(56, CH - 56, 1, -1); fret(CW - 56, CH - 56, -1, -1);
+    x.globalAlpha = .12; x.strokeStyle = gold; x.lineWidth = 3; [250, 200, 150].forEach(r => { x.beginPath(); x.arc(1060, 400, r, 0, 7); x.stroke() }); x.globalAlpha = 1;
+    x.save(); x.translate(1060, 390); x.rotate(-.08); x.fillStyle = gold; x.beginPath(); x.roundRect(-105, -105, 210, 210, 22); x.fill();
+    x.fillStyle = '#b3121a'; x.font = '900 165px "Noto Serif SC","Songti SC","SimSun",serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('礼', 0, 8); x.restore();
+    x.fillStyle = 'rgba(255,217,168,.85)'; x.font = '700 30px Caveat'; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText('«подарок»', 1060, 550); x.textAlign = 'left';
+    cBody(x, d, { label:'rgba(255,217,168,.9)', ins:'#fff3e0', amt:[[0,'#ffffff'],[1,'#ffd9a8']], mute:'rgba(255,243,224,.75)', text:'#fff', pillBorder:'rgba(255,217,168,.9)', pillText:'#fff3e0' }, 150, 0, 660) } },
+  { id:'stickers', t:'Стикеры', draw(x, d){
+    x.fillStyle = '#fff6f6'; x.fillRect(0, 0, CW, CH);
+    const sticker = fn => { x.save(); x.shadowColor = 'rgba(0,0,0,.15)'; x.shadowBlur = 10; x.shadowOffsetY = 4; x.lineJoin = 'round'; fn(); x.restore() };
+    const starPath = (sx, sy, r, n = 5) => { x.beginPath(); for(let i = 0; i < n * 2; i++){ const rr = i % 2 ? r * .45 : r, a = i * Math.PI / n - Math.PI / 2; x.lineTo(sx + rr * Math.cos(a), sy + rr * Math.sin(a)) } x.closePath() };
+    sticker(() => { starPath(1000, 170, 90); x.lineWidth = 16; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#c81717'; x.fill() });
+    sticker(() => { x.translate(1150, 420); x.rotate(.2); x.beginPath(); x.moveTo(-30, -110); x.lineTo(50, -110); x.lineTo(5, -10); x.lineTo(55, -10); x.lineTo(-40, 120); x.lineTo(-10, 20); x.lineTo(-55, 20); x.closePath(); x.lineWidth = 16; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#2f6fed'; x.fill() });
+    sticker(() => { x.translate(930, 560); x.rotate(-.15); heartPath(x, 0, 0, 3.2); x.lineWidth = 16; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#ff5d52'; x.fill() });
+    sticker(() => { x.translate(1110, 680); x.rotate(-.1); x.beginPath(); x.roundRect(-100, -44, 200, 88, 44); x.lineWidth = 12; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#121212'; x.fill(); x.fillStyle = '#fff'; x.font = '900 44px Unbounded'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('WOW', 0, 4) });
+    sticker(() => { starPath(820, 340, 40, 4); x.lineWidth = 10; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#16804a'; x.fill() });
+    cBody(x, d, { label:'#7a6f6f', ins:'#c81717', amt:[[0,'#121212'],[1,'#3d3535']], mute:'#7a6f6f', text:'#121212', pillFill:'#121212', pillText:'#fff' }, 80, 0, 680) } },
+  { id:'holo', t:'Голограмма', draw(x, d){
+    x.fillStyle = '#efe9fb'; x.fillRect(0, 0, CW, CH);
+    const blob = (bx, by, r, col) => { const g = x.createRadialGradient(bx, by, 0, bx, by, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, CW, CH) };
+    blob(1060, 160, 560, 'rgba(255,90,160,.95)'); blob(1200, 680, 520, 'rgba(80,150,255,.95)'); blob(820, 470, 400, 'rgba(120,240,200,.8)'); blob(280, 780, 460, 'rgba(255,200,110,.7)'); blob(100, 60, 420, 'rgba(170,130,255,.75)');
+    x.save(); x.fillStyle = 'rgba(255,255,255,.34)'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 3; x.beginPath(); x.roundRect(40, 40, CW - 80, CH - 80, 36); x.fill(); x.stroke(); x.restore();
+    cBody(x, d, { label:'#3f3656', ins:'#c81717', amt:[[0,'#121212'],[1,'#3f3656']], mute:'#4f4666', text:'#121212', pillFill:'#121212', pillText:'#fff' }, 90, 0, 900) } },
+  { id:'card', t:'Карта', draw(x, d){
+    x.fillStyle = '#ece6e6'; x.fillRect(0, 0, CW, CH);
+    x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 50; x.shadowOffsetY = 24;
+    const g = x.createLinearGradient(0, 0, CW, CH); g.addColorStop(0, '#2a2a2a'); g.addColorStop(.55, '#121212'); g.addColorStop(1, '#3a0d0f');
+    x.fillStyle = g; x.beginPath(); x.roundRect(70, 60, 1140, 680, 48); x.fill(); x.restore();
+    x.save(); x.beginPath(); x.roundRect(70, 60, 1140, 680, 48); x.clip(); x.strokeStyle = 'rgba(255,255,255,.05)'; x.lineWidth = 2; for(let r = 200; r < 1400; r += 40){ x.beginPath(); x.arc(1300, -100, r, 0, 7); x.stroke() } x.restore();
+    x.globalAlpha = .75; x.fillStyle = '#ff5d52'; x.beginPath(); x.arc(1060, 640, 58, 0, 7); x.fill(); x.globalAlpha = .9; x.fillStyle = '#c81717'; x.beginPath(); x.arc(1130, 640, 58, 0, 7); x.fill(); x.globalAlpha = 1;
+    const cg = x.createLinearGradient(130, 330, 250, 420); cg.addColorStop(0, '#e9d7a6'); cg.addColorStop(1, '#b8995a'); x.fillStyle = cg; x.beginPath(); x.roundRect(130, 300, 120, 92, 14); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = 2; [[130,331,250,331],[130,361,250,361],[172,300,172,392],[208,300,208,392]].forEach(([a,b,c,e]) => { x.beginPath(); x.moveTo(a,b); x.lineTo(c,e); x.stroke() });
+    x.strokeStyle = '#fff'; x.lineWidth = 5; x.lineCap = 'round'; [18, 34, 50].forEach(r => { x.beginPath(); x.arc(280, 346, r, -.7, .7); x.stroke() }); x.lineCap = 'butt';
+    x.textBaseline = 'alphabetic'; x.fillStyle = '#fff'; x.font = '800 30px Unbounded'; cSpaced(x, 'POIZON.EKB', 130, 150, 6);
+    x.fillStyle = 'rgba(255,255,255,.6)'; x.font = '600 26px "Golos Text"'; x.fillText('подарочная карта', 130, 192);
+    cFit(x, d.ins, 700, 72, 'Caveat', 560, 40); x.fillStyle = '#ff5d52'; x.textAlign = 'right'; x.fillText(d.ins, 1150, 180); x.textAlign = 'left';
+    cFit(x, d.amount, 900, 110, 'Unbounded', 760, 60); cGrad(x, d.amount, 380, 400, x.font, [[0,'#ffffff'],[1,'#ffd3cf']]);
+    x.fillStyle = '#fff'; x.font = '700 40px "Courier New",monospace'; x.fillText(d.num.replace(/-/g, '  '), 130, 520);
+    const cols = [['КОМУ', d.to], ['ОТ КОГО', d.from], ['СРОК', 'бессрочно']].filter(p => p[1]);
+    cols.forEach(([k, v], i) => { const px = [130, 400, 700][i]; x.fillStyle = 'rgba(255,255,255,.55)'; x.font = '600 22px "Golos Text"'; x.fillText(k, px, 600); cFit(x, v.toUpperCase(), 800, 32, '"Golos Text"', 250, 20); x.fillStyle = '#fff'; x.fillText(v.toUpperCase(), px, 642) }) } },
+  { id:'poster', t:'Постер', draw(x, d){
+    x.fillStyle = '#c81717'; x.fillRect(0, 0, CW, CH);
+    x.font = '900 120px Unbounded'; x.fillStyle = 'rgba(255,255,255,.12)';
+    for(let r = 0; r < 8; r++){ const yy = 110 + r * 116, sh = r % 2 ? -260 : 0; for(let k = -1; k < 4; k++) x.fillText('ВЫБИРАЙ', sh + k * 720, yy) }
+    x.save(); x.shadowColor = 'rgba(80,0,0,.35)'; x.shadowBlur = 30; x.shadowOffsetY = 12; x.fillStyle = '#fff'; x.beginPath(); x.roundRect(60, 60, 920, 680, 28); x.fill(); x.restore();
+    cBody(x, d, { label:'#7a6f6f', ins:'#c81717', amt:[[0,'#b3121a'],[.55,'#e0342a'],[1,'#ff6f5e']], mute:'#7a6f6f', text:'#121212', pillFill:'#121212', pillText:'#fff' }, 110, 0, 760) } },
+];
+let CERT_FONTS = null;
+const certFonts = () => CERT_FONTS || (CERT_FONTS = Promise.all(['900 100px Unbounded','800 30px Unbounded','700 80px Caveat','800 30px "Golos Text"','600 30px "Golos Text"'].map(f => document.fonts.load(f).catch(()=>{}))));
+/* рисует сертификат в canvas любого размера: рисунок всегда в координатах 1280×800 */
+function certDraw(canvas, design, data, width){
+  const w = width || CW, h = Math.round(w * CH / CW);
+  if(canvas.width !== w) canvas.width = w; if(canvas.height !== h) canvas.height = h;
+  const x = canvas.getContext('2d'); x.setTransform(w / CW, 0, 0, w / CW, 0, 0); x.clearRect(0, 0, CW, CH);
+  (CERT_DESIGNS.find(z => z.id === design) || CERT_DESIGNS[0]).draw(x, data);
+  x.setTransform(1, 0, 0, 1, 0, 0);
+}
+const certData = num => ({ amount: fmt(certDenom), ins: certIns || 'Это тебе', to: $('cert-to').value.trim(), from: $('cert-from').value.trim(), num: num || 'SR-•••••-•••' });
+
+$('denoms').innerHTML = CFG.certDenoms.map(d=>`<button class="${d===certDenom?'on':''}" onclick="certDenom=${d};$('cert-custom').value='';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===this));certPreview()">${d/1000}к</button>`).join('');
+if(user && user.first_name) $('cert-from').value = user.first_name;
+/* выбор надписи: готовые по группам и своя */
+function certInsRender(){
+  $('cert-ins').innerHTML = CERT_INS.map(g => `<div class="cins-g"><span>${g.t}</span><div class="cins">${g.list.map(t => `<button type="button" class="${t===certIns && $('cert-ins-own').hidden?'on':''}" onclick="certPickIns(this)">${esc(t)}</button>`).join('')}</div></div>`).join('')
+    + `<div class="cins-g"><div class="cins"><button type="button" class="own ${$('cert-ins-own').hidden?'':'on'}" onclick="certOwnIns()">Своя надпись</button></div></div>`;
+}
+function certPickIns(b){ certIns = b.textContent; $('cert-ins-own').hidden = true; certInsRender(); certPreview(); haptic('tick') }
+function certOwnIns(){ const i = $('cert-ins-own'); i.hidden = false; certInsRender(); i.focus(); if(i.value.trim()){ certIns = i.value.trim(); certPreview() } }
+function certInsInput(){ certIns = $('cert-ins-own').value.trim() || 'Это тебе'; certPreview() }
+/* миниатюры дизайнов — один раз при открытии формы; большая картинка — на каждое изменение */
+function certDesignsRender(){
+  $('cert-designs').innerHTML = CERT_DESIGNS.map(z => `<button type="button" class="${z.id===certDesign?'on':''}" data-id="${z.id}" onclick="certPickDesign('${z.id}')"><canvas aria-hidden="true"></canvas><span>${z.t}</span></button>`).join('');
+  certFonts().then(() => document.querySelectorAll('#cert-designs button').forEach(b => certDraw(b.querySelector('canvas'), b.dataset.id, certData(), 264)));
+}
+function certPickDesign(id){ certDesign = id; document.querySelectorAll('#cert-designs button').forEach(b => b.classList.toggle('on', b.dataset.id === id)); certPreview(); haptic('tick') }
+let certPrevTimer = null;
+function certPreview(){
+  clearTimeout(certPrevTimer);
+  certPrevTimer = setTimeout(() => certFonts().then(() => {
+    const c = $('cert-canvas'); if(!c || $('cert-body').hidden) return;
+    const d = certData(); certDraw(c, certDesign, d, 1280);
+    // миниатюры повторяют выбранную сумму и надпись
+    document.querySelectorAll('#cert-designs button').forEach(b => certDraw(b.querySelector('canvas'), b.dataset.id, d, 264));
+  }), 120);
+}
 /* сначала только карточка сертификата; нажали — раскрывается форма */
 function certOpen(){
   const b = $('cert-body'); if(!b.hidden) return;
-  b.hidden = false; $('cert-box').classList.add('open'); $('cc-go').hidden = true; haptic('tick');
-  setTimeout(() => $('denoms').scrollIntoView({ behavior:'smooth', block:'center' }), 60);
+  b.hidden = false; $('cert-box').classList.add('open'); haptic('tick');
+  certInsRender(); certDesignsRender(); certPreview();
+  setTimeout(() => $('cert-canvas').scrollIntoView({ behavior:'smooth', block:'start' }), 60);
 }
-/* готовое сообщение: человек нажимает «Заказать» и сразу отправляет его в Telegram */
-/* своя сумма сертификата: от 500 ₽, округляем до сотен */
+/* своя сумма сертификата: от 500 ₽ */
 function certCustom(){
   const v = parseInt($('cert-custom').value, 10) || 0;
   document.querySelectorAll('#denoms button').forEach(b=>b.classList.remove('on'));
-  if(v){ certDenom = v; $('cert-amt').textContent = fmt(v) }
+  if(v){ certDenom = v; certPreview() }
 }
 async function buyCert(){
   if($('cert-custom').value){ certDenom = parseInt($('cert-custom').value,10) || 0 }
   if(certDenom < 500){ haptic('medium'); return toast('Сумма сертификата от 500 ₽') }
   if(certDenom > 500000){ haptic('medium'); return toast('Напишите мне, если нужен сертификат больше 500 000 ₽') }
-  $('cert-amt').textContent = fmt(certDenom);
   const to = $('cert-to').value.trim(), from = $('cert-from').value.trim(), wish = $('cert-wish').value.trim();
   // хвост из трёх знаков: номер сертификата — это деньги, его не должно быть легко угадать
   const num = 'SR-' + Date.now().toString().slice(-5) + '-' + Array.from({ length: 3 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-  // заявка ушла в таблицу — показываем итог прямо в приложении: реквизиты и «отправить скриншот»; бот пишет то же в личку
-  const btn = document.activeElement; if(btn && btn.tagName === 'BUTTON') btn.disabled = true;
-  const r = CFG.api && inTg ? await api('cert', { cert:{ num, value:certDenom, kind:certKind, to, from, wish } }) : null;
-  if(btn && btn.tagName === 'BUTTON') btn.disabled = false;
-  if(r && r.ok){ haptic('ok'); return certDone(num, certDenom) }
-  const msg = [ `Здравствуйте! Хочу подарочный сертификат POIZON.EKB, заявка ${num}`, '',
-    `Номинал: ${fmt(certDenom)}`,
-    `Вид: ${certKind==='Электронный' ? 'электронный, пришлите картинку в Telegram' : 'печатный'}`,
-    to ? `Кому: ${to}` : null, from ? `От кого: ${from}` : null, wish ? `Пожелание: ${wish}` : null,
+  const btn = $('cert-buy'); btn.disabled = true; btn.textContent = 'Оформляю…';
+  await certFonts();
+  const c = document.createElement('canvas'); certDraw(c, certDesign, certData(num), 1280);
+  const img = c.toDataURL('image/jpeg', .86);
+  const r = CFG.api && inTg ? await api('cert', { cert:{ num, value:certDenom, to, from, wish, design:certDesign, ins:certIns }, img }) : null;
+  btn.disabled = false; btn.textContent = 'Оформить сертификат';
+  if(r && r.ok){
+    haptic('ok');
+    G.certs = [{ num, value:certDenom, rest:certDenom, status:'заявка', to, from, wish, design:certDesign, ins:certIns, mine:true }].concat(G.certs || []);
+    return certDone(num, certDenom, img);
+  }
+  // без таблицы — готовое сообщение Кристине
+  const msg = [ `Здравствуйте! Хочу электронный подарочный сертификат POIZON.EKB, заявка ${num}`, '',
+    `Сумма: ${fmt(certDenom)}`, `Дизайн: ${(CERT_DESIGNS.find(z => z.id === certDesign) || {}).t}`, `Надпись: ${certIns}`,
+    to ? `Кому: ${to}` : null, from ? `От кого: ${from}` : null, wish ? `Поздравление: ${wish}` : null,
     '', 'Как оплатить?' ].filter(v=>v!==null).join('\n');
   try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(()=>{}) }catch(e){}
   haptic('ok'); openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(msg)}`, msg);
 }
-function certDone(num, sum){
-  const shot = `Оплатил(а) сертификат ${num} на ${fmt(sum)}, скриншот прикладываю`;
+/* итог заявки: картинка, реквизиты, «отправить скриншот» */
+function certDone(num, sum, img){
   openSheet(`<span class="hand">заявка принята</span>
     <div class="h2" style="margin-top:4px">${esc(num)} · ${fmt(sum)}</div>
+    ${img ? `<img class="cert-img" src="${img}" alt="Подарочный сертификат ${esc(num)}">` : ''}
     <div class="howmore"><div class="slip"><dl>
       <div class="row"><dt>Оплата</dt><dd>${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}. Из другого банка — через СБП</dd></div>
-      <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату и пришлю сертификат. Реквизиты уже продублировала вам в Telegram</dd></div>
+      <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, и сертификат сразу придёт вам в Telegram с кнопкой «Подарить»</dd></div>
     </dl></div></div>
     <div class="list" style="margin-top:16px">
       <button class="btn block" onclick="copyText('${CFG.pay.raw}','Номер скопирован, вставьте в приложении банка')">Скопировать номер для перевода</button>
       <button class="btn ghost block" onclick="certShot('${esc(num)}',${sum})">Отправить скриншот оплаты</button></div>`);
 }
 function certShot(num, sum){ const t = `Оплатил(а) сертификат ${num} на ${fmt(sum)}, скриншот прикладываю`; openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t) }
+/* сертификаты в профиле: статус, остаток и что можно сделать */
+function certState(s){
+  if(s.status === 'заявка') return { text:'ждёт оплаты', btn:`<button class="btn sm" onclick="certDone('${esc(s.num)}',${s.value})">Оплатить</button>` };
+  if(s.status === 'использован' || !(s.rest > 0)) return { text:`использован · было ${fmt(s.value)}`, btn:'' };
+  const who = s.mine ? (s.gifted ? 'подарен · ' : '') : 'подарок · ';
+  return { text:`${who}${s.rest < s.value ? `остаток из ${fmt(s.value)}` : 'активен, бессрочно'}`, btn:`<button class="btn sm" onclick="openCert('${esc(s.num)}')">Открыть</button>` };
+}
+function renderMyCerts(){
+  $('my-certs').innerHTML = (G.certs||[]).map(s => { const st = certState(s);
+    return `<div class="coupon cert-row"><span class="v">${fmt(s.status === 'заявка' ? s.value : s.rest)}</span><span class="t"><b>Сертификат ${esc(s.num)}</b>${esc(st.text)}</span>${st.btn}</div>` }).join('');
+}
+function openCert(num){
+  const s = (G.certs||[]).find(z => z.num === num); if(!s) return;
+  const active = s.status !== 'заявка' && s.status !== 'использован' && s.rest > 0;
+  openSheet(`<span class="hand">${s.mine ? 'ваш сертификат' : 'вам подарили'}</span>
+    <div class="h2" style="margin-top:4px">${esc(s.num)} · ${fmt(active ? s.rest : s.value)}${active && s.rest < s.value ? ` из ${fmt(s.value)}` : ''}</div>
+    <canvas class="cert-img" id="cert-open" aria-label="Подарочный сертификат ${esc(s.num)}"></canvas>
+    ${s.wish ? `<div class="rule">«${esc(s.wish)}»</div>` : ''}
+    <div class="rule">Как потратить: при оформлении заказа отметьте «Оплачу сертификатом» и впишите номер ${esc(s.num)}. Можно частями, остаток сохраняется.</div>
+    <div class="list" style="margin-top:14px">
+      <button class="btn block" onclick="closeSheet();go('shop')">Выбрать вещь</button>
+      ${s.mine && active ? `<button class="btn ghost block" onclick="shareCert('${esc(s.num)}',${s.rest})">Подарить</button>` : ''}
+      <button class="btn ghost block" onclick="copyText('${esc(s.num)}','Номер сертификата скопирован')">Скопировать номер</button></div>`);
+  certFonts().then(() => { const c = $('cert-open'); if(c) certDraw(c, s.design || 'red', { amount: fmt(s.value), ins: s.ins || 'Это тебе', to: s.to, from: s.from, num: s.num }, 1280) });
+}
+function shareCert(num, sum){
+  const url = `${CFG.appLink}?start=c_${num}`, text = `Дарю тебе подарочный сертификат POIZON.EKB на ${fmt(sum)}. Открой ссылку — он появится у тебя в магазине:`;
+  if(inTg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
+  else if(navigator.share) navigator.share({ text, url }).catch(()=>{});
+  else copyText(text + ' ' + url);
+}
+/* ссылка на сертификат в приложении (?startapp=c_SR-…) и кнопка «Мои сертификаты» из бота */
+function certDeepLink(sp){
+  if(sp === 'certs') return setTimeout(() => { go('me'); scrollToId('gifts-sec') }, 1500);
+  const m = /^c_(SR-\d{5}-[A-Z0-9]{3})$/i.exec(sp || ''); if(!m) return;
+  const num = m[1].toUpperCase();
+  setTimeout(() => api('certinfo', { num }).then(r => {
+    if(!r || !r.ok) return toast('Сертификат не найден');
+    G.certs = [r.cert].concat((G.certs||[]).filter(z => z.num !== num)); go('me'); openCert(num);
+  }), 1500);
+}
 
 /* =====================================================================
    ИГРЫ: «Вырасти пару», свой герой.

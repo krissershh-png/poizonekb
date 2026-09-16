@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16l';
+const BUILD = '2026-09-16m';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2451,7 +2451,7 @@ function renderWant(guest){
   if(fav.length){
     const anyDrop = fav.some(p => priceDrop(p));
     e.innerHTML = `<div class="cap"><span>Избранное · ${fav.length} ${plural(fav.length,['вещь','вещи','вещей'])}</span><button onclick="shopCat='fav';go('shop')">Все</button></div>
-      ${anyDrop ? `<div class="rule dropnote">«−300 ₽» на фото — на столько вещь подешевела, пока лежит в избранном. Цена меняется каждый день вместе с курсом юаня и ценой на Poizon, и завтра может вырасти. Нравится цена — берите сейчас</div>` : ''}
+      ${anyDrop ? `<div class="rule dropnote">«−300 ₽» на фото — столько вы сэкономите: вещь подешевела, пока была в избранном. Цены обновляются каждый день вслед за курсом юаня, поэтому могут и немного подрасти. Если цена сейчас нравится, лучше не откладывать</div>` : ''}
       <div class="prow">${fav.slice(0,10).map(p => { const mp = favPrice(p) || minPrice(p), drop = priceDrop(p) ? FP[p.id] - favPrice(p) : 0;
         return `<button class="pc" onclick="openProduct('${p.id}')"><span class="ph">${thumbP(p)}${drop ? `<span class="tg">−${fmt(drop)}</span>` : ''}</span><span class="n">${esc(p.brand)} ${esc(p.name)}</span><span class="p">${FAVSZ[p.id] ? (p.cat === 'shoes' ? 'EU ' : '') + esc(FAVSZ[p.id]) + ' · ' : ''}${mp ? fmt(mp) : 'по запросу'}</span></button>` }).join('')}</div>`;
   } else if(guest){

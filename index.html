@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16f';
+const BUILD = '2026-09-16g';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -473,9 +473,9 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .intro .slip.under{border-radius:0}
 .intro .slip.under .intro-lead{border-top:0;padding-top:2px;margin:0}
 /* «надёжный посредник»: крупный заголовок, по нему один раз пробегает красный блик */
-.intro .gl{font-family:Unbounded,"Arial Black",sans-serif;font-weight:900;font-size:24px;line-height:1.05;text-transform:uppercase;margin:2px 0 10px;text-wrap:balance;
+.intro .gl{font-family:Unbounded,"Arial Black",sans-serif;font-weight:900;font-size:16px;line-height:1.15;text-transform:uppercase;letter-spacing:.02em;margin:2px 0 8px;text-wrap:balance;
   background:linear-gradient(100deg,#121212 0 40%,#ff5d52 48%,#c81717 52%,#121212 60% 100%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-.intro .gl small{display:block;font-family:Caveat,cursive;font-weight:700;font-size:22px;text-transform:none;letter-spacing:0;-webkit-text-fill-color:var(--red);color:var(--red);margin-top:2px}
+.intro .gl small{display:block;font-family:Caveat,cursive;font-weight:700;font-size:19px;text-transform:none;letter-spacing:0;-webkit-text-fill-color:var(--red);color:var(--red);margin-top:2px}
 .intro.play .gl{animation:shine 5s ease-in-out infinite}
 @keyframes shine{0%{background-position:100% 0}36%,100%{background-position:0 0}}
 @media (prefers-reduced-motion:reduce){.intro.play .gl{animation:none}}

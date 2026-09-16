@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17a';
+const BUILD = '2026-09-17b';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -529,6 +529,8 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .rus s{color:var(--ink-2);font-weight:800;text-decoration-thickness:1.5px;text-decoration-color:var(--red)}
 .rus b{color:var(--red);font-weight:900}
 .rus em{flex-basis:100%;font-style:normal;font-size:11px;font-weight:600}
+.card .rus-c{display:block;margin-top:1px;font-size:11px;font-weight:700;color:var(--mute)}
+.card .rus-c s{text-decoration-color:var(--red);text-decoration-thickness:1.5px}
 /* плашка закупки: бирюзовый градиент с точками, отрывной календарик, клетки набора */
 .buyday{position:relative;overflow:hidden;margin-top:28px;display:flex;align-items:center;gap:14px;padding:14px 16px 14px 14px;border-radius:var(--r);background:var(--amber);color:#fff}
 .buyday>:not(.dots){position:relative}
@@ -1210,7 +1212,7 @@ const itemKg = p => +p.kg || 1.55;
 /* ---------- закупка раз в месяц ---------- */
 let BUY = null;   // { n, next, early } из таблицы: сколько вещей уже ждут выкупа
 var DELIVERED = 0, RETAIL = {};   // RETAIL: цены в российских магазинах { id: { p, w, d } } — из retail.json на сайте и из листа «Цены в России»
-try{ fetch('retail.json?v=' + BUILD).then(r => r.ok ? r.json() : {}).then(j => { RETAIL = Object.assign({}, j.items || {}, RETAIL) }).catch(() => {}) }catch(e){}
+try{ fetch('retail.json?v=' + BUILD).then(r => r.ok ? r.json() : {}).then(j => { RETAIL = Object.assign({}, j.items || {}, RETAIL); if(typeof refreshPrices === 'function') refreshPrices() }).catch(() => {}) }catch(e){}
    // сколько заказов привезено: из таблицы (выданные + CFG.deliveredBefore в bot/Code.gs)
 var POPULAR = {};   // из таблицы: сколько раз вещь заказывали
 function nextBuy(){
@@ -1300,7 +1302,7 @@ function card(p){
     <button class="fav ${favs.includes(p.id)?'on':''}" onclick="toggleFav('${p.id}',this)" aria-label="В избранное">${HEART}</button>
     <button class="bd" onclick="openProduct('${p.id}')"><span class="brand">${esc(p.brand)}</span><span class="name">${esc(p.name)}</span>
       <span class="meta">${meta}</span>
-      <span class="price num">${mp ? (p.stock?'':'<small>от </small>')+fmt(mp) : '<small>цена по запросу</small>'}</span></button></div>`;
+      <span class="price num">${mp ? (p.stock?'':'<small>от </small>')+fmt(mp) : '<small>цена по запросу</small>'}</span>${rusOk(p, minPrice(p)) ? `<span class="rus-c">в РФ <s class="num">${fmt(RETAIL[p.id].p)}</s></span>` : ''}</button></div>`;
 }
 /* избранное помнит цену на момент добавления: когда на Poizon стало дешевле, на карточке появляется «Цена ниже» */
 let FP = load('favp', {});
@@ -1767,9 +1769,10 @@ function fitSize(inp){
   } else out.textContent = `по сетке ${row[1]} EU — сейчас такого нет на Poizon`;
 }
 /* под ценой: сколько та же вещь стоит в российских магазинах. Цену Крис проверяет сама и вписывает в лист «Цены в России»; строка видна, только если у неё дешевле */
+const rusOk = (p, mp) => { const r = RETAIL[p.id]; return !!(r && mp && r.p - mp >= Math.max(2000, mp * .2)) };
 function rusLine(p, mp){
   // показываем только заметную выгоду: от 20% и не меньше 2 000 ₽, иначе строка не убеждает
-  const r = RETAIL[p.id]; if(!r || !mp || r.p - mp < Math.max(2000, mp * .2)) return '';
+  if(!rusOk(p, mp)) return ''; const r = RETAIL[p.id];
   return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода до ${fmt(r.p - mp)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'цена на '+esc(r.d) : ''}</em>` : ''}</div>`;
 }
 /* доверие в карточке: сколько раз вещь уже заказывали у меня */

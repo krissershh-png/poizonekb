@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16o';
+const BUILD = '2026-09-16p';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1720,7 +1720,7 @@ function fitSize(inp){
 function rusLine(p, mp){
   // показываем только заметную выгоду: от 20% и не меньше 2 000 ₽, иначе строка не убеждает
   const r = RETAIL[p.id]; if(!r || !mp || r.p - mp < Math.max(2000, mp * .2)) return '';
-  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода до ${fmt(r.p - mp)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'проверила '+esc(r.d) : ''}</em>` : ''}</div>`;
+  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода до ${fmt(r.p - mp)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'цена на '+esc(r.d) : ''}</em>` : ''}</div>`;
 }
 /* доверие в карточке: сколько раз вещь уже заказывали у меня */
 function trustLine(p, mp){

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16i';
+const BUILD = '2026-09-16k';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -193,6 +193,10 @@ summary::-webkit-details-marker{display:none}
 summary::after{content:"+";font-family:var(--dela);color:var(--teal-d);font-size:18px;line-height:1}
 details[open] summary::after{content:"–"}
 details p{margin:0 0 14px;font-size:14px;color:var(--ink-2)}
+#size-all{display:grid;gap:6px;padding-bottom:14px}
+.szb{background:#fff;padding:0 12px;border-radius:12px}
+.szb summary{padding:11px 0;font-size:13px}
+.szb[open]{padding-bottom:10px}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
 th,td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line)}
 th{font-size:11px;color:var(--mute);font-weight:900}
@@ -860,7 +864,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="dots"></div>
     <span class="hand">итого</span>
     <div class="total num grad" id="c-total">0 ₽</div>
-    <div id="c-msg" hidden><div class="c-msg-t" id="c-msg-t"></div><button class="btn sm ghost" id="c-write" style="margin-top:10px" onclick="openTg('https://t.me/'+CFG.admin)">Написать Кристине</button></div>
+    <div id="c-msg" hidden><div class="c-msg-t" id="c-msg-t"></div><button class="btn sm ghost" id="c-write" style="margin-top:10px" onclick="writeKris('calc')">Написать Кристине</button></div>
     <div class="small" id="c-note" style="margin-top:6px"></div>
     <div class="small" id="rate-txt" style="margin-top:2px"></div>
   </div>
@@ -980,7 +984,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 
   <div class="sec"><h2 class="h2">Связь</h2></div>
   <div class="list">
-    <button class="btn block ghost" onclick="openTg('https://t.me/'+CFG.admin)">Написать Кристине</button>
+    <button class="btn block ghost" onclick="writeKris()">Написать Кристине</button>
     <button class="btn block ghost" onclick="openTg('https://t.me/'+CFG.channel)">Канал @buypoizonekb</button>
   </div>
   <div class="small" id="hours-note" style="text-align:center;margin-top:10px"></div>
@@ -1083,6 +1087,13 @@ function haptic(t){ try{ if(!tg||!tg.HapticFeedback) return; if(t==='ok') tg.Hap
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.toggle('top', $('sheet-bg').classList.contains('open')); t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400) }
 /* inTg: приложение реально открыто внутри Telegram (в обычном браузере initData пустой) */
 const inTg = !!(tg && tg.initData);
+/* «Написать Кристине»: чат открывается с готовым приветствием, первую фразу придумывать не нужно */
+function writeKris(from){
+  const y = Number(($('yen')||{}).value) || 0;
+  const t = from === 'calc' && y ? `Привет, Крис! 👋 Посчитал(а) в «Расчёте» вещь за ${y} ¥. Подскажешь, можно её заказать?`
+    : 'Привет, Крис! 👋 Пишу из магазина POIZON.EKB. Хочу спросить: ';
+  openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t);
+}
 /* msg: готовый текст. Если браузер не дал открыть Telegram, показываем его с кнопками «Открыть» и «Скопировать» */
 function openTg(u, msg){
   if(inTg && tg.openTelegramLink){
@@ -1646,7 +1657,7 @@ const CHARTS = {
 };
 CHARTS['Jordan']=CHARTS['Nike']; CHARTS['Onitsuka Tiger']=CHARTS['Asics']; CHARTS['Reebok']=CHARTS['Nike']; CHARTS['Champion']=CHARTS['Nike'];
 const chartTable = rows => `<table class="num"><tr><th>Стопа, см</th><th>EU</th></tr>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>`;
-$('size-all').innerHTML = Object.keys(CHARTS).filter(b=>!['Jordan','Onitsuka Tiger','Reebok','Champion'].includes(b)).map(b=>`<div class="brand" style="margin:8px 0 2px">${b}</div>${chartTable(CHARTS[b])}`).join('');
+$('size-all').innerHTML = Object.keys(CHARTS).filter(b=>!['Jordan','Onitsuka Tiger','Reebok','Champion'].includes(b)).map(b=>`<details class="szb"><summary>${b}</summary>${chartTable(CHARTS[b])}</details>`).join('');   // сначала список брендов, сетка раскрывается по нажатию
 
 /* ---------- карточка товара ---------- */
 let pick = null;

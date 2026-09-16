@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16k';
+const BUILD = '2026-09-16l';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1197,7 +1197,8 @@ const itemKg = p => +p.kg || 1.55;
 
 /* ---------- закупка раз в месяц ---------- */
 let BUY = null;   // { n, next, early } из таблицы: сколько вещей уже ждут выкупа
-var DELIVERED = 0, RETAIL = {};   // RETAIL: цены в российских магазинах из таблицы { id: { p, w, d } }
+var DELIVERED = 0, RETAIL = {};   // RETAIL: цены в российских магазинах { id: { p, w, d } } — из retail.json на сайте и из листа «Цены в России»
+try{ fetch('retail.json?v=' + BUILD).then(r => r.ok ? r.json() : {}).then(j => { RETAIL = Object.assign({}, j.items || {}, RETAIL) }).catch(() => {}) }catch(e){}
    // сколько заказов привезено: из таблицы (выданные + CFG.deliveredBefore в bot/Code.gs)
 var POPULAR = {};   // из таблицы: сколько раз вещь заказывали
 function nextBuy(){
@@ -1716,8 +1717,9 @@ function fitSize(inp){
 }
 /* под ценой: сколько та же вещь стоит в российских магазинах. Цену Крис проверяет сама и вписывает в лист «Цены в России»; строка видна, только если у неё дешевле */
 function rusLine(p, mp){
-  const r = RETAIL[p.id]; if(!r || !mp || r.p <= mp) return '';
-  return `<div class="rus"><span>В России</span><s class="num">${fmt(r.p)}</s><b class="num">выгода до ${fmt(r.p - mp)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'проверила '+esc(r.d) : ''}</em>` : ''}</div>`;
+  // показываем только заметную выгоду: от 20% и не меньше 2 000 ₽, иначе строка не убеждает
+  const r = RETAIL[p.id]; if(!r || !mp || r.p - mp < Math.max(2000, mp * .2)) return '';
+  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода до ${fmt(r.p - mp)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'проверила '+esc(r.d) : ''}</em>` : ''}</div>`;
 }
 /* доверие в карточке: сколько раз вещь уже заказывали у меня */
 function trustLine(p, mp){
@@ -2449,7 +2451,7 @@ function renderWant(guest){
   if(fav.length){
     const anyDrop = fav.some(p => priceDrop(p));
     e.innerHTML = `<div class="cap"><span>Избранное · ${fav.length} ${plural(fav.length,['вещь','вещи','вещей'])}</span><button onclick="shopCat='fav';go('shop')">Все</button></div>
-      ${anyDrop ? `<div class="rule dropnote">«−300 ₽» на фото — на столько вещь подешевела, пока лежит в избранном. Цена меняется каждый день: курс юаня и цена на Poizon</div>` : ''}
+      ${anyDrop ? `<div class="rule dropnote">«−300 ₽» на фото — на столько вещь подешевела, пока лежит в избранном. Цена меняется каждый день вместе с курсом юаня и ценой на Poizon, и завтра может вырасти. Нравится цена — берите сейчас</div>` : ''}
       <div class="prow">${fav.slice(0,10).map(p => { const mp = favPrice(p) || minPrice(p), drop = priceDrop(p) ? FP[p.id] - favPrice(p) : 0;
         return `<button class="pc" onclick="openProduct('${p.id}')"><span class="ph">${thumbP(p)}${drop ? `<span class="tg">−${fmt(drop)}</span>` : ''}</span><span class="n">${esc(p.brand)} ${esc(p.name)}</span><span class="p">${FAVSZ[p.id] ? (p.cat === 'shoes' ? 'EU ' : '') + esc(FAVSZ[p.id]) + ' · ' : ''}${mp ? fmt(mp) : 'по запросу'}</span></button>` }).join('')}</div>`;
   } else if(guest){
@@ -3242,7 +3244,7 @@ function register(){
     if(r.delivered){ DELIVERED = r.delivered; renderRevs() }
     if(r.phone && !$('f-phone').value.trim()){ $('f-phone').value = r.phone; formatPhone(); phoneUi() }   // номер из прошлого заказа или из Telegram — на любом телефоне
     if(r.popular) POPULAR = r.popular;
-    if(r.retail) RETAIL = r.retail;
+    if(r.retail) Object.assign(RETAIL, r.retail);   // цены из таблицы важнее файла
     if(r.purchase && r.purchase.next){ BUY = r.purchase; renderHome(); if($('s-cart').classList.contains('active')) renderCart() }   // закупка: дата и сколько вещей уже ждут выкупа
     if(r.vibe && VIBES[r.vibe] && !VIBE){ VIBE = { key:r.vibe, at:Date.now(), scores:{} }; save('vibe', VIBE); renderHome() }   // вайб из таблицы на новом телефоне
     // курс из таблицы: сервер читает канал обменника сам, без браузерных прокси, которые могут не открыться

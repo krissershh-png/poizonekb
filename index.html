@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16n';
+const BUILD = '2026-09-16o';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -88,10 +88,11 @@ a{color:inherit;text-decoration:none}
 .hero .txt{position:relative;z-index:1;min-width:0}
 .hero .cta{margin-top:16px;display:flex;gap:8px;flex-wrap:nowrap;width:max-content;position:relative;z-index:2}
 .hero .cta .btn.sm{padding:0 12px}
-.hero .mascot-wrap{display:block;width:156px;max-width:none;margin:-8px -16px -18px -8px;padding:0;border:0;background:none;position:relative;z-index:1;align-self:end;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.hero .mascot-wrap{display:block;width:156px;max-width:none;margin:-8px -16px -16.5px -8px;padding:0;border:0;background:none;position:relative;z-index:1;align-self:end;-webkit-tap-highlight-color:transparent;cursor:pointer}
 /* живой маскот: дышит, иногда подпрыгивает с коробкой; нажали — прыжок и сердечки */
 .hero .mascot{display:block;width:100%;max-width:none;margin:0;transform-origin:50% 100%;animation:m-float 4s ease-in-out infinite}
-@keyframes m-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* дыхание от нижнего края: низ маскота всегда стоит на рамке, без зазора и без выхода за неё */
+@keyframes m-float{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
 .m-fx{position:absolute;left:46%;bottom:34%;width:22px;height:22px;pointer-events:none;animation:mfx 1.05s cubic-bezier(.2,.7,.3,1) forwards}
 .m-fx svg{display:block;width:100%;height:100%}
 @keyframes mfx{0%{opacity:0;transform:translate(0,0) scale(.3)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.15) rotate(var(--r))}}

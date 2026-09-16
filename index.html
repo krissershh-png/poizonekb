@@ -442,6 +442,33 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .intro .slip{padding-bottom:20px}
 .intro-lead{margin:2px 0 0;padding-top:10px;border-top:1.5px dashed #d3dfe2;font-size:14px;font-weight:700;line-height:1.45;color:var(--ink-2);text-wrap:pretty}
 .intro-lead b{font-weight:900}
+/* лента «надёжный посредник»: чёрная, текст бежит справа налево; под ней тот же чек с текстом */
+.ribbon{position:relative;overflow:hidden;background:var(--ink);border-radius:6px 6px 0 0;padding:10px 0 8px}
+.ribbon .rt{display:flex;width:max-content;animation:ribbon 18s linear infinite}
+.ribbon .rt span{display:flex;align-items:center;gap:22px;padding-right:22px;font-family:var(--hand);font-size:27px;line-height:1;white-space:nowrap;color:#ff4b3e}
+.ribbon.white .rt span{color:#fff}
+.ribbon .rt span::after{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.75}
+@keyframes ribbon{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ribbon .rt{animation:none}}
+.intro .slip.under{border-radius:0}
+.intro .slip.under .intro-lead{border-top:0;padding-top:2px;margin:0}
+/* заказ по ссылке в корзине: красная плашка с юанем вместо серого квадрата */
+.item .th.link{position:relative;background:linear-gradient(140deg,#ef4a3d 0%,#c81717 55%,#8f0e14 100%);color:#fff;overflow:hidden}
+.item .th.link::before{content:"";position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.28) 1px,transparent 1.3px) 0 0/7px 7px;opacity:.55}
+.item .th.link b{position:relative;font-family:var(--dela);font-size:30px;line-height:1}
+.item .th.link svg{position:absolute;right:5px;bottom:5px;width:18px;height:18px;padding:3px;border-radius:50%;background:#fff;color:#c81717}
+/* фильтры каталога */
+.fbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;font-size:13px}
+.fbtn svg{width:15px;height:15px}
+.fbtn i{font-style:normal;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;display:grid;place-items:center}
+.fgrp{margin-top:18px}
+.fgrp .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.fwrap{display:flex;flex-wrap:wrap;gap:7px}
+.fwrap .chip{padding:8px 12px;font-size:13px}
+.fwrap .chip.sw{display:inline-flex;align-items:center;gap:7px}
+.fwrap .chip.sw i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18)}
+.fbar{position:sticky;bottom:-16px;display:grid;grid-template-columns:1fr 2fr;gap:8px;margin:18px -2px 0;padding:12px 2px 4px;background:#fff}
+.dropnote{margin:-4px 0 8px}
 /* плашка закупки: бирюзовый градиент с точками, отрывной календарик, клетки набора */
 .buyday{position:relative;overflow:hidden;margin-top:28px;display:flex;align-items:center;gap:14px;padding:14px 16px 14px 14px;border-radius:var(--r);background:var(--amber);color:#fff}
 .buyday>:not(.dots){position:relative}
@@ -703,7 +730,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 
   <button class="gift" id="gift-banner" onclick="openWheel()">
     <div class="dots"></div>
-    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9c-2-4-7-4-6-1 .5 1.5 3 1 6 1zM12 9c2-4 7-4 6-1-.5 1.5-3 1-6 1z"/></svg></div>
+    <div class="ic" id="gift-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9c-2-4-7-4-6-1 .5 1.5 3 1 6 1zM12 9c2-4 7-4 6-1-.5 1.5-3 1-6 1z"/></svg></div>
     <div class="t"><b id="gift-title">Подарок на первый заказ</b><span id="gift-sub">Крутите колесо</span></div>
   </button>
 
@@ -741,7 +768,10 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <div class="chips sub" id="shop-sub" style="margin-top:8px" hidden></div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0 10px">
     <span class="small" id="shop-count"></span>
-    <select id="sort" onchange="renderShop()" style="width:auto;padding:7px 12px;border-radius:999px;font-size:13px"><option value="pop">Популярные</option><option value="asc">Дешевле</option><option value="desc">Дороже</option></select>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="chip fbtn" id="flt-btn" onclick="openFilters()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Фильтры</button>
+      <select id="sort" onchange="renderShop()" style="width:auto;padding:7px 12px;border-radius:999px;font-size:13px"><option value="pop">Популярные</option><option value="asc">Дешевле</option><option value="desc">Дороже</option></select>
+    </div>
   </div>
   <div class="grid" id="shop-grid"></div>
   <div class="vnudge" id="vibe-nudge" hidden>
@@ -814,20 +844,15 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <div class="top"><h1 class="h1" style="font-size:19px">Мои дела</h1></div>
 
   <div id="me-hero"></div>
+  <!-- заказы одним списком, без отдельной большой карточки сверху: путь посылки и трек — по кнопке у заказа -->
+  <div class="cap" id="orders-sec"><span>Мои заказы</span></div>
+  <div class="list" id="orders"></div>
   <div id="me-main"></div>
   <div id="me-coupon"></div>
-
-  <div class="cap" id="track-anchor"><span>Отследить посылку</span></div>
-  <div class="rule" style="margin:-4px 0 8px">Трек появится у заказа сам, а статусы посылки придут в Telegram. Можно проверить и вручную:</div>
-  <div class="track"><input id="track-in" placeholder="Трек-номер" autocapitalize="characters"><button class="btn sm" onclick="track()">Найти</button></div>
-  <div id="track-out"></div>
 
   <div id="me-want"></div>
   <div id="me-vibe"></div>
   <div id="me-how"></div>
-
-  <div class="cap" id="orders-sec"><span>Мои заказы</span></div>
-  <div class="list" id="orders"></div>
 
   <div id="me-shelf"></div>
 
@@ -1048,7 +1073,7 @@ const myTag = user ? (user.username || ('id'+user.id)) : '';
   if(sp === 'stock') setTimeout(()=>{ go('home'); scrollToId('home-stock') }, 600);   // «В наличии» из меню бота
   if(sp === 'cart') setTimeout(()=>go('cart'), 300);                                  // «Открыть заказ» из напоминания о корзине
   const jm = /^j_(PZ-\d{4,6})$/i.exec(sp);                                         // «Путь посылки»: ждём заказы из таблицы
-  if(jm){ const t0 = Date.now(), tick = () => { if(SRV_ORDERS) openJourney(jm[1].toUpperCase()); else if(Date.now() - t0 < 12000) setTimeout(tick, 400) }; setTimeout(tick, 600) }
+  if(jm){ const t0 = Date.now(), tick = () => { if(SRV_ORDERS) openTrack(jm[1].toUpperCase()); else if(Date.now() - t0 < 12000) setTimeout(tick, 400) }; setTimeout(tick, 600) }
   if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe|calc|stock|cart)$/i.test(sp) && !G.ref && sp !== myTag){
     G.ref = sp.slice(0,40);
     G.coupons.push({ id:'friend', v:CFG.friend.value, min:CFG.friend.min, until:Date.now()+CFG.friend.days*DAY, why:'Подарок от друга', first:true });
@@ -1099,6 +1124,12 @@ function nextBuy(){
   return d;
 }
 const buyDate = () => nextBuy().toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+/* когда вещь приедет: дата закупки + обычная дорога, «20–27 октября» понятнее, чем «3–4 недели» */
+function arrivalText(){
+  const b = nextBuy(), [d1, d2] = CFG.journey.days, a = new Date(b.getTime() + d1*DAY), z = new Date(b.getTime() + d2*DAY);
+  const full = d => d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+  return a.getMonth() === z.getMonth() ? `${a.getDate()}–${full(z)}` : `${full(a)} – ${full(z)}`;
+}
 const buyShort = () => nextBuy().toLocaleDateString('ru-RU', { day:'numeric', month:'short' }).replace('.', '');/* плашка закупки: отрывной календарик с датой, сколько дней осталось. Клетки набора и «в ней уже N вещей» — только с таблицей */
 function buydayHTML(){
   const d = nextBuy(), t = new Date(); t.setHours(0,0,0,0);
@@ -1160,7 +1191,9 @@ const isStudio = s => /\/(cv|pz)\//.test(s) || !!(window.STUDIO && window.STUDIO
 const studioAt = (p, i) => isStudio(p.img[i]) && ((p.orig || p.img)[i] !== p.look);
 const HEART = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.4 12 21 12 21z"/></svg>';
 function card(p){
-  const mp = minPrice(p), S = sizesOf(p).filter(s=>s.ok), n = S.length;
+  // выбран размер в фильтрах — цена «от» именно для него
+  const inSize = FLT.sizes.length ? sizesOf(p).filter(s => s.ok && s.eu !== 'Один' && FLT.sizes.includes(sizeNorm(s.eu))) : [];
+  const mp = inSize.length ? Math.min(...inSize.map(s => s.price)) : minPrice(p), S = sizesOf(p).filter(s=>s.ok), n = S.length;
   const studio = studioAt(p, 0) ? 'studio' : '';
   const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
   const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-favPrice(p))}</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
@@ -1264,7 +1297,9 @@ const HOW_ICON = {
 const INTRO = 'Онлайн-магазин оригинальной продукции из приложения Poizon. Привезу всё — от часов до кроссовок — и сэкономлю ваши деньги.';
 function renderFacts(){
   const e = $('facts'); if(!e || e.childElementCount) return;
-  e.innerHTML = `<div class="slip"><span class="hand">надёжный посредник</span><p class="intro-lead">${INTRO}</p></div>`;
+  // две одинаковые половины ленты: сдвиг на половину ширины даёт бесконечный бег без рывка. ?rb=white — белый текст вместо красного
+  const words = Array(8).fill('<span>надёжный посредник</span>').join('');
+  e.innerHTML = `<div class="ribbon ${/[?&]rb=white/.test(location.search) ? 'white' : ''}" role="img" aria-label="надёжный посредник"><div class="rt">${words}</div></div><div class="slip under"><p class="intro-lead">${INTRO}</p></div>`;
 }
 function renderHow(){
   const row = $('how-row'); if(!row) return;
@@ -1359,6 +1394,91 @@ function mixCats(list){
   while(q.some(x=>x.length)) q.forEach((x,i)=>{ for(let k=0; k<(i===0?2:1) && x.length; k++) out.push(x.shift()) });
   return out.concat(list.filter(p=>!CATS.some(c=>c.id===p.cat)));
 }
+/* ---------- фильтры каталога: размер, бренд, цвет, цена. Запоминаются: «до 10 000 ₽ в моём размере» ставится один раз ---------- */
+let FLT = load('flt', { sizes:[], brands:[], colors:[], max:0 });
+const SHOE_SIZES = ['35','35.5','36','36.5','37','37.5','38','38.5','39','39.5','40','40.5','41','41.5','42','42.5','43','43.5','44','44.5','45','46'];
+const CLOTH_SIZES = ['XS','S','M','L','XL','XXL'];
+const PRICE_MAX = [0, 7000, 10000, 15000, 20000];
+// цвет — из характеристики «Цвет» и названия («White Grey»)
+const COLORS = [
+  ['white','Белый','#ffffff',/бел|молочн|крем|white|sail|ivory|cream|bone/],
+  ['black','Чёрный','#121212',/ч[её]рн|black|onyx/],
+  ['grey','Серый','#9b9b9b',/сер(ый|ая|ое|ые|о-)|графит|\bgr[ae]y\b|smoke|charcoal|carbon/],
+  ['beige','Бежевый','#d8c2a0',/беж|песоч|хаки|beige|\bsand\b|khaki|\boat|taupe|wheat|linen/],
+  ['brown','Коричневый','#7b4a2a',/коричн|кофе|шоколад|brown|mocha|cacao|chocolate|chestnut|camel/],
+  ['pink','Розовый','#f3a2bf',/розов|фукси|\bpink\b|\brose\b/],
+  ['red','Красный','#c81717',/красн|бордо|\bred\b|burgundy|\bbred\b|crimson|\bwine\b/],
+  ['blue','Синий и голубой','#2f6fed',/син(ий|яя|ее|ие)|голуб|бирюз|\bblue\b|\bnavy\b|\bsky\b|teal/],
+  ['green','Зелёный','#2f8a4a',/зел[её]н|олив|мят|green|olive|\bmint\b|jade/],
+  ['yellow','Жёлтый и оранжевый','#f2b830',/ж[её]лт|оранж|yellow|orange|volt/],
+  ['purple','Фиолетовый','#8a5cc9',/фиолет|сирен|лаванд|purple|lilac|violet|lavender/],
+  ['silver','Металлик','linear-gradient(135deg,#f4f4f4,#9aa3ad)',/серебр|золот|металл|silver|metallic|\bgold\b|chrome/],
+];
+const COLOR_CACHE = {};
+function colorsOf(p){
+  if(COLOR_CACHE[p.id]) return COLOR_CACHE[p.id];
+  const attr = ((p.attrs||[]).find(a => a[0] === 'Цвет') || [])[1] || '';
+  const t = (attr + ' ' + p.name).toLowerCase();
+  return COLOR_CACHE[p.id] = COLORS.filter(c => c[3].test(t)).map(c => c[0]);
+}
+/* размер вещи к сетке фильтра: 38⅔ → 38.5, 37⅓ → 37.5; одежда 2XL → XXL */
+function sizeNorm(eu){
+  const s = String(eu).toUpperCase().replace('2XL','XXL');
+  if(CLOTH_SIZES.includes(s)) return s;
+  const v = parseFloat(String(eu).replace('⅓','.33').replace('⅔','.67').replace(',','.'));
+  return isNaN(v) ? '' : String(Math.round(v*2)/2);
+}
+const fltCount = () => FLT.sizes.length + FLT.brands.length + FLT.colors.length + (FLT.max ? 1 : 0);
+function passFilters(p){
+  if(FLT.brands.length && !FLT.brands.includes(p.brand)) return false;
+  if(FLT.colors.length && !colorsOf(p).some(c => FLT.colors.includes(c))) return false;
+  let S = sizesOf(p).filter(s => s.ok);
+  // размер: у вещи с размерами нужен выбранный; сумки и аксессуары «один размер» не отсекаем
+  if(FLT.sizes.length && S.some(s => s.eu !== 'Один')){
+    S = S.filter(s => FLT.sizes.includes(sizeNorm(s.eu)));
+    if(!S.length) return false;
+  }
+  if(FLT.max){ const m = S.length ? Math.min(...S.map(s => s.price || 0).filter(Boolean)) : minPrice(p); if(!m || m > FLT.max) return false }
+  return true;
+}
+function fltToggle(kind, val, el){
+  const a = FLT[kind], i = a.indexOf(val);
+  i >= 0 ? a.splice(i, 1) : a.push(val);
+  el.classList.toggle('on', i < 0); fltSync();
+}
+function fltMax(v, el){ FLT.max = v; el.parentNode.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b === el)); fltSync() }
+function fltSync(){
+  save('flt', FLT); haptic('tick');
+  const n = shopBase().filter(passFilters).length, b = $('flt-show');
+  if(b) b.textContent = n ? `Показать ${n} ${plural(n,['товар','товара','товаров'])}` : 'Ничего не нашлось';
+}
+function fltClear(){ FLT = { sizes:[], brands:[], colors:[], max:0 }; save('flt', FLT) }
+function fltReset(){ fltClear(); openFilters() }
+/* что осталось в выбранной вкладке без учёта фильтров: от этого считаются бренды и «Показать N» */
+function shopBase(){
+  return CAT.filter(p => shopCat==='all' || (shopCat==='stock'?p.stock : shopCat==='fav'?favs.includes(p.id) : p.cat===shopCat))
+    .filter(p => !SUBS[shopCat] || shopSub==='all' || p.sub===shopSub);
+}
+function openFilters(){
+  const base = shopBase(), cnt = {};
+  base.forEach(p => { cnt[p.brand] = (cnt[p.brand]||0) + 1 });
+  FLT.brands.forEach(b => { if(!cnt[b]) cnt[b] = 0 });
+  const brands = Object.keys(cnt).sort((a,b) => cnt[b] - cnt[a] || a.localeCompare(b));
+  const clothes = shopCat === 'clothes', shoes = shopCat === 'shoes' || shopCat === 'stock';
+  const sizes = clothes ? CLOTH_SIZES : shoes ? SHOE_SIZES : SHOE_SIZES.concat(CLOTH_SIZES);
+  const chip = (kind, v, t, extra = '') => `<button class="chip ${extra} ${FLT[kind].includes(v)?'on':''}" onclick="fltToggle('${kind}','${String(v).replace(/'/g,"\\'")}',this)">${t}</button>`;
+  openSheet(`<span class="hand">фильтры</span>
+    <div class="fgrp"><div class="fh"><span>Размер</span><span>${clothes ? 'одежда' : shoes ? 'EU' : 'EU и одежда'}</span></div>
+      <div class="fwrap">${sizes.map(s => chip('sizes', s, s.replace('.', ','))).join('')}</div></div>
+    <div class="fgrp"><div class="fh"><span>Цена</span></div>
+      <div class="fwrap">${PRICE_MAX.map(v => `<button class="chip ${FLT.max===v?'on':''}" onclick="fltMax(${v},this)">${v ? 'до '+fmt(v) : 'Любая'}</button>`).join('')}</div></div>
+    <div class="fgrp"><div class="fh"><span>Цвет</span></div>
+      <div class="fwrap">${COLORS.map(c => chip('colors', c[0], `<i style="background:${c[2]}"></i>${c[1]}`, 'sw')).join('')}</div></div>
+    <div class="fgrp"><div class="fh"><span>Бренд</span><span>${brands.length}</span></div>
+      <div class="fwrap">${brands.map(b => chip('brands', b, esc(b))).join('')}</div></div>
+    <div class="fbar"><button class="btn ghost" onclick="fltReset()">Сбросить</button><button class="btn" id="flt-show" onclick="closeSheet();renderShop()">Показать</button></div>`);
+  fltSync();
+}
 let SHOP_REST = [];
 function shopMore(){ const b = $('shop-more'); if(!b) return; const next = SHOP_REST.slice(0,48); SHOP_REST = SHOP_REST.slice(48); b.insertAdjacentHTML('beforebegin', next.map(card).join('')); if(SHOP_REST.length) b.textContent = 'Показать ещё '+SHOP_REST.length; else b.remove() }
 function renderShop(){
@@ -1370,9 +1490,12 @@ function renderShop(){
   const subs = (SUBS[shopCat] || []).filter(s => CAT.some(p => p.cat===shopCat && p.sub===s.id));
   $('shop-sub').hidden = subs.length < 2;
   $('shop-sub').innerHTML = [{id:'all',t: SUB_ALL[shopCat] || 'Все'},...subs].map(s=>`<button class="chip ${shopSub===s.id?'on':''}" onclick="shopSub='${s.id}';renderShop()">${s.t}</button>`).join('');
-  let list = CAT.filter(p => shopCat==='all' || (shopCat==='stock'?p.stock : shopCat==='fav'?favs.includes(p.id) : p.cat===shopCat))
-    .filter(p => !SUBS[shopCat] || shopSub==='all' || p.sub===shopSub)
-    .filter(p => !q || (p.brand+' '+p.name).toLowerCase().includes(q));
+  let list = shopBase()
+    .filter(p => !q || (p.brand+' '+p.name).toLowerCase().includes(q))
+    .filter(passFilters);
+  const fc = fltCount(), fb = $('flt-btn'), oldBadge = fb.querySelector('i');
+  if(oldBadge) oldBadge.remove();
+  if(fc) fb.insertAdjacentHTML('beforeend', `<i>${fc}</i>`);
   // «Мой вайб» — фильтр по умолчанию, но выключаемый; поиску, наличию и избранному не мешает, пустую выдачу не оставляет
   if(VIBE && vibeOn && !q && shopCat !== 'stock' && shopCat !== 'fav'){ const f = list.filter(p => inVibe(p, VIBE.key)); if(f.length) list = f }
   const key = p => minPrice(p) || 1e9;
@@ -1383,7 +1506,7 @@ function renderShop(){
   $('shop-count').textContent = list.length+' '+plural(list.length,['товар','товара','товаров']);
   /* на слабом телефоне 300 карточек разом дёргают скролл: рисуем по 48, остальное по кнопке */
   SHOP_REST = list.slice(48);
-  $('shop-grid').innerHTML = list.length ? list.slice(0,48).map(card).join('') + (SHOP_REST.length ? `<button class="btn ghost block" id="shop-more" style="grid-column:1/-1" onclick="shopMore()">Показать ещё ${SHOP_REST.length}</button>` : '') : `<div class="empty" style="grid-column:1/-1"><span class="hand">такого пока нет</span><div style="font-weight:800;margin:6px 0 12px;color:var(--ink-2)">Пришлите ссылку или скрин с Poizon, привезу</div><button class="btn sm" onclick="openCustom()">Заказ по ссылке</button></div>`;
+  $('shop-grid').innerHTML = list.length ? list.slice(0,48).map(card).join('') + (SHOP_REST.length ? `<button class="btn ghost block" id="shop-more" style="grid-column:1/-1" onclick="shopMore()">Показать ещё ${SHOP_REST.length}</button>` : '') : `<div class="empty" style="grid-column:1/-1"><span class="hand">такого пока нет</span><div style="font-weight:800;margin:6px 0 12px;color:var(--ink-2)">${fc ? 'С этими фильтрами ничего нет. Или пришлите ссылку с Poizon, привезу' : 'Пришлите ссылку или скрин с Poizon, привезу'}</div>${fc ? `<button class="btn sm ghost" style="margin-right:6px" onclick="fltClear();renderShop()">Сбросить фильтры</button>` : ''}<button class="btn sm" onclick="openCustom()">Заказ по ссылке</button></div>`;
   if(VIBE) hint('vibe', document.querySelector('#shop-chips .chip.vibe'), '«Мой вайб» — вещи под ваш стиль. Нажмите, чтобы выключить');
   else hint('vibe-quiz', document.querySelector('#shop-chips .chip.vibe'), 'Узнайте свой вайб — пройдите тест из 4 вопросов');
   if(HINTS.vibe || HINTS['vibe-quiz']) hint('fav', document.querySelector('#shop-grid .fav'), 'В избранное — напишу, если подешевеет');   // сначала про вайб, сердечко потом
@@ -1429,14 +1552,14 @@ function openProduct(id){
     <div class="brand" style="margin-top:14px">${esc(p.brand)}</div>
     <div class="h2" style="text-transform:none;font-size:16px;margin-top:2px">${esc(p.name)}</div>
     <div class="price num" id="p-price" style="font-size:26px">${mp ? (p.stock || p.post ? (p.stock ? '' : '<small>от </small>')+fmt(mp) : (() => { const mx = Math.max(...S.filter(x=>x.ok).map(x=>x.price)); return mx > mp ? fmt(mp)+' – '+fmt(mx) : fmt(mp) })()) : '<small>цена по запросу</small>'}</div>
-    ${p.stock ? '' : `<div class="small buyl">Уедет в закупку ${buyDate()} · потом ${CFG.journey.text} в пути</div>`}
+    ${p.stock ? '' : `<div class="small buyl">Уедет в закупку ${buyDate()} · приедет примерно ${arrivalText()}</div>`}
     ${trustLine(p, mp)}${sizesHTML}${finder}${chart}
     ${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ''}
     <div class="attrs"><div class="h2" style="font-size:13px;margin-bottom:4px">Характеристики</div>
       ${(p.attrs||[]).map(a=>`<div class="ar"><span>${esc(a[0])}</span><b>${esc(a[1])}</b></div>`).join('')}
       ${!(p.attrs||[]).length && p.specs && p.specs.length ? `<div class="ar"><span>Особенности</span><b>${esc(p.specs.join(', '))}</b></div>` : ''}
       <div class="ar"><span>Подлинность</span><b>Проверка Poizon</b></div>
-      <div class="ar"><span>Срок доставки</span><b>${p.stock ? 'в Екатеринбурге, сегодня' : `закупка ${buyDate()} + ${CFG.journey.text}`}</b></div>
+      <div class="ar"><span>Срок доставки</span><b>${p.stock ? 'в Екатеринбурге, сегодня' : `примерно ${arrivalText()}`}</b></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button></div>
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
@@ -1569,11 +1692,16 @@ function spinAvailable(){
   if(G.spins>0) return 'repeat';
   return null;
 }
+/* неоплаченный заказ — значок карты, а не подарок (подарок — у колеса, купонов и сертификата) */
+let GIFT_IC = null;
+const PAY_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 9.5h18"/><path d="M7 14.5h4"/></svg>';
 function renderGiftBanner(){
   cleanCoupons();
   const mode = spinAvailable(), b = $('gift-banner');
   const best = [...G.coupons].sort((a,b)=>b.v-a.v)[0];
   const unpaid = (SRV_ORDERS || []).find(o => o.st === 'новый');   // оформил, но не оплатил: главное напоминание на главной
+  if(GIFT_IC === null) GIFT_IC = $('gift-ic').innerHTML;
+  $('gift-ic').innerHTML = unpaid ? PAY_IC : GIFT_IC;
   if(unpaid){ $('gift-title').textContent = `Заказ ${unpaid.num} ждёт оплаты`; $('gift-sub').textContent = 'Оплатите, и я сразу выкуплю на Poizon'; b.hidden = false; b.onclick = () => { go('me') } }
   else if(mode==='welcome'){ $('gift-title').textContent='Подарок на первый заказ'; $('gift-sub').textContent='Крутите колесо — скидка до 700 ₽'; b.hidden=false; b.onclick=openWheel }
   else if(mode==='repeat'){ $('gift-title').textContent='Колесо открыто'; $('gift-sub').textContent = G.spinUntil ? 'Крутить до '+dmyhm(G.spinUntil) : 'Подарок на следующий заказ'; b.hidden=false; b.onclick=openWheel }
@@ -1929,7 +2057,7 @@ function renderCart(){
   const L = $('cart-list');
   if(!cart.length){ L.innerHTML = `<div class="empty"><span class="hand">пока пусто</span></div><button class="btn block ghost" onclick="go('shop')">В каталог</button>`; $('cart-form').hidden = true; return }
   L.innerHTML = cart.map((c,i)=>{
-    if(c.custom) return `<div class="item"><div class="th">¥</div><div class="t"><b>По ссылке</b><span>${esc(c.link).slice(0,50)} · ${esc(c.size)}${(c.qty||1) > 1 ? ' · '+c.qty+' шт.' : ''}</span><span class="price num" style="font-size:15px">${c.price?fmt(c.price):'уточню'}</span></div><button class="x" onclick="rm(${i})">×</button></div>`;
+    if(c.custom) return `<div class="item"><div class="th link"><b>¥</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div><div class="t"><b>По ссылке</b><span>${esc(c.link).slice(0,50)} · ${esc(c.size)}${(c.qty||1) > 1 ? ' · '+c.qty+' шт.' : ''}</span><span class="price num" style="font-size:15px">${c.price?fmt(c.price):'уточню'}</span></div><button class="x" onclick="rm(${i})">×</button></div>`;
     const p = CAT.find(x=>x.id===c.id) || {brand:'',name:'',img:['']};
     return `<div class="item"><div class="th"><img src="${p.img[0]}" alt=""></div><div class="t"><b>${esc(p.brand)} ${esc(p.name)}</b><span>${c.size==='Один' ? 'Один размер' : 'Размер '+c.size}</span><span class="price num" style="font-size:15px">${c.post?'<small>от </small>':''}${fmt(c.price)}</span></div><button class="x" onclick="rm(${i})">×</button></div>`;
   }).join('');
@@ -2100,11 +2228,9 @@ function renderMeView(){
   const list = myOrders(), pend = list.filter(o => o.st === 'новый' || pendingLocal(o)), moving = list.filter(o => PAID_ST.includes(o.st));
   const guest = !list.length && !boxesOf().length;
   const best = [...G.coupons].filter(c => !c.used).sort((a,b) => b.v - a.v)[0] || null;
-  let main = '';
-  FEATURED = '';   // заказ из большой карточки в списке ниже не повторяется
-  if(pend.length){ main = payCard(pend[0]); FEATURED = pend[0].num }
-  else if(moving.length){ const o = moving.sort((a,b) => journeyIdx(b) - journeyIdx(a))[0]; main = orderCard(o); FEATURED = o.num }
-  $('me-main').innerHTML = main;
+  // все заказы одним списком наверху профиля: большая карточка сверху дублировала заказ из списка и путала
+  FEATURED = '';
+  $('me-main').innerHTML = '';
   // скидка крупно сразу под заказом; у гостя без купона — колесо или каталог
   $('me-coupon').innerHTML = best ? couponCard(best) : guest ? guestCard() : '';
   renderWant(guest);
@@ -2150,7 +2276,7 @@ function payCard(o){
 function orderCard(o){
   const j = journeyIdx(o), d = dropsOf(o), its = itemsOf(o), [d1, d2] = CFG.journey.days, rest = Math.round((d1+d2)/2) - d;
   const left = j >= 6 ? 'можно забирать' : rest > 0 ? `осталось ≈ ${rest} ${plural(rest,['день','дня','дней'])}` : 'уже скоро';
-  return `<button class="hcard" onclick="openJourney('${esc(o.num)}')">
+  return `<button class="hcard" onclick="openTrack('${esc(o.num)}')">
     ${orderHead(o, true)}
     <div class="seg8">${JOURNEY.map((_,i)=>`<i class="${i<=j?'on':''}"></i>`).join('')}</div>
     <div class="st"><div><b>${esc(JOURNEY[j])}</b><span>этап ${j+1} из ${JOURNEY.length} · ${left}</span></div><span class="chip-drops">${DROP_SVG}${d} ${plural(d,['капля','капли','капель'])}</span></div>
@@ -2182,7 +2308,9 @@ function starterPicks(){
 function renderWant(guest){
   const e = $('me-want'), fav = favs.map(id => CAT.find(p=>p.id===id)).filter(Boolean);
   if(fav.length){
+    const anyDrop = fav.some(p => priceDrop(p));
     e.innerHTML = `<div class="cap"><span>Избранное · ${fav.length} ${plural(fav.length,['вещь','вещи','вещей'])}</span><button onclick="shopCat='fav';go('shop')">Все</button></div>
+      ${anyDrop ? `<div class="rule dropnote">«−300 ₽» на фото — на столько вещь подешевела, пока лежит в избранном. Цена меняется каждый день: курс юаня и цена на Poizon</div>` : ''}
       <div class="prow">${fav.slice(0,10).map(p => { const mp = favPrice(p) || minPrice(p), drop = priceDrop(p) ? FP[p.id] - favPrice(p) : 0;
         return `<button class="pc" onclick="openProduct('${p.id}')"><span class="ph">${thumbP(p)}${drop ? `<span class="tg">−${fmt(drop)}</span>` : ''}</span><span class="n">${esc(p.brand)} ${esc(p.name)}</span><span class="p">${FAVSZ[p.id] ? (p.cat === 'shoes' ? 'EU ' : '') + esc(FAVSZ[p.id]) + ' · ' : ''}${mp ? fmt(mp) : 'по запросу'}</span></button>` }).join('')}</div>`;
   } else if(guest){
@@ -2322,15 +2450,15 @@ function renderOrders(){
   $('orders-sec').hidden = $('orders').hidden = !list.length;   // нет заказов — нет пустого блока
   $('orders').innerHTML = list.map(o => {
     const tr = String(o.track||'').replace(/[^A-Za-z0-9-]/g,''), n = esc(o.num), its = itemsOf(o);
-    const wait = o.st === 'новый', moving = PAID_ST.includes(o.st), j = journeyIdx(o), d = dropsOf(o);
-    const label = o.local ? 'Отправлен' : wait ? 'Ждёт оплаты' : moving ? (j >= 6 ? 'Приехал' : 'В пути') : (o.status || '');
-    const [d1, d2] = CFG.journey.days, rest = Math.round((d1+d2)/2) - d;
-    const stage = moving ? `<div class="obar">${JOURNEY.map((_,i)=>`<i class="${i<=j?'on':''}"></i>`).join('')}</div>
-      <div class="ostage">${esc(JOURNEY[j])} · этап ${j+1} из ${JOURNEY.length}${j < 6 ? (rest > 0 ? ` · осталось ≈ ${rest} ${plural(rest,['день','дня','дней'])}` : ' · уже скоро') : ''}${d ? ` · ${d} ${plural(d,['капля','капли','капель'])}` : ''}</div>` : '';
+    const wait = o.st === 'новый', moving = PAID_ST.includes(o.st), S = stagesOf(o), j = stageIdx(o), d = dropsOf(o), stock = stockOrder(o);
+    const label = o.local ? 'Отправлен' : wait ? 'Ждёт оплаты' : moving ? (stock ? 'Готовлю' : journeyIdx(o) >= 6 ? 'Приехал' : 'В пути') : (o.status || '');
+    const stage = moving ? `<div class="obar">${S.map((_,i)=>`<i class="${i<=j?'on':''}"></i>`).join('')}</div>
+      <div class="ostage">${esc(S[j])} · этап ${j+1} из ${S.length}${leftText(o) ? ' · '+esc(leftText(o)) : ''}${d && !stock ? ` · ${d} ${plural(d,['капля','капли','капель'])}` : ''}</div>` : '';
     const btns = o.local ? `<button class="btn sm" onclick="payOrder('${n}')">Написать Кристине</button><button class="btn sm ghost" onclick="reportGot('${n}')">Уже получили?</button><button class="btn sm ghost" onclick="hideOrder('${n}')">Убрать</button>`
-      : wait ? `<button class="btn sm" onclick="payOrder('${n}')">Оплатить</button>`
+      : wait ? `<button class="btn sm" onclick="payOrder('${n}')">Оплатить</button><button class="btn sm ghost" onclick="cancelOrder('${n}')">Отменить</button>`
       : o.st === 'отменён' ? ''
-      : `<button class="btn sm teal" onclick="openJourney('${n}')">${o.st === 'выдан' ? ((o.n||1) > 1 ? 'Коробки на полке' : 'Коробка на полке') : 'Путь посылки'}</button>${tr && moving ? `<button class="btn sm ghost" onclick="$('track-in').value='${tr}';track();scrollToId('track-anchor')">Где посылка</button>` : ''}`;
+      : o.st === 'выдан' ? `<button class="btn sm teal" onclick="openBox('${n}',0)">${(o.n||1) > 1 ? 'Коробки на полке' : 'Коробка на полке'}</button>`
+      : `<button class="btn sm teal" onclick="openTrack('${n}')">Путь посылки</button>`;
     return `<div class="order"><div class="orow"><div class="oth">${thumb(its[0])}</div><div class="ot"><b>${esc(orderTitle(o))}</b><span>${n} · ${esc(o.date||'')} · ${fmt(o.pay||0)}</span></div><span class="status ${wait || pendingLocal(o) ? 'wait' : moving ? 'go' : ''}">${esc(label)}</span></div>
       ${stage}${btns ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${btns}</div>` : ''}</div>`;
   }).join('');
@@ -2353,17 +2481,72 @@ function trackView(n, j){
     <div class="trk-list">${names.map((t,i)=>`<div class="${i<=cur?'on':''} ${i===cur && !done?'cur':''}"><span></span>${esc(t)}</div>`).join('')}</div>
   </div>`;
 }
-async function track(){
-  const n = $('track-in').value.trim().replace(/\s+/g,''), out = $('track-out'); if(!n) return toast('Введите трек-номер');
-  out.innerHTML = '<div class="small" style="margin-top:10px">Ищу…</div>';
+/* трек у заказа подгружается сам внутри «Пути посылки»; трек проверяет только таблица — службу доставки клиент не видит */
+async function loadTrack(n){
+  const out = $('trk-box'); if(!out || !n || !(CFG.api && inTg)) return;
+  out.innerHTML = '<div class="small" style="margin-top:12px">Проверяю трек…</div>';
   try{
-    let j;
-    /* трек проверяет только таблица: службу доставки клиент не видит нигде, даже в коде */
-    if(!(CFG.api && inTg)){ out.innerHTML = '<div class="small" style="margin-top:10px">Этапы посылки видны, когда приложение открыто из Telegram. Или напишите мне, подскажу.</div>'; return }
-    j = await api('track', { track:n }); if(!j || !j.ok) throw 0;
-    if((j.errors && j.errors.length) || !(j.line||[]).length){ out.innerHTML = '<div class="small" style="margin-top:10px">Не нашла. Проверьте номер или напишите мне.</div>'; return }
-    out.innerHTML = trackView(n, j);
-  }catch(e){ out.innerHTML = '<div class="small" style="margin-top:10px">Сейчас недоступно, напишите мне.</div>' }
+    const j = await api('track', { track:n });
+    if(!j || !j.ok || (j.errors && j.errors.length) || !(j.line||[]).length){ out.innerHTML = ''; return }
+    if($('trk-box') === out) out.innerHTML = `<div class="h2" style="font-size:13px;margin-top:16px">Где сейчас посылка</div>${trackView(n, j)}`;
+  }catch(e){ out.innerHTML = '' }
+}
+/* ---------- путь посылки: этапы, срок, фото и трек — по кнопке у заказа ---------- */
+const JOURNEY_STOCK = ['Заказ оформлен','Оплачен','Готовлю к выдаче','Получен'];
+/* заказ целиком из вещей в наличии: выкупать на Poizon нечего, пути из Китая нет */
+function stockOrder(o){
+  const ids = o.ids || [];
+  return ids.length > 0 && ids.every(x => { const p = CAT.find(c => c.id === x.id); return p && p.stock });
+}
+const stagesOf = o => stockOrder(o) ? JOURNEY_STOCK : JOURNEY;
+function stageIdx(o){ const j = journeyIdx(o); return !stockOrder(o) ? j : j >= 7 ? 3 : j >= 2 ? 2 : j }
+function leftText(o){
+  const j = journeyIdx(o);
+  if(o.st === 'новый') return 'ждёт оплаты';
+  if(j >= 7) return '';
+  if(stockOrder(o)) return j >= 1 ? 'вещь уже в Екатеринбурге' : '';
+  if(j >= 6) return 'можно забирать';
+  const d = dropsOf(o), [d1, d2] = CFG.journey.days;
+  return d2 - d <= 0 ? 'уже совсем скоро' : `ещё примерно ${Math.max(1, d1-d)}–${d2-d} ${plural(d2-d,['день','дня','дней'])}`;
+}
+function openTrack(num){
+  const o = (SRV_ORDERS||[]).find(x => x.num === num);
+  if(!o) return openJourney(num);
+  if(o.st === 'выдан') return openBox(o.num, 0);
+  const S = stagesOf(o), j = stageIdx(o), n = esc(o.num), early = journeyIdx(o) <= 1, left = leftText(o);
+  openSheet(`<span class="hand">путь посылки</span>
+    <div class="h2" style="margin-top:4px;text-transform:none;font-size:16px;overflow-wrap:anywhere">${esc(orderTitle(o))}</div>
+    <div class="small" style="margin-top:2px;white-space:normal">${n} · ${fmt(o.pay||0)}${left ? ' · '+esc(left) : ''}</div>
+    ${o.st === 'новый' ? `<div class="list" style="margin-top:12px"><button class="btn block" onclick="payOrder('${n}')">Оплатить ${fmt(o.pay||0)}</button><button class="btn ghost block" onclick="cancelOrder('${n}')">Отменить заказ</button></div>` : ''}
+    <div class="jr">${S.map((t,i)=>`<div class="${i<=j?'on':''} ${i===j?'cur':''}"><i></i><span>${t}</span></div>`).join('')}</div>
+    ${(o.pics||[]).length ? `<div class="h2" style="font-size:13px;margin-top:14px">Фото вашей посылки</div><div class="jr-ph" id="jr-ph"></div>` : ''}
+    <div id="trk-box"></div>
+    <div class="rule">${stockOrder(o) ? 'Вещь в наличии в Екатеринбурге: напишу, когда и как передам.' : 'Статусы и трек-номер приходят в Telegram сами, спрашивать не нужно.'}</div>
+    <div class="list" style="margin-top:12px">
+      ${!stockOrder(o) && o.st !== 'новый' ? `<button class="btn ghost block" onclick="openJourney('${n}')">Росток этой посылки</button>` : ''}
+      ${early && o.st !== 'новый' ? `<button class="btn ghost block" onclick="changeMind('${n}')">Передумали? Напишите мне</button>` : ''}
+    </div>`);
+  loadPics(o); loadTrack(o.track);
+}
+/* неоплаченный заказ клиент отменяет сам; оплаченный — через Кристину, пока вещь не выкуплена */
+function cancelOrder(num){
+  openSheet(`<span class="hand">отмена заказа</span>
+    <div class="h2" style="margin-top:4px">${esc(num)}</div>
+    <div class="small" style="margin:8px 0 14px;white-space:normal">Заказ ещё не оплачен, отменить можно сразу. Если уже перевели деньги — напишите мне, верну.</div>
+    <div class="list"><button class="btn block" onclick="cancelNow('${esc(num)}')">Отменить заказ</button><button class="btn ghost block" onclick="closeSheet()">Оставить заказ</button></div>`);
+}
+async function cancelNow(num){
+  haptic('medium');
+  const r = CFG.api && inTg ? await api('cancel', { num }) : null;
+  if(r && r.ok){
+    const o = (SRV_ORDERS||[]).find(x => x.num === num); if(o){ o.st = 'отменён'; o.status = 'Отменён' }
+    closeSheet(); toast(`Заказ ${num} отменён`); renderMeView(); renderGiftBanner(); return;
+  }
+  closeSheet(); changeMind(num);
+}
+function changeMind(num){
+  const text = `Здравствуйте! Передумал(а) по заказу ${num}, можно отменить?`;
+  openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(text)}`, text);
 }
 async function shareRef(){
   if(CFG.api && inTg && !G.link) await register();
@@ -2398,7 +2581,7 @@ function certCustom(){
   document.querySelectorAll('#denoms button').forEach(b=>b.classList.remove('on'));
   if(v){ certDenom = v; $('cert-amt').textContent = fmt(v) }
 }
-function buyCert(){
+async function buyCert(){
   if($('cert-custom').value){ certDenom = parseInt($('cert-custom').value,10) || 0 }
   if(certDenom < 500){ haptic('medium'); return toast('Сумма сертификата от 500 ₽') }
   if(certDenom > 500000){ haptic('medium'); return toast('Напишите мне, если нужен сертификат больше 500 000 ₽') }
@@ -2406,7 +2589,11 @@ function buyCert(){
   const to = $('cert-to').value.trim(), from = $('cert-from').value.trim(), wish = $('cert-wish').value.trim();
   // хвост из трёх знаков: номер сертификата — это деньги, его не должно быть легко угадать
   const num = 'SR-' + Date.now().toString().slice(-5) + '-' + Array.from({ length: 3 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-  api('cert', { cert:{ num, value:certDenom, kind:certKind, to, from, wish } });
+  // заявка ушла в таблицу — показываем итог прямо в приложении: реквизиты и «отправить скриншот»; бот пишет то же в личку
+  const btn = document.activeElement; if(btn && btn.tagName === 'BUTTON') btn.disabled = true;
+  const r = CFG.api && inTg ? await api('cert', { cert:{ num, value:certDenom, kind:certKind, to, from, wish } }) : null;
+  if(btn && btn.tagName === 'BUTTON') btn.disabled = false;
+  if(r && r.ok){ haptic('ok'); return certDone(num, certDenom) }
   const msg = [ `Здравствуйте! Хочу подарочный сертификат POIZON.EKB, заявка ${num}`, '',
     `Номинал: ${fmt(certDenom)}`,
     `Вид: ${certKind==='Электронный' ? 'электронный, пришлите картинку в Telegram' : 'печатный'}`,
@@ -2415,6 +2602,19 @@ function buyCert(){
   try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(()=>{}) }catch(e){}
   haptic('ok'); openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(msg)}`, msg);
 }
+function certDone(num, sum){
+  const shot = `Оплатил(а) сертификат ${num} на ${fmt(sum)}, скриншот прикладываю`;
+  openSheet(`<span class="hand">заявка принята</span>
+    <div class="h2" style="margin-top:4px">${esc(num)} · ${fmt(sum)}</div>
+    <div class="howmore"><div class="slip"><dl>
+      <div class="row"><dt>Оплата</dt><dd>${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}. Из другого банка — через СБП</dd></div>
+      <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату и пришлю сертификат. Реквизиты уже продублировала вам в Telegram</dd></div>
+    </dl></div></div>
+    <div class="list" style="margin-top:16px">
+      <button class="btn block" onclick="copyText('${CFG.pay.raw}','Номер скопирован, вставьте в приложении банка')">Скопировать номер для перевода</button>
+      <button class="btn ghost block" onclick="certShot('${esc(num)}',${sum})">Отправить скриншот оплаты</button></div>`);
+}
+function certShot(num, sum){ const t = `Оплатил(а) сертификат ${num} на ${fmt(sum)}, скриншот прикладываю`; openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t) }
 
 /* =====================================================================
    ИГРЫ: «Вырасти пару», свой герой.
@@ -2466,7 +2666,6 @@ function plantSVG(s, tile){
   const pot = `<g class="pot"><path d="M58 130h84l-7 46c-1 6-5 9-11 9H76c-6 0-10-3-11-9z" fill="url(#pb)"/><path d="M64 134h10l-4 46c-3-1-5-4-5-8z" fill="#fff" opacity=".28"/>
     <rect x="49" y="114" width="102" height="22" rx="9" fill="url(#rm)"/><rect x="53" y="117" width="94" height="6" rx="3" fill="#fff" opacity=".12"/>
     <ellipse cx="100" cy="117" rx="40" ry="6" fill="url(#so)"/>
-    <text x="100" y="130.5" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="7.5" letter-spacing="1.6" fill="#fff">POIZON EKB</text>
     <path d="M80 154q5-6 10 0M110 154q5-6 10 0" stroke="#1d2b2e" stroke-width="3" fill="none" stroke-linecap="round"/>
     <path d="M92 160q8 10 16 0z" fill="#1d2b2e"/><path d="M96 164q4 3 8 0z" fill="#f6a9b6"/>
     <ellipse cx="76" cy="161" rx="6" ry="3.5" fill="#f6a9b6" opacity=".85"/><ellipse cx="124" cy="161" rx="6" ry="3.5" fill="#f6a9b6" opacity=".85"/></g>`;
@@ -2513,22 +2712,19 @@ function openJourney(num){
       ${boxes ? `<button class="btn ghost block" style="margin-top:8px" onclick="closeSheet();go('me');scrollToId('me-shelf')">Моя полка</button>` : ''}`);
     return;
   }
-  const j = journeyIdx(o), d = dropsOf(o), its = itemsOf(o), [d1, d2] = CFG.journey.days;
-  const left = o.st === 'новый' ? 'ждёт оплаты' : j >= 6 ? 'посылка приехала' : d2 - d <= 0 ? 'уже совсем скоро' : `ещё примерно ${Math.max(1, d1-d)}–${d2-d} ${plural(d2-d,['день','дня','дней'])}`;
+  // игра: только росток, капли и шкала; этапы, фото и трек — в «Пути посылки» у заказа
+  const j = journeyIdx(o), d = dropsOf(o), its = itemsOf(o), left = leftText(o);
   openSheet(`<div style="text-align:center">
       <span class="hand">${JOURNEY_HAND[j]}</span>
       <div class="h1" style="font-size:19px;margin-top:4px">Вырасти пару</div>
       <div class="small" style="margin-top:2px;white-space:normal;overflow-wrap:anywhere">${esc(o.num)}${its.length ? ' · '+esc(its.map(x=>x.title).join(', ')) : ''}</div>
       <div class="garden">${plantSVG(PLANT_AT[j])}</div>
       <span class="meter" style="height:10px"><i style="width:${Math.round(j/7*100)}%"></i></span>
-      <div class="dela num" style="font-size:13px;margin-top:8px;white-space:normal">${d} ${plural(d,['капля','капли','капель'])} · ${left}</div>
+      <div class="dela num" style="font-size:13px;margin-top:8px;white-space:normal">${d} ${plural(d,['капля','капли','капель'])}${left ? ' · '+left : ''}</div>
     </div>
     ${o.st === 'новый' ? `<button class="btn block" style="margin-top:12px" onclick="payOrder('${esc(o.num)}')">Оплатить заказ</button>` : ''}
-    <div class="jr">${JOURNEY.map((t,i)=>`<div class="${i<=j?'on':''} ${i===j?'cur':''}"><i></i><span>${t}</span></div>`).join('')}</div>
-    ${(o.pics||[]).length ? `<div class="h2" style="font-size:13px;margin-top:14px">Фото вашей посылки</div><div class="jr-ph" id="jr-ph"></div>` : ''}
     <div class="rule">Капля за каждый день пути, этап доставки — скачок роста. Посылка приедет — вырастет кроссовок, и коробка встанет на вашу полку.</div>
-    ${o.track ? `<button class="btn ghost block" style="margin-top:12px" onclick="closeSheet();go('me');$('track-in').value='${esc(o.track)}';track();scrollToId('track-anchor')">Подробнее о доставке</button>` : ''}`);
-  loadPics(o);
+    <button class="btn ghost block" style="margin-top:12px" onclick="openTrack('${esc(o.num)}')">Путь посылки</button>`);
 }
 /* фото этапов, которые Кристина прислала боту; грузятся по одному через таблицу */
 const PICS = {};
@@ -2545,7 +2741,7 @@ function openPic(num, i){
   const src = PICS[num+'#'+i]; if(!src) return;
   const o = (SRV_ORDERS||[]).find(x=>x.num===num), s = o && o.pics ? o.pics[i] : 0;
   openSheet(`<span class="hand">${esc((JOURNEY[s]||'').toLowerCase())}</span><img src="${src}" alt="" style="width:100%;border-radius:18px;margin-top:8px">
-    <button class="btn ghost block" style="margin-top:12px" onclick="openJourney('${esc(num)}')">Назад</button>`);
+    <button class="btn ghost block" style="margin-top:12px" onclick="openTrack('${esc(num)}')">Назад</button>`);
 }
 
 /* ---------- цена у других ресейлеров: только для отбора «С чего начинают», клиенту не показывается ---------- */

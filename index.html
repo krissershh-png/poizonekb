@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-16e';
+const BUILD = '2026-09-16f';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -565,6 +565,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .coupon .t .left{color:var(--orange)}
 .orow{display:flex;align-items:center;gap:10px}
 .oth{width:48px;height:48px;flex:0 0 48px;border-radius:12px;overflow:hidden;display:grid;place-items:center}
+.oth.cert-th{background:#fff}
 .oth img{width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;border-radius:12px}.oth img.life{object-fit:cover;padding:0}
 .ot{flex:1;min-width:0}.ot b{display:block;font-weight:900;font-size:14px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ot span{display:block;font-size:12px;font-weight:700;color:var(--mute);margin-top:2px}
@@ -924,8 +925,11 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 
   <div class="cap" id="gifts-sec"><span>Мои скидки</span></div>
   <div class="list" id="my-coupons"></div>
-  <div class="list" id="my-certs" style="margin-top:10px"></div>
   <button class="btn teal block" id="me-spin" style="margin-top:10px" onclick="openWheel()" hidden>Крутить колесо</button>
+
+  <!-- оплаченные сертификаты — отдельно от скидок; неоплаченные стоят в «Моих заказах» -->
+  <div class="cap" id="certs-sec"><span>Мои сертификаты</span></div>
+  <div class="list" id="my-certs"></div>
 
   <div class="cap" id="ref"><span>Приведи друга</span></div>
   <div class="tile dark" style="width:100%;flex:none;min-height:0;gap:14px">
@@ -2368,7 +2372,7 @@ function renderMeView(){
     + perks.map(x=>`<div class="coupon"><span class="v">+</span><span class="t"><b>Подарок в посылку</b>к следующему заказу</span></div>`).join('');
   renderMyCerts();
   $('me-spin').hidden = !spinAvailable() || (guest && !best);   // у гостя кнопка колеса уже в главной карточке
-  $('gifts-sec').hidden = !rest.length && !perks.length && !(G.certs||[]).length && $('me-spin').hidden;
+  $('gifts-sec').hidden = !rest.length && !perks.length && $('me-spin').hidden;
   renderHeroCard(); renderGames(); renderMyLink(); renderOrders(); renderVibeRow();
   // игры, полка и герой — после первого заказа: новичку они мешают понять главное, а покупателю дарят радость
   const veteran = orderedBefore() || boxesOf().length > 0;
@@ -2566,13 +2570,17 @@ function loadMyOrders(){
     if(cnt > seen){ save('boxesSeen', cnt); const item = GROW_UNL[cnt-1]; setTimeout(()=>{ confetti(); toast(item ? `Новая коробка на полке! Для героя: ${UNL_NAME[item]}` : 'Новая коробка на полке!') }, 800) }
   });
 }
+const CERT_TH = '<svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true"><rect x="6" y="12" width="36" height="24" rx="4" fill="#c81717"/><path d="M6 20h36" stroke="#121212" stroke-width="4"/><text x="33" y="32" font-family="Unbounded,Arial Black,sans-serif" font-weight="900" font-size="10" fill="#fff" text-anchor="middle">₽</text></svg>';
 function renderOrders(){
   renderShelf();
   // сначала неоплаченные, потом в пути, потом полученные
   const rank = o => o.st === 'новый' || pendingLocal(o) ? 0 : PAID_ST.includes(o.st) ? 1 : 2;
   const list = myOrders().filter(o => o.num !== FEATURED).sort((a,b) => rank(a) - rank(b));
-  $('orders-sec').hidden = $('orders').hidden = !list.length;   // нет заказов — нет пустого блока
-  $('orders').innerHTML = list.map(o => {
+  const certs = (G.certs||[]).filter(s => s.status === 'заявка' && s.mine !== false);
+  $('orders-sec').hidden = $('orders').hidden = !list.length && !certs.length;   // нет заказов — нет пустого блока
+  $('orders').innerHTML = certs.map(s => { const n = esc(s.num);
+    return `<div class="order"><div class="orow"><div class="oth cert-th">${CERT_TH}</div><div class="ot"><b>Сертификат</b><span>${n} · ${fmt(s.value)}</span></div><span class="status wait">Ждёт оплаты</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" onclick="certDone('${n}',${s.value})">Оплатить</button></div></div>` }).join('') + list.map(o => {
     const tr = String(o.track||'').replace(/[^A-Za-z0-9-]/g,''), n = esc(o.num), its = itemsOf(o);
     const wait = o.st === 'новый', moving = PAID_ST.includes(o.st), S = stagesOf(o), j = stageIdx(o), d = dropsOf(o), stock = stockOrder(o);
     const label = o.local ? 'Отправлен' : wait ? 'Ждёт оплаты' : moving ? (stock ? 'Готовлю' : journeyIdx(o) >= 6 ? 'Приехал' : 'В пути') : (o.status || '');
@@ -2905,7 +2913,9 @@ function certState(s){
   return { text:`${who}${s.rest < s.value ? `остаток из ${fmt(s.value)}` : 'активен, бессрочно'}`, btn:`<button class="btn sm" onclick="openCert('${esc(s.num)}')">Открыть</button>` };
 }
 function renderMyCerts(){
-  $('my-certs').innerHTML = (G.certs||[]).map(s => { const st = certState(s);
+  const list = (G.certs||[]).filter(s => s.status !== 'заявка');
+  $('certs-sec').hidden = $('my-certs').hidden = !list.length;
+  $('my-certs').innerHTML = list.map(s => { const st = certState(s);
     return `<div class="coupon cert-row"><span class="v">${fmt(s.status === 'заявка' ? s.value : s.rest)}</span><span class="t"><b>Сертификат ${esc(s.num)}</b>${esc(st.text)}</span>${st.btn}</div>` }).join('');
 }
 function openCert(num){
@@ -2930,7 +2940,7 @@ function shareCert(num, sum){
 }
 /* ссылка на сертификат в приложении (?startapp=c_SR-…) и кнопка «Мои сертификаты» из бота */
 function certDeepLink(sp){
-  if(sp === 'certs') return setTimeout(() => { go('me'); scrollToId('gifts-sec') }, 1500);
+  if(sp === 'certs') return setTimeout(() => { go('me'); scrollToId($('certs-sec').hidden ? 'orders-sec' : 'certs-sec') }, 1500);
   const m = /^c_(SR-\d{5}-[A-Z0-9]{3})$/i.exec(sp || ''); if(!m) return;
   const num = m[1].toUpperCase();
   setTimeout(() => api('certinfo', { num }).then(r => {

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17d';
+const BUILD = '2026-09-17e';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -831,6 +831,16 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
     <div class="hs" id="home-vibe"></div>
   </div>
 
+  <div id="rus-home" hidden>
+    <div class="sec"><h2 class="h2">Дешевле, чем в России</h2></div>
+    <div class="hs" id="home-rus"></div>
+  </div>
+
+  <div id="viewed-home" hidden>
+    <div class="sec"><h2 class="h2">Вы смотрели</h2></div>
+    <div class="hs" id="home-viewed"></div>
+  </div>
+
   <div class="sec"><h2 class="h2">Хиты канала</h2><button class="more" onclick="shopCat='all';go('shop')">Каталог</button></div>
   <div class="chips" id="home-chips" style="margin-bottom:10px"></div>
   <div class="grid" id="home-grid"></div>
@@ -1354,8 +1364,40 @@ const SUB_ALL = { shoes:'Вся обувь', clothes:'Вся одежда', acc:
 let shopSub = 'all';
 function catsPresent(){ return CATS.filter(c => CAT.some(p=>p.cat===c.id)) }
 let homeCat = 'all';
+/* поиск как пишут люди: «найк данк», «нью беланс 530», «угги», «мартинсы». Кириллица → названия брендов и моделей, слова в любом порядке */
+const SEARCH_ALIAS = [
+  [/н[ьъ]?ю\s*б[еэ]л[еа]нс|(?<=\s)нб(?=\s)/g, 'new balance'], [/найк[иа]?/g, 'nike'], [/адидас[ыа]?/g, 'adidas'], [/[дж]ж?ордан[ыа]?|джорд[ао]ны?/g, 'jordan'],
+  [/(?<=\s)у+г+и?(?=\s)/g, 'ugg'], [/тимберленд[ыа]?|тимбы/g, 'timberland'], [/(доктор\s*)?март[ие]н?сы?|др\.?\s*мартенс/g, 'dr. martens'],
+  [/пума/g, 'puma'], [/асикс/g, 'asics'], [/ванс[ыа]?/g, 'vans'], [/конверс[ыа]?/g, 'converse'], [/норт\s*ф[еэ]йс|тнф/g, 'north face'],
+  [/кархарт/g, 'carhartt'], [/стон\s*айл[еа]нд|стоник/g, 'stone island'], [/лонг?ш?ч?[аа]мп|лоншан/g, 'longchamp'], [/гуччи/g, 'gucci'],
+  [/прада/g, 'prada'], [/баленсиага/g, 'balenciaga'], [/лабубу/g, 'labubu'], [/онитсука|оницука/g, 'onitsuka'], [/саломон/g, 'salomon'],
+  [/самб[аы]/g, 'samba'], [/газел[ьи]/g, 'gazelle'], [/кампус/g, 'campus'], [/спеш?ц?иал/g, 'spezial'], [/данк[иа]?/g, 'dunk'],
+  [/форс[ыа]?|аф\s*1|эйр\s*форс/g, 'air force'], [/вомеро/g, 'vomero'], [/ультра/g, 'ultra'], [/мини/g, 'mini'], [/классик/g, 'classic'], [/платформ[аеу]?/g, 'platform'], [/ретро/g, 'retro'], [/лоу/g, 'low'], [/хай/g, 'high'], [/нуп?тс?е|напси/g, 'nuptse'], [/пуховик/g, 'пуховик'],
+  [/кросс?овк[иа]|кроссы|кеды/g, 'shoes'], [/сумк[аи]|сумочк[аи]/g, 'bags'], [/очк[иа]/g, 'очки'], [/часы/g, 'часы']
+];
+const CAT_WORDS = { shoes:'shoes кроссовки обувь', clothes:'clothes одежда', bags:'bags сумка', acc:'acc аксессуары' };
+function searchMatcher(q){
+  let s = ' ' + q.toLowerCase().replace(/ё/g, 'е') + ' ';
+  SEARCH_ALIAS.forEach(([re, to]) => { s = s.replace(re, ' ' + to + ' ') });
+  const words = s.split(/[\s,]+/).filter(Boolean);
+  return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
+}
+/* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */
+function renderRusRail(){
+  const list = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a))).slice(0, 12);
+  $('rus-home').hidden = list.length < 2;
+  $('home-rus').innerHTML = list.map(card).join('');
+}
+/* «Вы смотрели»: последние открытые карточки, чтобы вернуться к вещи без поиска */
+function rememberViewed(id){ const v = load('viewed', []).filter(x => x !== id); v.unshift(id); save('viewed', v.slice(0, 12)) }
+function renderViewed(){
+  const list = load('viewed', []).map(id => CAT.find(p => p.id === id)).filter(p => p && (p.stock || p.post || minPrice(p) > 0));
+  $('viewed-home').hidden = list.length < 2;
+  $('home-viewed').innerHTML = list.map(card).join('');
+}
 function renderHome(){
   $('home-stock').innerHTML = CAT.filter(p=>p.stock).map(card).join('');
+  renderRusRail(); renderViewed();
   // цены с Poizon обновляются каждый день: раз в день сообщаем, если избранное подешевело
   const drops = CAT.filter(priceDrop).length;
   if(drops && G.dropDay !== dayKey()){ G.dropDay = dayKey(); save('gifts', G); setTimeout(()=>toast(`Цена ниже на ${drops} ${plural(drops,['вещь','вещи','вещей'])} из избранного`), 1500) }
@@ -1639,8 +1681,9 @@ function renderShop(){
   const subs = (SUBS[shopCat] || []).filter(s => CAT.some(p => p.cat===shopCat && p.sub===s.id));
   $('shop-sub').hidden = subs.length < 2;
   $('shop-sub').innerHTML = [{id:'all',t: SUB_ALL[shopCat] || 'Все'},...subs].map(s=>`<button class="chip ${shopSub===s.id?'on':''}" onclick="shopSub='${s.id}';renderShop()">${s.t}</button>`).join('');
+  const qm = searchMatcher(q);
   let list = shopBase()
-    .filter(p => !q || (p.brand+' '+p.name).toLowerCase().includes(q))
+    .filter(p => !q || qm(p))
     .filter(passFilters);
   const fc = fltCount(), fb = $('flt-btn'), oldBadge = fb.querySelector('i');
   if(oldBadge) oldBadge.remove();
@@ -1678,7 +1721,7 @@ $('size-all').innerHTML = Object.keys(CHARTS).filter(b=>!['Jordan','Onitsuka Tig
 let pick = null;
 function openProduct(id){
   const p = CAT.find(x=>x.id===id); if(!p) return;
-  openedThisVisit++;
+  openedThisVisit++; rememberViewed(id);
   if(favs.includes(id) && favPrice(p)){ FP[id] = favPrice(p); save('favp', FP) }   // посмотрели — метка «цена ниже» снимается
   const seen = load('seen', 0) + 1; save('seen', seen); if(seen === 3) setTimeout(maybeWheel, 900);   // третья карточка — время подарка
   const S = sizesOf(p), one = S.length === 1 && S[0].eu === 'Один';

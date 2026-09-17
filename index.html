@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17b';
+const BUILD = '2026-09-17c';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1302,7 +1302,7 @@ function card(p){
     <button class="fav ${favs.includes(p.id)?'on':''}" onclick="toggleFav('${p.id}',this)" aria-label="В избранное">${HEART}</button>
     <button class="bd" onclick="openProduct('${p.id}')"><span class="brand">${esc(p.brand)}</span><span class="name">${esc(p.name)}</span>
       <span class="meta">${meta}</span>
-      <span class="price num">${mp ? (p.stock?'':'<small>от </small>')+fmt(mp) : '<small>цена по запросу</small>'}</span>${rusOk(p, minPrice(p)) ? `<span class="rus-c">в РФ <s class="num">${fmt(RETAIL[p.id].p)}</s></span>` : ''}</button></div>`;
+      <span class="price num">${mp ? (p.stock?'':'<small>от </small>')+fmt(mp) : '<small>цена по запросу</small>'}</span>${rusOk(p) ? `<span class="rus-c">в РФ <s class="num">${fmt(RETAIL[p.id].p)}</s></span>` : ''}</button></div>`;
 }
 /* избранное помнит цену на момент добавления: когда на Poizon стало дешевле, на карточке появляется «Цена ниже» */
 let FP = load('favp', {});
@@ -1769,11 +1769,12 @@ function fitSize(inp){
   } else out.textContent = `по сетке ${row[1]} EU — сейчас такого нет на Poizon`;
 }
 /* под ценой: сколько та же вещь стоит в российских магазинах. Цену Крис проверяет сама и вписывает в лист «Цены в России»; строка видна, только если у неё дешевле */
-const rusOk = (p, mp) => { const r = RETAIL[p.id]; return !!(r && mp && r.p - mp >= Math.max(2000, mp * .2)) };
+/* сравниваем с самым дорогим размером: любой размер у Крис должен быть заметно дешевле — от 20% и не меньше 2 000 ₽ */
+const maxPrice = p => { if(p.stock || p.post) return minPrice(p); const s = sizesOf(p).filter(x => x.ok); return s.length ? Math.max(...s.map(x => x.price)) : 0 };
+const rusOk = p => { const r = RETAIL[p.id], mx = maxPrice(p); return !!(r && mx && r.p - mx >= Math.max(2000, mx * .2)) };
 function rusLine(p, mp){
-  // показываем только заметную выгоду: от 20% и не меньше 2 000 ₽, иначе строка не убеждает
-  if(!rusOk(p, mp)) return ''; const r = RETAIL[p.id];
-  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода до ${fmt(r.p - mp)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'цена на '+esc(r.d) : ''}</em>` : ''}</div>`;
+  if(!rusOk(p)) return ''; const r = RETAIL[p.id], mx = maxPrice(p);
+  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода ${mx > mp ? 'от ' : ''}${fmt(r.p - mx)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'цена на '+esc(r.d) : ''}</em>` : ''}</div>`;
 }
 /* доверие в карточке: сколько раз вещь уже заказывали у меня */
 function trustLine(p, mp){

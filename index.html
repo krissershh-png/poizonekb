@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17k';
+const BUILD = '2026-09-17l';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -124,6 +124,11 @@ a{color:inherit;text-decoration:none}
 .qwrap #q{padding-right:48px}
 .qphoto{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer}
 .qphoto:active{background:#e9e4e4}
+.vs-wait{display:flex;align-items:center;gap:12px;margin-top:10px}
+.vs-wait b{display:block;font-weight:900;font-size:14px}
+.vs-thumb{width:64px;height:64px;flex:0 0 64px;object-fit:cover;border-radius:12px;background:var(--bg)}
+.vs-none{margin-top:16px;padding:14px;border-radius:14px;background:var(--bg);display:grid;gap:2px}
+.vs-none span{font-size:13px;font-weight:700;color:var(--ink-2)}
 .survey-tile{display:block;width:100%;margin-top:12px;padding:0;border:0;background:none;cursor:pointer}
 .survey-tile img{display:block;width:100%;aspect-ratio:4/1;border-radius:14px}
 .survey-img{display:block;width:100%;max-width:100%;aspect-ratio:4/1;border-radius:14px;margin-top:4px}
@@ -1435,17 +1440,72 @@ function photoChosen(inp){
     c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
     PHOTO = c.toDataURL('image/jpeg', .85);
-    openSheet(`<span class="hand">найду по фото</span>
-      <div class="h2" style="margin-top:4px">Пришлю ссылку и цену</div>
-      <div class="small" style="margin-top:12px">Вы выбрали это фото:</div>
-      <img class="photo-prev" src="${PHOTO}" alt="Ваше фото" style="margin-top:6px">
-      <div class="field"><span>Что важно (необязательно)</span><input id="photo-note" maxlength="200" placeholder="Размер 38, хочу именно этот цвет"></div>
-      <div class="rule">Фото уйдёт мне в Telegram. Найду вещь на Poizon и напишу вам в личку, обычно в течение дня.</div>
-      <div class="list" style="margin-top:12px"><button class="btn block" id="photo-send" onclick="photoSend()">Отправить Крис</button>
-      <button class="btn ghost block" onclick="photoPick()">Выбрать другое фото</button></div>`);
+    // сначала ищем в каталоге прямо в телефоне; нет похожего или поиск не запустился — отправка Крис
+    openSheet(`<span class="hand">ищу в каталоге</span>
+      <div class="vs-wait"><img class="vs-thumb" src="${PHOTO}" alt="Ваше фото"><div><b>Сравниваю с вещами каталога</b><span class="small" id="vs-status">${VS.session ? 'Пара секунд' : 'Первый раз загружаю поиск, это до минуты'}</span></div></div>`);
+    const token = (VS.run = (VS.run || 0) + 1);
+    visualSearch(c).then(list => { if(VS.run === token && $('vs-status')) photoResults(list) })
+      .catch(() => { if(VS.run === token && $('vs-status')) photoSendSheet('В этот раз поиск не запустился на телефоне. Отправьте фото мне — найду сама.') });
   };
   im.onerror = () => { URL.revokeObjectURL(url); toast('Не получилось открыть фото, попробуйте другое') };
   im.src = url;
+}
+/* поиск по фото в телефоне: нейросеть DINOv2-small (24 МБ, лежит на сайте в ml/) превращает фото в «отпечаток» из 384 чисел.
+   Отпечатки трёх фото каждой вещи посчитаны заранее (ml/vecs.bin, int8). Похожесть — косинус; пороги подобраны на других фото тех же вещей */
+const VS = { session: null, vecs: null, ids: null, run: 0 };
+// та же вещь ≈ 1, та же модель другого цвета ≈ 0,8, фото не из каталога (люди, баннеры) ≤ 0,66
+const VS_SURE = 0.72, VS_MAYBE = 0.62;
+function loadScript(src){ return new Promise((ok, bad) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = bad; document.head.appendChild(s) }) }
+async function vsInit(){
+  if(VS.session) return;
+  const [ , bin, ids] = await Promise.all([
+    window.ort ? null : loadScript('ml/ort.wasm.min.js'),
+    fetch('ml/vecs.bin?v=' + BUILD).then(r => { if(!r.ok) throw 0; return r.arrayBuffer() }),
+    fetch('ml/vecs.json?v=' + BUILD).then(r => { if(!r.ok) throw 0; return r.json() })
+  ]);
+  ort.env.wasm.wasmPaths = new URL('ml/', location.href).href; ort.env.wasm.numThreads = 1;
+  VS.vecs = new Int8Array(bin); VS.ids = ids;
+  VS.session = await ort.InferenceSession.create('ml/dinov2_small_q8.onnx', { executionProviders: ['wasm'] });
+}
+async function visualSearch(src){
+  await vsInit();
+  // как при обучении модели: короткая сторона 256, центр 224×224, нормализация ImageNet
+  const S = 224, c = document.createElement('canvas'); c.width = c.height = S;
+  const k = 256 / Math.min(src.width, src.height), w = src.width * k, h = src.height * k;
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, (S - w) / 2, (S - h) / 2, w, h);
+  const px = x.getImageData(0, 0, S, S).data, t = new Float32Array(3 * S * S);
+  const M = [.485, .456, .406], SD = [.229, .224, .225];
+  for(let i = 0; i < S * S; i++) for(let ch = 0; ch < 3; ch++) t[i + ch * S * S] = (px[i * 4 + ch] / 255 - M[ch]) / SD[ch];
+  const out = await VS.session.run({ pixel_values: new ort.Tensor('float32', t, [1, 3, S, S]) });
+  const D = 384, q = out.last_hidden_state.data.subarray(0, D); let n = 0; for(const v of q) n += v * v; n = Math.sqrt(n);   // CLS-токен
+  const best = {};
+  for(let r = 0; r < VS.ids.length; r++){
+    let s = 0; const o = r * D; for(let i = 0; i < D; i++) s += VS.vecs[o + i] * q[i];
+    s = s / 127 / n; const id = VS.ids[r]; if(!(best[id] >= s)) best[id] = s;
+  }
+  return Object.entries(best).map(([id, s]) => ({ p: CAT.find(z => z.id === id), s })).filter(x => x.p && (x.p.stock || x.p.post || minPrice(x.p) > 0)).sort((a, b) => b.s - a.s);
+}
+function photoResults(list){
+  const top = list.length ? list[0].s : 0;
+  const sure = list.filter(x => x.s >= Math.max(VS_SURE, top - .15)).slice(0, 6), maybe = sure.length ? [] : list.filter(x => x.s >= Math.max(VS_MAYBE, top - .08)).slice(0, 4);
+  const found = sure.length ? sure : maybe;
+  if(!found.length) return photoSendSheet('В каталоге такого не нашлось. Отправьте фото мне — найду на Poizon и пришлю цену.');
+  openSheet(`<span class="hand">${sure.length ? 'нашла в каталоге' : 'похоже на это'}</span>
+    <div class="vs-wait" style="margin-top:6px"><img class="vs-thumb" src="${PHOTO}" alt="Ваше фото"><div><b>${sure.length ? 'Похожие вещи в каталоге' : 'Точного совпадения нет, но похожее есть'}</b><span class="small">Нажмите на вещь, чтобы открыть</span></div></div>
+    <div class="grid" style="margin-top:12px">${found.map(x => card(x.p)).join('')}</div>
+    <div class="vs-none"><b>Нет нужной вещи?</b><span>Отправьте фото мне — найду на Poizon и напишу цену</span>
+      <button class="btn block" style="margin-top:10px" onclick="photoSendSheet()">Отправить фото Крис</button></div>`);
+}
+function photoSendSheet(lead){
+  openSheet(`<span class="hand">найду по фото</span>
+    <div class="h2" style="margin-top:4px">Пришлю ссылку и цену</div>
+    ${lead ? `<div class="rule" style="margin-top:8px">${esc(lead)}</div>` : ''}
+    <div class="small" style="margin-top:12px">Вы выбрали это фото:</div>
+    <img class="photo-prev" src="${PHOTO}" alt="Ваше фото" style="margin-top:6px">
+    <div class="field"><span>Что важно (необязательно)</span><input id="photo-note" maxlength="200" placeholder="Размер 38, хочу именно этот цвет"></div>
+    <div class="rule">Фото уйдёт мне в Telegram. Найду вещь на Poizon и напишу вам в личку, обычно в течение дня.</div>
+    <div class="list" style="margin-top:12px"><button class="btn block" id="photo-send" onclick="photoSend()">Отправить Крис</button>
+    <button class="btn ghost block" onclick="photoPick()">Выбрать другое фото</button></div>`);
 }
 async function photoSend(){
   if(!PHOTO) return;

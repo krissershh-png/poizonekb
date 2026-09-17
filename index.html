@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17g';
+const BUILD = '2026-09-17i';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -198,7 +198,8 @@ a{color:inherit;text-decoration:none}
 .gal::-webkit-scrollbar{display:none}
 .gal img{flex:0 0 80%;aspect-ratio:4/5;object-fit:cover;border-radius:16px;scroll-snap-align:start;background:var(--aqua-2)}
 .sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.sizes button{padding:9px 0 8px;border-radius:12px;background:var(--bg);display:grid;gap:1px}
+.sizes button{position:relative;padding:9px 0 8px;border-radius:12px;background:var(--bg);display:grid;gap:1px}
+.sizes button.mine::before{content:"ваш";position:absolute;top:-7px;left:50%;transform:translateX(-50%);padding:1px 6px;border-radius:999px;background:var(--red);color:#fff;font-size:9px;font-weight:900;line-height:1.4}
 .sizes button b{font-weight:900;font-size:15px}
 .sizes button small{font-size:11px;font-weight:800;color:var(--mute)}
 .sizes button.on{background:var(--ink);color:#fff}.sizes button.on small{color:rgba(255,255,255,.72)}
@@ -359,6 +360,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .tag{font-size:10px;padding:5px 9px;letter-spacing:.02em}
 .tag.hot{background:var(--orange);color:#fff}
 .tag.drop{background:#1f8f3a;color:#fff}
+.tag.last{background:var(--ink);color:#fff}
 /* ---- профиль: сначала то, что важно сейчас; мелкие подписи вместо крупных заголовков ---- */
 .cap{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
 .cap button{font-size:13px;font-weight:800;letter-spacing:0;text-transform:none;color:var(--teal-d);background:none;padding:0}
@@ -1313,7 +1315,7 @@ function card(p){
   const mp = inSize.length ? Math.min(...inSize.map(s => s.price)) : minPrice(p), S = sizesOf(p).filter(s=>s.ok), n = S.length;
   const studio = studioAt(p, 0) ? 'studio' : '';
   const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
-  const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-favPrice(p))}</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
+  const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-favPrice(p))}</span>` : !p.post && n === 1 && (p.cat === 'shoes' || p.cat === 'clothes') && sizesOf(p).length > 2 ? `<span class="tag last">Последний размер</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
   const meta = p.stock ? `<i></i>${range} · отправлю сегодня` : p.post ? `<i></i>${range ? range+' · ' : ''}выкуп ${buyShort()}` : (n ? `<i></i>${range} · выкуп ${buyShort()}` : `<i class="no"></i>уточню наличие`);
   return `<div class="card">
     <button class="ph" onclick="openProduct('${p.id}')"><img class="${studio}" src="${p.img[0]}" alt="" loading="lazy">${tag}</button>
@@ -1802,9 +1804,17 @@ function openProduct(id){
       <div class="ar"><span>Подлинность</span><b>Проверка Poizon</b></div>
       <div class="ar"><span>Срок доставки</span><b>${p.stock ? 'в Екатеринбурге, сегодня' : `примерно ${arrivalText()}`}</b></div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button></div>
+    <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button>${mp ? `<button class="btn ghost sm" onclick="giftItem('${p.id}')">Подарить</button>` : ''}</div>
     ${similarHTML(p)}
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
+  // размер из прошлого заказа этой категории выбирается сам и подписан «ваш»
+  const my = load('mySize', {})[p.cat];
+  if(my && !p.stock && !pick.size){
+    const k = sizeKey(my), btns = [...document.querySelectorAll('#sheet .sizes button')].filter(x => !x.classList.contains('no'));
+    // у брендов разные сетки (38 и 38⅔): берём ближайший размер не дальше трети номера
+    const b = btns.find(x => x.querySelector('b').textContent === my) || btns.map(x => [x, Math.abs(sizeKey(x.querySelector('b').textContent) - k)]).filter(x => x[1] <= .34).sort((a, c) => a[1] - c[1]).map(x => x[0])[0];
+    if(b){ b.classList.add('mine'); pickSize(b.querySelector('b').textContent, b) }
+  }
   if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');
   hint('fit', document.querySelector('#sheet .fit'), 'Впишите длину стопы — подберу размер');
 }
@@ -1889,7 +1899,8 @@ function addToCart(){
   const s = S.find(x=>x.eu===pick.size);
   if(p.stock && cart.some(c=>c.id===p.id)){ toast('Эта пара уже в заказе'); return }
   cart.push({ k:p.id+'_'+s.eu+'_'+Date.now(), id:p.id, size:s.eu, price:s.price, post:!!p.post });
-  save('cart',cart); badge(); closeSheet(); toast('Добавила в заказ'); haptic('ok');
+  if(s.eu !== 'Один' && !p.post){ const my = load('mySize', {}); my[p.cat] = s.eu; save('mySize', my) }   // запоминаем размер: в следующих карточках он выберется сам
+  save('cart',cart); save('cartAt', Date.now()); badge(); closeSheet(); toast('Добавила в заказ'); haptic('ok');
 }
 function badge(){ $('badge').hidden = !cart.length; $('badge').textContent = cart.length }
 /* вопрос по товару: открывает личку Кристины с готовым текстом, в нём артикул и ссылка на фото, чтобы понять расцветку */
@@ -1948,7 +1959,7 @@ function addCustom(){
   const link = $('cu-link').value.trim(); if(!link){ toast('Вставьте ссылку или название'); return }
   const { y, kg, n } = cuVals();
   cart.push({ k:'c'+Date.now(), custom:true, link, size:$('cu-size').value.trim()||'уточню', cat:cuCat, kg, qty:n, yen:y, price: y ? priceFrom(y, kg, n) : 0 });
-  save('cart',cart); badge(); closeSheet(); toast('Добавила в заказ'); haptic('ok');
+  save('cart',cart); save('cartAt', Date.now()); badge(); closeSheet(); toast('Добавила в заказ'); haptic('ok');
 }
 
 /* ---------- расчёт ---------- */
@@ -1987,6 +1998,9 @@ function spinAvailable(){
 /* неоплаченный заказ — значок карты, а не подарок (подарок — у колеса, купонов и сертификата) */
 let GIFT_IC = null;
 const PAY_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 9.5h18"/><path d="M7 14.5h4"/></svg>';
+/* брошенный заказ: вещи лежат в корзине дольше получаса — на главной напоминание с текущей суммой и датой закупки */
+const CART_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 8H6.2"/><circle cx="9" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/></svg>';
+const cartWaiting = () => cart.length > 0 && Date.now() - load('cartAt', 0) > 30 * 60 * 1000;
 function renderGiftBanner(){
   cleanCoupons();
   const mode = spinAvailable(), b = $('gift-banner');
@@ -1995,6 +2009,7 @@ function renderGiftBanner(){
   if(GIFT_IC === null) GIFT_IC = $('gift-ic').innerHTML;
   $('gift-ic').innerHTML = unpaid ? PAY_IC : GIFT_IC;
   if(unpaid){ $('gift-title').textContent = `Заказ ${unpaid.num} ждёт оплаты`; $('gift-sub').textContent = 'Оплатите, и я сразу выкуплю на Poizon'; b.hidden = false; b.onclick = () => { go('me') } }
+  else if(cartWaiting()){ const n = cart.length, sum = cart.reduce((a, c) => a + (c.price || 0), 0); $('gift-ic').innerHTML = CART_IC; $('gift-title').textContent = `В заказе ${n} ${plural(n,['вещь','вещи','вещей'])} ${n === 1 ? 'ждёт' : 'ждут'} оформления`; $('gift-sub').textContent = (sum ? 'Сейчас '+fmt(sum)+' · ' : '') + 'закупка '+buyDate(); b.hidden = false; b.onclick = () => go('cart') }
   else if(mode==='welcome'){ $('gift-title').textContent='Подарок на первый заказ'; $('gift-sub').textContent='Крутите колесо — скидка до 700 ₽'; b.hidden=false; b.onclick=openWheel }
   else if(mode==='repeat'){ $('gift-title').textContent='Колесо открыто'; $('gift-sub').textContent = G.spinUntil ? 'Крутить до '+dmyhm(G.spinUntil) : 'Подарок на следующий заказ'; b.hidden=false; b.onclick=openWheel }
   else if(best){ $('gift-title').textContent='Ваш подарок −'+best.v+' ₽'; $('gift-sub').textContent = G.coupons.filter(c=>c.first).length > 1 && !orderedBefore() ? 'скидки не суммируются · к заказу одна, самая выгодная' : 'сгорит '+dmyhm(best.until); b.hidden=false; b.onclick=()=>go('shop') }
@@ -3029,6 +3044,13 @@ function certOpen(){
   b.hidden = false; $('cert-box').classList.add('open'); haptic('tick');
   certInsRender(); certDesignsRender(); certPreview();
   setTimeout(() => $('cert-canvas').scrollIntoView({ behavior:'smooth', block:'start' }), 60);
+}
+/* «Подарить» в карточке товара: сертификат на сумму вещи (округляем вверх до 500 ₽), получатель выберет размер сам */
+function giftItem(id){
+  const p = CAT.find(x => x.id === id); if(!p) return;
+  const sum = Math.max(500, Math.ceil(minPrice(p) / 500) * 500);
+  closeSheet(); go('me');
+  setTimeout(() => { certOpen(); $('cert-custom').value = sum; certCustom(); if(!$('cert-wish').value) $('cert-wish').value = `На ${p.brand} ${p.name}`.slice(0, 120); certPreview(); $('cert-box').scrollIntoView({ behavior:'smooth', block:'start' }); toast('Сертификат на сумму вещи — размер выберут сами') }, 250);
 }
 /* своя сумма сертификата: от 500 ₽ */
 function certCustom(){

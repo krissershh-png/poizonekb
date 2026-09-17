@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17i';
+const BUILD = '2026-09-17j';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -124,6 +124,7 @@ a{color:inherit;text-decoration:none}
 .qwrap #q{padding-right:48px}
 .qphoto{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer}
 .qphoto:active{background:#e9e4e4}
+.survey-img{display:block;width:100%;max-width:100%;aspect-ratio:4/1;border-radius:14px;margin-top:4px}
 .photo-prev{display:block;width:100%;max-height:300px;object-fit:contain;border-radius:14px;background:var(--bg);margin:12px 0}
 /* расцветки модели в карточке: миниатюры в ряд, текущая обведена */
 .vrs{margin-top:12px}
@@ -1189,6 +1190,7 @@ const myTag = user ? (user.username || ('id'+user.id)) : '';
   if(sp === 'stock') setTimeout(()=>{ go('home'); scrollToId('home-stock') }, 600);   // «В наличии» из меню бота
   if(sp === 'cart') setTimeout(()=>go('cart'), 300);                                  // «Открыть заказ» из напоминания о корзине
   if(sp === 'certs' || /^c_SR-/i.test(sp)) certDeepLink(sp);                          // «Мои сертификаты» из бота и ссылка на сертификат
+  if(sp === 'survey') setTimeout(() => surveyInvite(true), 900);                       // ссылка на опрос из канала
   const jm = /^j_(PZ-\d{4,6})$/i.exec(sp);                                         // «Путь посылки»: ждём заказы из таблицы
   if(jm){ const t0 = Date.now(), tick = () => { if(SRV_ORDERS) openTrack(jm[1].toUpperCase()); else if(Date.now() - t0 < 12000) setTimeout(tick, 400) }; setTimeout(tick, 600) }
   if(!CFG.api && sp && !/^(r|p|j|v)_|^(orders|wheel|shelf|vibe|calc|stock|cart)$/i.test(sp) && !G.ref && sp !== myTag){
@@ -1392,6 +1394,31 @@ function searchMatcher(q){
   const words = s.split(/[\s,]+/).filter(Boolean);
   return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
 }
+/* опрос с розыгрышем 3 000 ₽ (Google Форма). Всплывает, когда человек провёл в приложении минуту и ничего не делает в окне;
+   «Позже» — спросим через 3 дня, «Ответить» — больше не показываем */
+const SURVEY_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeOewxY3OocRWrrBTioE5DfGGy7YsfuLBPhTKIm-PUOfBUSZw/viewform';
+function surveyInvite(force){
+  const st = load('survey', {});
+  if(!force && (st.done || (st.later && Date.now() < st.later))) return false;
+  if(!force && ($('sheet-bg').classList.contains('open') || !$('s-home') || $('s-cart').classList.contains('active'))) return false;
+  openSheet(`<img class="survey-img" src="img/survey.webp" alt="Ответьте на вопросы за 5 минут и выиграйте 3 000 ₽ на заказ">
+    <div class="h2" style="margin-top:12px">Помогите сделать заказ проще</div>
+    <div class="rule">Около 5 минут: как вы покупаете вещи и что мешает заказывать из Китая. Среди ответивших разыграю 3 000 ₽ на заказ, итоги — в канале.</div>
+    <div class="list" style="margin-top:12px"><button class="btn block" onclick="surveyGo()">Ответить на вопросы</button>
+    <button class="btn ghost block" onclick="surveyLater()">Позже</button></div>`);
+  return true;
+}
+function surveyGo(){ save('survey', { done: Date.now() }); closeSheet(); if(inTg && tg.openLink) tg.openLink(SURVEY_URL); else window.open(SURVEY_URL, '_blank') }
+function surveyLater(){ save('survey', { later: Date.now() + 3 * 864e5 }); closeSheet() }
+(function(){
+  let active = 0;
+  const t = setInterval(() => {
+    if(document.hidden) return;
+    active += 5;
+    if(active >= 60 && surveyInvite(false)) clearInterval(t);
+    if(active > 900) clearInterval(t);   // за 15 минут не вышло удобного момента — в этот раз не мешаем
+  }, 5000);
+})();
 /* «Найти по фото»: человек выбирает снимок вещи, бот присылает его Крис с контактом; Крис находит вещь на Poizon и пишет в личку */
 let PHOTO = null;
 function photoPick(){ const i = $('photo-in'); i.value = ''; i.click() }
@@ -1406,7 +1433,8 @@ function photoChosen(inp){
     PHOTO = c.toDataURL('image/jpeg', .85);
     openSheet(`<span class="hand">найду по фото</span>
       <div class="h2" style="margin-top:4px">Пришлю ссылку и цену</div>
-      <img class="photo-prev" src="${PHOTO}" alt="Ваше фото">
+      <div class="small" style="margin-top:12px">Вы выбрали это фото:</div>
+      <img class="photo-prev" src="${PHOTO}" alt="Ваше фото" style="margin-top:6px">
       <div class="field"><span>Что важно (необязательно)</span><input id="photo-note" maxlength="200" placeholder="Размер 38, хочу именно этот цвет"></div>
       <div class="rule">Фото уйдёт мне в Telegram. Найду вещь на Poizon и напишу вам в личку, обычно в течение дня.</div>
       <div class="list" style="margin-top:12px"><button class="btn block" id="photo-send" onclick="photoSend()">Отправить Крис</button>

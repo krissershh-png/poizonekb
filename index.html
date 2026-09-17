@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17e';
+const BUILD = '2026-09-17f';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -118,6 +118,12 @@ a{color:inherit;text-decoration:none}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hs{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}
 .hs::-webkit-scrollbar{display:none}
+/* поиск с кнопкой «по фото» */
+.qwrap{position:relative}
+.qwrap #q{padding-right:48px}
+.qphoto{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.qphoto:active{background:#e9e4e4}
+.photo-prev{display:block;width:100%;max-height:300px;object-fit:contain;border-radius:14px;background:var(--bg);margin:12px 0}
 /* расцветки модели в карточке: миниатюры в ряд, текущая обведена */
 .vrs{margin-top:12px}
 .vrs-h{font-size:12px;font-weight:800;color:var(--mute);margin-bottom:6px}
@@ -855,7 +861,8 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 <!-- ================= КАТАЛОГ ================= -->
 <section class="screen" id="s-shop">
   <div class="top"><h1 class="h1" style="font-size:19px">Каталог</h1><button class="ava" onclick="go('me')"><img src="img/mascot-round.png" alt=""></button></div>
-  <input id="q" placeholder="Поиск: Samba, Dunk, Labubu…" oninput="renderShop()" style="border-radius:999px;background:var(--bg);border-color:transparent">
+  <div class="qwrap"><input id="q" placeholder="Поиск: Samba, Dunk, Labubu…" oninput="renderShop()" style="border-radius:999px;background:var(--bg);border-color:transparent"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div>
+  <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">
   <div class="chips" id="shop-chips" style="margin-top:10px"></div>
   <div class="chips sub" id="shop-sub" style="margin-top:8px" hidden></div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0 10px">
@@ -1382,6 +1389,47 @@ function searchMatcher(q){
   const words = s.split(/[\s,]+/).filter(Boolean);
   return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
 }
+/* «Найти по фото»: человек выбирает снимок вещи, бот присылает его Крис с контактом; Крис находит вещь на Poizon и пишет в личку */
+let PHOTO = null;
+function photoPick(){ const i = $('photo-in'); i.value = ''; i.click() }
+function photoChosen(inp){
+  const f = inp.files && inp.files[0]; if(!f) return;
+  if(!/^image\//.test(f.type)) return toast('Выберите фото');
+  const url = URL.createObjectURL(f), im = new Image();
+  im.onload = () => {
+    const k = Math.min(1, 1280 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+    c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+    PHOTO = c.toDataURL('image/jpeg', .85);
+    openSheet(`<span class="hand">найду по фото</span>
+      <div class="h2" style="margin-top:4px">Пришлю ссылку и цену</div>
+      <img class="photo-prev" src="${PHOTO}" alt="Ваше фото">
+      <div class="field"><span>Что важно (необязательно)</span><input id="photo-note" maxlength="200" placeholder="Размер 38, хочу именно этот цвет"></div>
+      <div class="rule">Фото уйдёт мне в Telegram. Найду вещь на Poizon и напишу вам в личку, обычно в течение дня.</div>
+      <div class="list" style="margin-top:12px"><button class="btn block" id="photo-send" onclick="photoSend()">Отправить Крис</button>
+      <button class="btn ghost block" onclick="photoPick()">Выбрать другое фото</button></div>`);
+  };
+  im.onerror = () => { URL.revokeObjectURL(url); toast('Не получилось открыть фото, попробуйте другое') };
+  im.src = url;
+}
+async function photoSend(){
+  if(!PHOTO) return;
+  const note = ($('photo-note') || {}).value || '', btn = $('photo-send');
+  btn.disabled = true; btn.textContent = 'Отправляю…';
+  const r = await api('photo', { img: PHOTO, note: note.trim() });
+  if(r && r.ok){
+    haptic('ok'); PHOTO = null;
+    openSheet(`<span class="hand">фото у меня</span><div class="h2" style="margin-top:4px">Найду и напишу в Telegram</div>
+      <div class="rule">Обычно отвечаю в течение дня. Пока можно посмотреть похожие вещи в каталоге.</div>
+      <button class="btn block" style="margin-top:12px" onclick="closeSheet()">Хорошо</button>`);
+    return;
+  }
+  // без сервера (или старый код бота): открываем личку с текстом, фото человек прикрепит сам
+  btn.disabled = false; btn.textContent = 'Отправить Крис';
+  const t = 'Привет, Крис! 👋 Ищу вещь по фото, сейчас пришлю.' + (note.trim() ? ' ' + note.trim() : '');
+  openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t);
+  toast('Прикрепите фото в чате');
+}
 /* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */
 function renderRusRail(){
   const list = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a))).slice(0, 12);
@@ -1698,7 +1746,7 @@ function renderShop(){
   $('shop-count').textContent = list.length+' '+plural(list.length,['товар','товара','товаров']);
   /* на слабом телефоне 300 карточек разом дёргают скролл: рисуем по 48, остальное по кнопке */
   SHOP_REST = list.slice(48);
-  $('shop-grid').innerHTML = list.length ? list.slice(0,48).map(card).join('') + (SHOP_REST.length ? `<button class="btn ghost block" id="shop-more" style="grid-column:1/-1" onclick="shopMore()">Показать ещё ${SHOP_REST.length}</button>` : '') : `<div class="empty" style="grid-column:1/-1"><span class="hand">такого пока нет</span><div style="font-weight:800;margin:6px 0 12px;color:var(--ink-2)">${fc ? 'С этими фильтрами ничего нет. Или пришлите ссылку с Poizon, привезу' : 'Пришлите ссылку или скрин с Poizon, привезу'}</div>${fc ? `<button class="btn sm ghost" style="margin-right:6px" onclick="fltClear();renderShop()">Сбросить фильтры</button>` : ''}<button class="btn sm" onclick="openCustom()">Заказ по ссылке</button></div>`;
+  $('shop-grid').innerHTML = list.length ? list.slice(0,48).map(card).join('') + (SHOP_REST.length ? `<button class="btn ghost block" id="shop-more" style="grid-column:1/-1" onclick="shopMore()">Показать ещё ${SHOP_REST.length}</button>` : '') : `<div class="empty" style="grid-column:1/-1"><span class="hand">такого пока нет</span><div style="font-weight:800;margin:6px 0 12px;color:var(--ink-2)">${fc ? 'С этими фильтрами ничего нет. Или пришлите ссылку с Poizon, привезу' : 'Пришлите ссылку или скрин с Poizon, привезу'}</div>${fc ? `<button class="btn sm ghost" style="margin-right:6px" onclick="fltClear();renderShop()">Сбросить фильтры</button>` : ''}<button class="btn sm" onclick="openCustom()">Заказ по ссылке</button><button class="btn sm ghost" style="margin-left:6px" onclick="photoPick()">Найти по фото</button></div>`;
   if(VIBE) hint('vibe', document.querySelector('#shop-chips .chip.vibe'), '«Мой вайб» — вещи под ваш стиль. Нажмите, чтобы выключить');
   else hint('vibe-quiz', document.querySelector('#shop-chips .chip.vibe'), 'Узнайте свой вайб — пройдите тест из 4 вопросов');
   if(HINTS.vibe || HINTS['vibe-quiz']) hint('fav', document.querySelector('#shop-grid .fav'), 'В избранное — напишу, если подешевеет');   // сначала про вайб, сердечко потом

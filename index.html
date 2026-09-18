@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-17l';
+const BUILD = '2026-09-18a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -969,7 +969,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <div class="cap" id="games-cap"><span>Игры</span></div>
   <div id="me-games" style="margin-top:-2px"></div>
   <!-- опрос с розыгрышем: баннер в профиле, пока человек не открыл форму -->
-  <button class="survey-tile" id="me-survey" type="button" onclick="surveyInvite(true)" hidden><img src="img/survey.webp" alt="Ответьте на вопросы за 5 минут и выиграйте 3 000 ₽ на заказ" loading="lazy"></button>
+  <button class="survey-tile" id="me-survey" type="button" onclick="surveyInvite(true)" hidden><img src="img/survey2.webp" alt="Ответьте на вопросы за 5 минут и выиграйте 2 000 ₽ на заказ" loading="lazy"></button>
 
   <div class="cap" id="gifts-sec"><span>Мои скидки</span></div>
   <div class="list" id="my-coupons"></div>
@@ -1403,16 +1403,16 @@ function searchMatcher(q){
   const words = s.split(/[\s,]+/).filter(Boolean);
   return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
 }
-/* опрос с розыгрышем 3 000 ₽ (Google Форма). Всплывает, когда человек провёл в приложении минуту и ничего не делает в окне;
+/* опрос с розыгрышем 2 000 ₽ (Google Форма). Всплывает, когда человек провёл в приложении минуту и ничего не делает в окне;
    «Позже» — спросим через 3 дня, «Ответить» — больше не показываем */
-const SURVEY_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeOewxY3OocRWrrBTioE5DfGGy7YsfuLBPhTKIm-PUOfBUSZw/viewform';
+const SURVEY_URL = 'https://forms.gle/9GdovFG2H4JxvRPZA';
 function surveyInvite(force){
   const st = load('survey', {});
   if(!force && (st.done || (st.later && Date.now() < st.later))) return false;
   if(!force && ($('sheet-bg').classList.contains('open') || !$('s-home') || $('s-cart').classList.contains('active'))) return false;
-  openSheet(`<img class="survey-img" src="img/survey.webp" alt="Ответьте на вопросы за 5 минут и выиграйте 3 000 ₽ на заказ">
+  openSheet(`<img class="survey-img" src="img/survey2.webp" alt="Ответьте на вопросы за 5 минут и выиграйте 2 000 ₽ на заказ">
     <div class="h2" style="margin-top:12px">Помогите сделать заказ проще</div>
-    <div class="rule">Около 5 минут: как вы покупаете вещи и что мешает заказывать из Китая. Среди ответивших разыграю 3 000 ₽ на заказ, итоги — в канале.</div>
+    <div class="rule">Около 5 минут: как вы покупаете вещи и что мешает заказывать из Китая. Среди ответивших разыграю 2 000 ₽ на заказ, итоги — в канале.</div>
     <div class="list" style="margin-top:12px"><button class="btn block" onclick="surveyGo()">Ответить на вопросы</button>
     <button class="btn ghost block" onclick="surveyLater()">Позже</button></div>`);
   return true;

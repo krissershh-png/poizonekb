@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19f';
+const BUILD = '2026-09-19g';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1544,7 +1544,7 @@ async function photoSend(){
   toast('Прикрепите фото в чате');
 }
 /* распаковки: превью в ряд, по нажатию видео открывается и играет со звуком */
-const VIDS = [['v1','Как я начала'],['v2','adidas Samba'],['v3','New Balance из коробки'],['v4','Отзыв покупателя'],['v5','Распаковка у блогера'],['v6','Открываю посылку'],['v7','5 фактов про Poizon'],['v8','Большая распаковка']];
+const VIDS = [['v1','Как я начала'],['v2','adidas Samba'],['v3','New Balance из коробки'],['v4','Ваши отзывы'],['v5','Ваши отзывы'],['v6','Открываю посылку'],['v7','5 фактов про Poizon'],['v8','Большая распаковка']];
 function aboutToggle(b){ const open = $('about').classList.toggle('open'); b.textContent = open ? 'Свернуть' : 'Читать полностью'; b.setAttribute('aria-expanded', open) }
 function renderVids(){ const e = $('home-vids'); if(!e || e.childElementCount) return; e.innerHTML = VIDS.map(([k, t]) => `<button class="vid" type="button" onclick="openVid('${k}','${t}')"><img src="vid/${k}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><b>${t}</b></button>`).join('') }
 function openVid(k, t){ openSheet(`<span class="hand">${esc(t)}</span><video class="vid-full" src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`) }

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19e';
+const BUILD = '2026-09-19f';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -129,7 +129,9 @@ a{color:inherit;text-decoration:none}
 .vs-thumb{width:64px;height:64px;flex:0 0 64px;object-fit:cover;border-radius:12px;background:var(--bg)}
 .vs-none{margin-top:16px;padding:14px;border-radius:14px;background:var(--bg);display:grid;gap:2px}
 .vs-none span{font-size:13px;font-weight:700;color:var(--ink-2)}
-.about p{margin:0;font-size:14px;font-weight:600;line-height:1.5;color:var(--ink-2);text-wrap:pretty}
+.about p{margin:0;font-size:14px;font-weight:600;line-height:1.5;color:var(--ink-2);text-wrap:pretty;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.about.open p{display:block;-webkit-line-clamp:unset}
+.about-btns{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
 .vids{margin-top:12px}
 .vid{position:relative;flex:0 0 120px;height:213px;padding:0;border:0;border-radius:14px;overflow:hidden;background:#121212;cursor:pointer}
 .vid img{width:100%;height:100%;object-fit:cover;display:block}
@@ -839,7 +841,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 
   <!-- про Крис: коротко о себе и настоящие распаковки -->
   <div class="sec"><h2 class="h2">Про меня</h2></div>
-  <div class="about"><p>Я Кристина, экономист-международник. Год училась в Китае — в Чэнду и Шанхае, говорю по-китайски. Там увидела, что те же Nike и adidas стоят в 2–3 раза дешевле, сначала заказывала на Poizon себе, разобралась во всех нюансах доставки — а после поездки в офис крупнейшей компании по экспорту из Китая поняла, что привозить вещи проще, чем кажется. С лета 2024 года вожу оригиналы в Екатеринбург и Пышму: раз в месяц одна закупка, заказы привожу лично.</p><button class="more" style="margin-top:8px" onclick="openTg('https://t.me/chinawithkris')">Мой блог про Китай →</button></div>
+  <div class="about" id="about"><p>Я Кристина, экономист-международник. Год училась в Китае — в Чэнду и Шанхае, говорю по-китайски. Там увидела, что те же Nike и adidas стоят в 2–3 раза дешевле, сначала заказывала на Poizon себе, разобралась во всех нюансах доставки — а после поездки в офис крупнейшей компании по экспорту из Китая поняла, что привозить вещи проще, чем кажется. С лета 2024 года вожу оригиналы в Екатеринбург и Пышму: раз в месяц одна закупка, заказы привожу лично.</p><div class="about-btns"><button class="more" type="button" onclick="aboutToggle(this)" aria-expanded="false">Читать полностью</button><button class="more" onclick="openTg('https://t.me/chinawithkris')">Мой блог про Китай →</button></div></div>
   <div class="hs vids" id="home-vids"></div>
 
   <button class="gift" id="gift-banner" onclick="openWheel()">
@@ -1543,6 +1545,7 @@ async function photoSend(){
 }
 /* распаковки: превью в ряд, по нажатию видео открывается и играет со звуком */
 const VIDS = [['v1','Как я начала'],['v2','adidas Samba'],['v3','New Balance из коробки'],['v4','Отзыв покупателя'],['v5','Распаковка у блогера'],['v6','Открываю посылку'],['v7','5 фактов про Poizon'],['v8','Большая распаковка']];
+function aboutToggle(b){ const open = $('about').classList.toggle('open'); b.textContent = open ? 'Свернуть' : 'Читать полностью'; b.setAttribute('aria-expanded', open) }
 function renderVids(){ const e = $('home-vids'); if(!e || e.childElementCount) return; e.innerHTML = VIDS.map(([k, t]) => `<button class="vid" type="button" onclick="openVid('${k}','${t}')"><img src="vid/${k}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><b>${t}</b></button>`).join('') }
 function openVid(k, t){ openSheet(`<span class="hand">${esc(t)}</span><video class="vid-full" src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`) }
 /* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */

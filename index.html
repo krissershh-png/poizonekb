@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-18a';
+const BUILD = '2026-09-19a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -546,6 +546,8 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .rus s{color:var(--ink-2);font-weight:800;text-decoration-thickness:1.5px;text-decoration-color:var(--red)}
 .rus b{color:var(--red);font-weight:900}
 .rus em{flex-basis:100%;font-style:normal;font-size:11px;font-weight:600}
+.rus .why{padding:0;border:0;background:none;font-size:12px;font-weight:800;color:var(--ink);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.card .insize{display:block;font-size:11px;font-weight:800;color:var(--mute)}
 .card .rus-c{display:block;margin-top:1px;font-size:11px;font-weight:700;color:var(--mute)}
 .card .rus-c s{text-decoration-color:var(--red);text-decoration-thickness:1.5px}
 /* плашка закупки: бирюзовый градиент с точками, отрывной календарик, клетки набора */
@@ -1333,7 +1335,7 @@ function card(p){
     <button class="fav ${favs.includes(p.id)?'on':''}" onclick="toggleFav('${p.id}',this)" aria-label="В избранное">${HEART}</button>
     <button class="bd" onclick="openProduct('${p.id}')"><span class="brand">${esc(p.brand)}</span><span class="name">${esc(p.name)}</span>
       <span class="meta">${meta}</span>
-      <span class="price num">${mp ? (p.stock?'':'<small>от </small>')+fmt(mp) : '<small>цена по запросу</small>'}</span>${rusOk(p, minPrice(p)) ? `<span class="rus-c">в РФ <s class="num">${fmt(RETAIL[p.id].p)}</s></span>` : ''}</button></div>`;
+      <span class="price num">${mp ? (p.stock || inSize.length === 1 ? '' : '<small>от </small>')+fmt(mp) : '<small>цена по запросу</small>'}</span>${inSize.length ? `<span class="insize">в размере ${inSize.length === 1 ? inSize[0].eu : 'из фильтра'}</span>` : ''}${rusOk(p, minPrice(p)) ? `<span class="rus-c">в РФ <s class="num">${fmt(RETAIL[p.id].p)}</s></span>` : ''}</button></div>`;
 }
 /* избранное помнит цену на момент добавления: когда на Poizon стало дешевле, на карточке появляется «Цена ниже» */
 let FP = load('favp', {});
@@ -1554,7 +1556,7 @@ function renderHome(){
   }
   $('home-grid').innerHTML = hits.map(card).join('');
   $('home-buy').innerHTML = buydayHTML(); renderFacts(); renderHow();
-  $('faq-wait').textContent = `Выкупаю раз в месяц одной закупкой, ближайшая — ${buyDate()}. Если раньше наберётся ${CFG.purchase.early} вещей, выкуплю раньше. После выкупа дорога ${CFG.journey.text}. Нужно быстрее — отметьте в заказе срочный выкуп отдельно, это +${fmt(CFG.purchase.rushFee)}.`;
+  $('faq-wait').textContent = `Выкупаю раз в месяц одной закупкой, дата ближайшей — на главной. Если раньше наберётся ${CFG.purchase.early} вещей, выкуплю раньше. После выкупа дорога ${CFG.journey.text}. Нужно быстрее — отметьте в заказе срочный выкуп отдельно, это +${fmt(CFG.purchase.rushFee)}.`;
   renderGiftBanner(); renderGames(); renderLooks(); renderVibeHome();
   if(typeof hint === 'function'){   // подсказки главной — по мере прокрутки, сверху вниз
     hint('gift', $('gift-banner'), spinAvailable() ? 'Крутите колесо — скидка на первый заказ' : 'Скидка применится сама при оформлении');
@@ -1900,6 +1902,12 @@ function openProduct(id){
     ${similarHTML(p)}
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
   // размер из прошлого заказа этой категории выбирается сам и подписан «ваш»
+  // размер из фильтра каталога важнее запомненного: выбираем самый дешёвый из отмеченных
+  if(FLT.sizes.length && !p.stock && !p.post){
+    const fb = [...document.querySelectorAll('#sheet .sizes button')].filter(x => !x.classList.contains('no') && FLT.sizes.includes(sizeNorm(x.querySelector('b').textContent)));
+    const cheap = fb.map(x => [x, (sizesOf(p).find(s => s.eu === x.querySelector('b').textContent) || {}).price || 1e9]).sort((a, c) => a[1] - c[1])[0];
+    if(cheap) pickSize(cheap[0].querySelector('b').textContent, cheap[0]);
+  }
   const my = load('mySize', {})[p.cat];
   if(my && !p.stock && !pick.size){
     const k = sizeKey(my), btns = [...document.querySelectorAll('#sheet .sizes button')].filter(x => !x.classList.contains('no'));
@@ -1907,6 +1915,7 @@ function openProduct(id){
     const b = btns.find(x => x.querySelector('b').textContent === my) || btns.map(x => [x, Math.abs(sizeKey(x.querySelector('b').textContent) - k)]).filter(x => x[1] <= .34).sort((a, c) => a[1] - c[1]).map(x => x[0])[0];
     if(b){ b.classList.add('mine'); pickSize(b.querySelector('b').textContent, b) }
   }
+  if(!p.stock && !p.post) hint('rate', $('p-price'), 'Цена считается по сегодняшнему курсу юаня. Курс меняется каждый день — поэтому и цена то чуть выше, то чуть ниже');
   if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');
   hint('fit', document.querySelector('#sheet .fit'), 'Впишите длину стопы — подберу размер');
 }
@@ -1964,14 +1973,25 @@ function fitSize(inp){
 }
 /* под ценой: сколько та же вещь стоит в российских магазинах. Цену Крис проверяет сама и вписывает в лист «Цены в России»; строка видна, только если у неё дешевле */
 /* ваша минимальная цена против цены в российском магазине; строка только при заметной выгоде — от 20% и не меньше 2 000 ₽ */
-const rusOk = (p, price) => { const r = RETAIL[p.id], v = price || minPrice(p); return !!(r && v && r.p - v >= Math.max(2000, v * .2)) };
+const rusOk = (p, price) => { const r = RETAIL[p.id], v = price || minPrice(p); return !!(r && v && r.p - v >= Math.max(2000, v * .2) && v >= r.p * .4) };   // выгода больше 60% выглядит подозрительно — такую не показываем
+function whyCheaper(){
+  openSheet(`<span class="hand">почему дешевле</span>
+    <div class="h2" style="margin-top:4px">Та же вещь, другой путь</div>
+    <div class="howmore"><div class="slip"><dl>
+      <div class="row"><dt>Без магазина</dt><dd>Нет аренды в ТЦ, продавцов и склада — вы платите за вещь, доставку и мою работу</dd></div>
+      <div class="row"><dt>Цены Китая</dt><dd>На Poizon бренды продают по ценам китайского рынка, а они ниже европейских</dd></div>
+      <div class="row"><dt>Без посредников</dt><dd>В российские магазины вещи идут через нескольких перекупщиков, каждый добавляет свою наценку</dd></div>
+      <div class="row"><dt>Оригинал</dt><dd>Каждую вещь проверяют эксперты Poizon, она приходит с биркой и пломбой. Фото вещи присылаю до отправки</dd></div>
+    </dl></div></div>
+    <button class="btn block" style="margin-top:14px" onclick="closeSheet()">Понятно</button>`);
+}
 function rusLine(p, mp){
   if(!RETAIL[p.id]) return ''; const r = RETAIL[p.id];
   return `<div id="p-rus">${rusInner(p, mp, false)}</div>`;
 }
 function rusInner(p, price, picked){
   if(!rusOk(p, price)) return ''; const r = RETAIL[p.id];
-  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода ${picked ? '' : 'до '}${fmt(r.p - price)}</b>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'цена на '+esc(r.d) : ''}</em>` : ''}</div>`;
+  return `<div class="rus"><span>Цена в РФ</span><s class="num">${fmt(r.p)}</s><b class="num">выгода ${picked ? '' : 'до '}${fmt(r.p - price)}</b><button class="why" type="button" onclick="whyCheaper()">почему дешевле?</button>${r.w || r.d ? `<em>${r.w ? esc(r.w) : ''}${r.w && r.d ? ' · ' : ''}${r.d ? 'цена на '+esc(r.d) : ''}</em>` : ''}</div>`;
 }
 /* доверие в карточке: сколько раз вещь уже заказывали у меня */
 function trustLine(p, mp){
@@ -2858,7 +2878,7 @@ function renderOrders(){
   $('orders-sec').hidden = $('orders').hidden = !list.length && !certs.length;   // нет заказов — нет пустого блока
   $('orders').innerHTML = certs.map(s => { const n = esc(s.num);
     return `<div class="order"><div class="orow"><div class="oth cert-th">${CERT_TH}</div><div class="ot"><b>Сертификат</b><span>${n} · ${fmt(s.value)}</span></div><span class="status wait">Ждёт оплаты</span></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" onclick="certDone('${n}',${s.value})">Оплатить</button></div></div>` }).join('') + list.map(o => {
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" onclick="certDone('${n}',${s.value})">Оплатить</button><button class="btn sm ghost" onclick="certCancel('${n}')">Отменить</button></div></div>` }).join('') + list.map(o => {
     const tr = String(o.track||'').replace(/[^A-Za-z0-9-]/g,''), n = esc(o.num), its = itemsOf(o);
     const wait = o.st === 'новый', moving = PAID_ST.includes(o.st), S = stagesOf(o), j = stageIdx(o), d = dropsOf(o), stock = stockOrder(o);
     const label = o.local ? 'Отправлен' : wait ? 'Ждёт оплаты' : moving ? (stock ? 'Готовлю' : journeyIdx(o) >= 6 ? 'Приехал' : 'В пути') : (o.status || '');
@@ -2939,6 +2959,19 @@ function openTrack(num){
   loadPics(o); loadTrack(o.track);
 }
 /* неоплаченный заказ клиент отменяет сам; оплаченный — через Кристину, пока вещь не выкуплена */
+/* неоплаченный сертификат можно отменить самому, как заказ */
+function certCancel(num){
+  openSheet(`<span class="hand">отмена сертификата</span>
+    <div class="h2" style="margin-top:4px">${esc(num)}</div>
+    <div class="small" style="margin:8px 0 14px;white-space:normal">Сертификат ещё не оплачен, отменить можно сразу. Если уже перевели деньги — напишите мне, верну.</div>
+    <div class="list"><button class="btn block" onclick="certCancelNow('${esc(num)}')">Отменить сертификат</button><button class="btn ghost block" onclick="closeSheet()">Оставить</button></div>`);
+}
+async function certCancelNow(num){
+  haptic('medium');
+  const r = CFG.api && inTg ? await api('certcancel', { num }) : null;
+  if(r && r.ok){ G.certs = (G.certs || []).filter(s => s.num !== num); closeSheet(); toast(`Сертификат ${num} отменён`); renderMeView(); return }
+  closeSheet(); const t = `Привет, Крис! Хочу отменить заявку на сертификат ${num}`; openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t);
+}
 function cancelOrder(num){
   openSheet(`<span class="hand">отмена заказа</span>
     <div class="h2" style="margin-top:4px">${esc(num)}</div>

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19a';
+const BUILD = '2026-09-19b';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -129,6 +129,14 @@ a{color:inherit;text-decoration:none}
 .vs-thumb{width:64px;height:64px;flex:0 0 64px;object-fit:cover;border-radius:12px;background:var(--bg)}
 .vs-none{margin-top:16px;padding:14px;border-radius:14px;background:var(--bg);display:grid;gap:2px}
 .vs-none span{font-size:13px;font-weight:700;color:var(--ink-2)}
+.about p{margin:0;font-size:14px;font-weight:600;line-height:1.5;color:var(--ink-2);text-wrap:pretty}
+.vids{margin-top:12px}
+.vid{position:relative;flex:0 0 120px;height:213px;padding:0;border:0;border-radius:14px;overflow:hidden;background:#121212;cursor:pointer}
+.vid img{width:100%;height:100%;object-fit:cover;display:block}
+.vid b{position:absolute;left:8px;right:8px;bottom:8px;color:#fff;font-size:12px;font-weight:800;line-height:1.2;text-align:left;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.vid .play{position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.9)}
+.vid .play::after{content:"";position:absolute;left:16px;top:12px;border:8px solid transparent;border-left:13px solid var(--red)}
+.vid-full{display:block;width:100%;max-height:70vh;margin-top:10px;border-radius:14px;background:#000}
 .survey-tile{display:block;width:100%;margin-top:12px;padding:0;border:0;background:none;cursor:pointer}
 .survey-tile img{display:block;width:100%;aspect-ratio:4/1;border-radius:14px}
 .survey-img{display:block;width:100%;max-width:100%;aspect-ratio:4/1;border-radius:14px;margin-top:4px}
@@ -829,6 +837,11 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <div class="sec"><h2 class="h2">Отзывы</h2><button class="more" onclick="openTg('https://t.me/feedbackpoizonekb')">Все отзывы</button></div>
   <div class="hs" id="home-revs"></div>
 
+  <!-- про Крис: коротко о себе и настоящие распаковки -->
+  <div class="sec"><h2 class="h2">Про меня</h2></div>
+  <div class="about"><p>Я Крис. С января 2025 года вожу оригиналы с Poizon в Екатеринбург и Пышму. Сама летала в Шанхай, чтобы посмотреть, как всё устроено. Раз в месяц делаю одну закупку, фото каждой вещи присылаю до отправки, а заказы привожу лично. И сама ношу то, что вожу: Samba, New Balance 550, V2K.</p></div>
+  <div class="hs vids" id="home-vids"></div>
+
   <button class="gift" id="gift-banner" onclick="openWheel()">
     <div class="dots"></div>
     <div class="ic" id="gift-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9c-2-4-7-4-6-1 .5 1.5 3 1 6 1zM12 9c2-4 7-4 6-1-.5 1.5-3 1-6 1z"/></svg></div>
@@ -1312,6 +1325,7 @@ if(tg){ tg.ready(); tg.expand(); try{ tg.setHeaderColor('#ffffff'); tg.setBackgr
   tg.BackButton.onClick(()=>{ $('sheet-bg').classList.contains('open') ? (QUIZ_OPEN ? vibeBack() : closeSheet()) : go('home') }) }
 function openSheet(html){ if(typeof hintPause === 'function') hintPause(); sheetBack = VIBE_SHEET; VIBE_SHEET = null; QUIZ_OPEN = false; $('sheet').innerHTML = '<div class="grip"></div>'+html; $('sheet').scrollTop = 0; $('sheet-bg').classList.add('open'); document.body.style.overflow='hidden'; tg&&tg.BackButton.show() }
 function closeSheet(){
+  const v = document.querySelector('#sheet video'); if(v) v.pause();   // закрыли видео — звук не продолжает играть
   if(sheetBack){ const b = sheetBack; sheetBack = null; openVibeResult(b.key, b.shared); return }   // вещь открыли из подборки: закрытие возвращает к подборке
   VIBE_SHEET = null; QUIZ_OPEN = false; $('sheet-bg').classList.remove('open'); document.body.style.overflow=''; stopBulbs()
 }
@@ -1527,6 +1541,10 @@ async function photoSend(){
   openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t);
   toast('Прикрепите фото в чате');
 }
+/* распаковки: превью в ряд, по нажатию видео открывается и играет со звуком */
+const VIDS = [['v1','Как я начала'],['v2','adidas Samba'],['v3','New Balance из коробки'],['v4','Отзыв покупателя'],['v5','Распаковка у блогера'],['v6','Открываю посылку'],['v7','5 фактов про Poizon'],['v8','Большая распаковка']];
+function renderVids(){ const e = $('home-vids'); if(!e || e.childElementCount) return; e.innerHTML = VIDS.map(([k, t]) => `<button class="vid" type="button" onclick="openVid('${k}','${t}')"><img src="vid/${k}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><b>${t}</b></button>`).join('') }
+function openVid(k, t){ openSheet(`<span class="hand">${esc(t)}</span><video class="vid-full" src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`) }
 /* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */
 function renderRusRail(){
   const list = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a))).slice(0, 12);
@@ -1542,7 +1560,7 @@ function renderViewed(){
 }
 function renderHome(){
   $('home-stock').innerHTML = CAT.filter(p=>p.stock).map(card).join('');
-  renderRusRail(); renderViewed();
+  renderRusRail(); renderViewed(); renderVids();
   // цены с Poizon обновляются каждый день: раз в день сообщаем, если избранное подешевело
   const drops = CAT.filter(priceDrop).length;
   if(drops && G.dropDay !== dayKey()){ G.dropDay = dayKey(); save('gifts', G); setTimeout(()=>toast(`Цена ниже на ${drops} ${plural(drops,['вещь','вещи','вещей'])} из избранного`), 1500) }

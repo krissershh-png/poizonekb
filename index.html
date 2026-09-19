@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19l';
+const BUILD = '2026-09-19m';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -133,7 +133,7 @@ a{color:inherit;text-decoration:none}
 .about.open p{display:block;-webkit-line-clamp:unset}
 .about-btns{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
 .vids{margin-top:12px}
-.vid{position:relative;flex:0 0 120px;height:213px;padding:0;border:0;border-radius:14px;overflow:hidden;background:#121212;cursor:pointer}
+.vid{position:relative;flex:0 0 133px;height:236px;padding:0;border:0;border-radius:14px;overflow:hidden;background:#121212;cursor:pointer}
 .vid img{width:100%;height:100%;object-fit:cover;display:block}
 .vid b{position:absolute;left:8px;right:8px;bottom:8px;color:#fff;font-size:12px;font-weight:800;line-height:1.2;text-align:left;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .vid .play{position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.9)}
@@ -841,7 +841,6 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <!-- настоящие скриншоты клиентов — сразу под героем, до первого призыва купить -->
   <div class="sec"><h2 class="h2">Отзывы и распаковки</h2><button class="more" onclick="openTg('https://t.me/feedbackpoizonekb')">Все отзывы</button></div>
   <div class="hs" id="home-revs"></div>
-  <div class="hs vids" style="margin-top:10px" id="home-vids"></div>
   <div class="about" style="margin-top:10px"><button class="more" onclick="openTg('https://t.me/chinawithkris')">Мой блог про Китай →</button></div>
 
 
@@ -1547,7 +1546,8 @@ async function photoSend(){
 /* распаковки: превью в ряд, по нажатию видео открывается и играет со звуком */
 const VIDS = [['v1','Как я начала'],['v2','adidas Samba'],['v3','New Balance из коробки'],['v4','Ваши отзывы'],['v5','Ваши отзывы'],['v6','Открываю посылку'],['v7','5 фактов про Poizon'],['v8','Большая распаковка']];
 function aboutToggle(b){ const open = $('about').classList.toggle('open'); b.textContent = open ? 'Свернуть' : 'Читать полностью'; b.setAttribute('aria-expanded', open) }
-function renderVids(){ const e = $('home-vids'); if(!e || e.childElementCount) return; e.innerHTML = VIDS.map(([k, t]) => `<button class="vid" type="button" onclick="openVid('${k}','${t}')"><img src="vid/${k}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><b>${t}</b></button>`).join('') }
+const vidTile = ([k, t]) => `<button class="vid" type="button" onclick="openVid('${k}','${t}')"><img src="vid/${k}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><b>${t}</b></button>`;
+function renderVids(){}   // видео идут в одной ленте с отзывами (renderRevs)
 function openVid(k, t){ openSheet(`<span class="hand">${esc(t)}</span><video class="vid-full" src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`) }
 /* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */
 function renderRusRail(){
@@ -3747,7 +3747,10 @@ const REVIEWS = ['img/rev/new-1.jpg','img/rev/new-2.jpg','img/rev/new-3.jpg','im
 const IMG = s => (window.IMGPACK || {})[s] || s;
 function renderRevs(){
   const tile = (s,i) => `<button class="revimg" onclick="openRev(${i})"><img src="${IMG(s)}" alt="Отзыв клиента" loading="lazy"></button>`;
-  $('home-revs').innerHTML = REVIEWS.map(tile).join('');   // отзывы только на главной: в форме заказа они отвлекают
+  // отзывы и распаковки одной лентой вперемешку: скрин, видео, скрин… Отзывы только на главной: в форме заказа они отвлекают
+  const out = [], n = Math.max(REVIEWS.length, VIDS.length);
+  for(let i = 0; i < n; i++){ if(REVIEWS[i]) out.push(tile(REVIEWS[i], i)); if(VIDS[i]) out.push(vidTile(VIDS[i])) }
+  $('home-revs').innerHTML = out.join('');
 }
 function openRev(i){
   openSheet(`<span class="hand">вы пишете</span><div class="h2" style="margin:4px 0 12px">Отзывы</div>

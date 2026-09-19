@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19o';
+const BUILD = '2026-09-19p';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2996,7 +2996,7 @@ async function certCancelNow(num){
 function cancelOrder(num){
   openSheet(`<span class="hand">отмена заказа</span>
     <div class="h2" style="margin-top:4px">${esc(num)}</div>
-    <div class="small" style="margin:8px 0 14px;white-space:normal">Заказ ещё не оплачен, отменить можно сразу. Если уже перевели деньги — напишите мне, верну.</div>
+    <div class="small" style="margin:8px 0 14px;white-space:normal">Отменить можно, только если вы ещё не перевели деньги. Если уже перевели — заказ отменить нельзя: я выкуплю его в ближайшую закупку.</div>
     <div class="list"><button class="btn block" onclick="cancelNow('${esc(num)}')">Отменить заказ</button><button class="btn ghost block" onclick="closeSheet()">Оставить заказ</button></div>`);
 }
 async function cancelNow(num){

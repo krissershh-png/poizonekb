@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19q';
+const BUILD = '2026-09-19r';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1312,13 +1312,21 @@ async function loadPrices(){ try{ const r = await fetch('prices.json?'+Date.now(
     refreshPrices(); renderGames() } }catch(e){} }
 
 /* ---------- навигация ---------- */
+/* первое знакомство с разделами: короткая подсказка, что это за место и зачем. Показывается один раз на раздел */
+function screenHint(s){
+  const nav = document.querySelector('nav');
+  if(s === 'shop') hint('what-shop', document.querySelector('#s-shop .top'), 'Poizon — китайская площадка оригиналов. Здесь её вещи с ценой в рублях: выбираете размер, я выкупаю и привожу');
+  if(s === 'calc'){ hint('calc', $('yen'), 'Цена в юанях из Poizon — итог сразу до двери'); hint('what-calc', nav, 'Это расчёт вещи, которой нет в каталоге. Готовые вещи с ценами — в «Каталоге», ваши заказы — в «Профиле»'); }
+  if(s === 'cart') hint('what-cart', document.querySelector('#s-cart .top'), 'Здесь ваш заказ. После оформления я подтвержу цену и пришлю реквизиты в Telegram');
+  if(s === 'me') hint('what-me', document.querySelector('#s-me .top'), 'Тут заказы и путь посылки, скидки, сертификаты и игры');
+}
 function go(s){
   if(typeof hintPause === 'function') hintPause();
   document.querySelectorAll('.screen').forEach(e=>e.classList.toggle('active', e.id==='s-'+s));
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
   window.scrollTo(0,0); $('vibe-nudge').hidden = true;
   if(s==='shop') renderShop(); if(s==='cart') renderCart(); if(s==='me') renderMe();
-  if(s==='calc') hint('calc', $('yen'), 'Цена в юанях из Poizon — итог сразу до двери');
+  screenHint(s);
   if(tg){ s==='home' ? tg.BackButton.hide() : tg.BackButton.show() }
   haptic('light');
 }

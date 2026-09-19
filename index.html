@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19u';
+const BUILD = '2026-09-19v';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -139,6 +139,10 @@ a{color:inherit;text-decoration:none}
 .vid .play{position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.9)}
 .vid .play::after{content:"";position:absolute;left:16px;top:12px;border:8px solid transparent;border-left:13px solid var(--red)}
 .vid-full{display:block;width:100%;max-height:70vh;margin-top:10px;border-radius:14px;background:#000}
+.rv-feed{display:grid;gap:14px}
+.rv{display:grid;gap:8px;padding-bottom:14px;border-bottom:1.5px solid var(--line)}
+.rv-img,.rv-vid{display:block;width:100%;max-width:100%;border-radius:14px;background:var(--bg)}
+.rv p{margin:0;font-size:14px;font-weight:600;line-height:1.45;color:var(--ink-2);white-space:pre-line}
 .survey-tile{display:block;width:100%;margin-top:12px;padding:0;border:0;background:none;cursor:pointer}
 .survey-tile img{display:block;width:100%;aspect-ratio:4/1;border-radius:14px}
 .survey-img{display:block;width:100%;max-width:100%;aspect-ratio:4/1;border-radius:14px;margin-top:4px}
@@ -839,7 +843,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <div class="intro" id="facts"></div>
 
   <!-- настоящие скриншоты клиентов — сразу под героем, до первого призыва купить -->
-  <div class="sec"><h2 class="h2">Отзывы и распаковки</h2><button class="more" onclick="openTg('https://t.me/feedbackpoizonekb')">Все отзывы</button></div>
+  <div class="sec"><h2 class="h2">Отзывы и распаковки</h2><button class="more" onclick="openAllRevs()">Все отзывы</button></div>
   <div class="hs" id="home-revs"></div>
 
 
@@ -3764,10 +3768,20 @@ function renderRevs(){
   for(let i = 0; i < n; i++){ if(REVIEWS[i]) out.push(tile(REVIEWS[i], i)); if(VIDS[i]) out.push(vidTile(VIDS[i])) }
   $('home-revs').innerHTML = out.join('');
 }
+/* «Все отзывы»: лента из канала отзывов прямо в приложении (revs.json + img/revall). Сверху те же три, что первыми на главной */
+let REVS_ALL = null;
+async function openAllRevs(){
+  openSheet('<span class="hand">вы пишете</span><div class="h2" style="margin:4px 0 12px">Все отзывы</div><div id="revs-all" class="small">Загружаю…</div>');
+  try{ REVS_ALL = REVS_ALL || await fetch('revs.json?v=' + BUILD).then(r => r.json()) }catch(e){ REVS_ALL = [] }
+  const box = $('revs-all'); if(!box) return;
+  const top = [`<img class="rv-img" src="${IMG(REVIEWS[0])}" alt="Отзыв клиента" loading="lazy">`, VIDS[0] ? `<video class="rv-vid" src="vid/${VIDS[0][0]}.mp4" poster="vid/${VIDS[0][0]}.jpg" controls playsinline preload="none"></video>` : '', `<img class="rv-img" src="${IMG(REVIEWS[1])}" alt="Отзыв клиента" loading="lazy">`].join('');
+  const card = r => `<div class="rv">${r.video ? `<video class="rv-vid" src="${r.video}" poster="${r.poster || ''}" controls playsinline preload="none"></video>` : ''}${r.photos.map(p => `<img class="rv-img" src="${p}" alt="Отзыв клиента" loading="lazy">`).join('')}${r.text ? `<p>${esc(r.text)}</p>` : ''}</div>`;
+  box.className = 'rv-feed'; box.innerHTML = `<div class="rv">${top}</div>` + REVS_ALL.map(card).join('');
+}
 function openRev(i){
   openSheet(`<span class="hand">вы пишете</span><div class="h2" style="margin:4px 0 12px">Отзывы</div>
     <div class="gal revgal">${REVIEWS.map(s=>`<img src="${IMG(s)}" alt="Отзыв клиента">`).join('')}</div>
-    <button class="btn ghost block" style="margin-top:14px" onclick="openTg('https://t.me/feedbackpoizonekb')">Все отзывы в канале</button>`);
+    <button class="btn ghost block" style="margin-top:14px" onclick="openAllRevs()">Все отзывы</button>`);
   setTimeout(()=>{ const g = document.querySelector('.revgal'), im = g && g.children[i]; if(im) g.scrollLeft = im.offsetLeft - 16 }, 30);
 }
 

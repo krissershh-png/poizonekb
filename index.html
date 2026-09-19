@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19t';
+const BUILD = '2026-09-19u';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1400,7 +1400,9 @@ function syncFavs(){
     return p && !p.post && !p.stock ? { id, name:`${p.brand} ${p.name}`, kg:itemKg(p), s: FAVSZ[id] || '', price: FP[id] || favPrice(p) || minPrice(p) } : null }).filter(Boolean) }), 1200);
 }
 const priceDrop = p => favs.includes(p.id) && FP[p.id] && favPrice(p) && favPrice(p) < FP[p.id];
-const CATS = [ {id:'shoes',t:'Обувь'}, {id:'clothes',t:'Одежда'}, {id:'bags',t:'Сумки'}, {id:'acc',t:'Аксессуары'} ];
+// косметика лежит в аксессуарах, но в каталоге у неё своя вкладка
+const CATS = [ {id:'shoes',t:'Обувь'}, {id:'clothes',t:'Одежда'}, {id:'bags',t:'Сумки'}, {id:'beauty',t:'Косметика'}, {id:'acc',t:'Аксессуары'} ];
+const isBeauty = p => p.sub === 'beauty';
 const SUBS = {
   shoes:   [ {id:'sneakers',t:'Кроссовки'}, {id:'keds',t:'Кеды и слипоны'}, {id:'boots',t:'Ботинки и сапоги'}, {id:'heels',t:'Туфли и балетки'} ],
   clothes: [ {id:'hoodies',t:'Худи и свитшоты'}, {id:'tees',t:'Футболки и поло'}, {id:'knit',t:'Свитера и кардиганы'}, {id:'outer',t:'Куртки и пуховики'}, {id:'pants',t:'Брюки и шорты'}, {id:'other',t:'Другое'} ],
@@ -1408,7 +1410,7 @@ const SUBS = {
 };
 const SUB_ALL = { shoes:'Вся обувь', clothes:'Вся одежда', acc:'Все аксессуары' };
 let shopSub = 'all';
-function catsPresent(){ return CATS.filter(c => CAT.some(p=>p.cat===c.id)) }
+function catsPresent(){ return CATS.filter(c => c.id === 'beauty' ? CAT.some(isBeauty) : CAT.some(p => p.cat === c.id && !isBeauty(p))) }
 let homeCat = 'all';
 /* поиск как пишут люди: «найк данк», «нью беланс 530», «угги», «мартинсы». Кириллица → названия брендов и моделей, слова в любом порядке */
 const SEARCH_ALIAS = [
@@ -1422,11 +1424,12 @@ const SEARCH_ALIAS = [
   [/кросс?овк[иа]|кроссы|кеды/g, 'shoes'], [/сумк[аи]|сумочк[аи]/g, 'bags'], [/очк[иа]/g, 'очки'], [/часы/g, 'часы']
 ];
 const CAT_WORDS = { shoes:'shoes кроссовки обувь', clothes:'clothes одежда', bags:'bags сумка', acc:'acc аксессуары' };
+const SUB_WORDS = { beauty:'косметика уход beauty' };
 function searchMatcher(q){
   let s = ' ' + q.toLowerCase().replace(/ё/g, 'е') + ' ';
   SEARCH_ALIAS.forEach(([re, to]) => { s = s.replace(re, ' ' + to + ' ') });
   const words = s.split(/[\s,]+/).filter(Boolean);
-  return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
+  return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '') + ' ' + (SUB_WORDS[p.sub] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
 }
 /* опрос с розыгрышем 2 000 ₽ (Google Форма). Всплывает, когда человек провёл в приложении минуту и ничего не делает в окне;
    «Позже» — спросим через 3 дня, «Ответить» — больше не показываем */
@@ -1577,7 +1580,7 @@ function renderHome(){
   if(drops && G.dropDay !== dayKey()){ G.dropDay = dayKey(); save('gifts', G); setTimeout(()=>toast(`Цена ниже на ${drops} ${plural(drops,['вещь','вещи','вещей'])} из избранного`), 1500) }
   $('home-chips').innerHTML = [{id:'all',t:'Все'},...catsPresent()].map(c=>`<button class="chip ${homeCat===c.id?'on':''}" onclick="homeCat='${c.id}';renderHome()">${c.t}</button>`).join('');
   // на главной без Pop Mart; в «Все» одна плитка — сезонная вещь с живым фото
-  const pool = CAT.filter(p=>!p.stock && p.brand!=='Pop Mart' && (homeCat==='all' || p.cat===homeCat) && minPrice(p));
+  const pool = CAT.filter(p=>!p.stock && p.brand!=='Pop Mart' && (homeCat==='all' || (homeCat==='beauty' ? isBeauty(p) : p.cat===homeCat && !isBeauty(p))) && minPrice(p));
   const hits = mixCats(pool.sort((a,b)=>score(b)-score(a))).slice(0,4);
   if(homeCat==='all'){
     const w = pool.filter(p => p.look && (/boots|outer|knit/.test(p.sub||'') || /UGG|угги|пуховик|Nuptse/i.test(p.brand+' '+p.name))).sort((a,b)=>(a.lk??99)-(b.lk??99))[0];
@@ -1817,7 +1820,7 @@ function fltClear(){ FLT = { sizes:[], brands:[], colors:[], pmin:0, pmax:0 }; s
 function fltReset(){ fltClear(); openFilters() }
 /* что осталось в выбранной вкладке без учёта фильтров: от этого считаются бренды и «Показать N» */
 function shopBase(){
-  return CAT.filter(p => shopCat==='all' || (shopCat==='stock'?p.stock : shopCat==='fav'?favs.includes(p.id) : p.cat===shopCat))
+  return CAT.filter(p => shopCat==='all' || (shopCat==='stock'?p.stock : shopCat==='fav'?favs.includes(p.id) : shopCat==='beauty'?isBeauty(p) : p.cat===shopCat && !isBeauty(p)))
     .filter(p => !SUBS[shopCat] || shopSub==='all' || p.sub===shopSub);
 }
 function openFilters(){

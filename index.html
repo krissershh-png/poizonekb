@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19p';
+const BUILD = '2026-09-19q';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -3222,6 +3222,8 @@ async function buyCert(){
     G.certs = [{ num, value:certDenom, rest:certDenom, status:'заявка', to, from, wish, design:certDesign, ins:certIns, mine:true }].concat(G.certs || []);
     return certDone(num, certDenom, img);
   }
+  // понятная причина вместо молчания: старый код бота, нет связи или ошибка данных
+  if(inTg && CFG.api) toast(r && r.error === 'type' ? 'Бот на старом коде: сертификаты ещё не подключены' : r && r.error ? 'Не получилось оформить: ' + r.error : 'Нет связи с ботом, пишу Кристине');
   // без таблицы — готовое сообщение Кристине
   const msg = [ `Здравствуйте! Хочу электронный подарочный сертификат POIZON.EKB, заявка ${num}`, '',
     `Сумма: ${fmt(certDenom)}`, `Дизайн: ${(CERT_DESIGNS.find(z => z.id === certDesign) || {}).t}`, `Надпись: ${certIns}`,

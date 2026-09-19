@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19v';
+const BUILD = '2026-09-19w';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -143,6 +143,7 @@ a{color:inherit;text-decoration:none}
 .rv{display:grid;gap:8px;padding-bottom:14px;border-bottom:1.5px solid var(--line)}
 .rv-img,.rv-vid{display:block;width:100%;max-width:100%;border-radius:14px;background:var(--bg)}
 .rv p{margin:0;font-size:14px;font-weight:600;line-height:1.45;color:var(--ink-2);white-space:pre-line}
+.favn-heart{color:var(--red);font-size:13px;line-height:1;margin-right:2px}
 .survey-tile{display:block;width:100%;margin-top:12px;padding:0;border:0;background:none;cursor:pointer}
 .survey-tile img{display:block;width:100%;aspect-ratio:4/1;border-radius:14px}
 .survey-img{display:block;width:100%;max-width:100%;aspect-ratio:4/1;border-radius:14px;margin-top:4px}
@@ -1262,6 +1263,8 @@ const itemKg = p => +p.kg || 1.55;
 
 /* ---------- закупка раз в месяц ---------- */
 let BUY = null;   // { n, next, early } из таблицы: сколько вещей уже ждут выкупа
+var FAVN = {};   // сколько людей добавили вещь в избранное (из таблицы); показываем от FAV_SHOW
+const FAV_SHOW = 10;
 var DELIVERED = 0, RETAIL = {};   // RETAIL: цены в российских магазинах { id: { p, w, d } } — из retail.json на сайте и из листа «Цены в России»
 try{ fetch('retail.json?v=' + BUILD).then(r => r.ok ? r.json() : {}).then(j => { RETAIL = Object.assign({}, j.items || {}, RETAIL); if(typeof refreshPrices === 'function') refreshPrices() }).catch(() => {}) }catch(e){}
    // сколько заказов привезено: из таблицы (выданные + CFG.deliveredBefore в bot/Code.gs)
@@ -1356,7 +1359,8 @@ function card(p){
   const studio = studioAt(p, 0) ? 'studio' : '';
   const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
   const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-favPrice(p))}</span>` : !p.post && n === 1 && (p.cat === 'shoes' || p.cat === 'clothes') && sizesOf(p).length > 2 ? `<span class="tag last">Последний размер</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
-  const meta = p.stock ? `<i></i>${range} · отправлю сегодня` : p.post ? `<i></i>${range ? range+' · ' : ''}выкуп ${buyShort()}` : (n ? `<i></i>${range} · выкуп ${buyShort()}` : `<i class="no"></i>уточню наличие`);
+  const fv = FAVN[p.id] || 0;
+  const meta = fv >= FAV_SHOW ? `<span class="favn-heart">♥</span>${fv} в избранном` : p.stock ? `<i></i>${range} · отправлю сегодня` : p.post ? `<i></i>${range ? range+' · ' : ''}выкуп ${buyShort()}` : (n ? `<i></i>${range} · выкуп ${buyShort()}` : `<i class="no"></i>уточню наличие`);
   return `<div class="card">
     <button class="ph" onclick="openProduct('${p.id}')"><img class="${studio}" src="${p.img[0]}" alt="" loading="lazy">${tag}</button>
     <button class="fav ${favs.includes(p.id)?'on':''}" onclick="toggleFav('${p.id}',this)" aria-label="В избранное">${HEART}</button>
@@ -2032,7 +2036,10 @@ function rusInner(p, price, picked){
 /* доверие в карточке: сколько раз вещь уже заказывали у меня */
 function trustLine(p, mp){
   const n = POPULAR[p.id] || 0;
-  return n >= 2 ? `<div class="trust"><div class="popular">${HOW_ICON_SVG('box')}Заказывали у меня ${n} ${plural(n,['раз','раза','раз'])}</div></div>` : '';
+  const fv = FAVN[p.id] || 0;
+  const favLine = fv >= FAV_SHOW ? `<div class="popular"><span class="favn-heart">♥</span>${fv} ${plural(fv,['человек добавил','человека добавили','человек добавили'])} в избранное</div>` : '';
+  const ord = n >= 2 ? `<div class="popular">${HOW_ICON_SVG('box')}Заказывали у меня ${n} ${plural(n,['раз','раза','раз'])}</div>` : '';
+  return ord || favLine ? `<div class="trust">${ord}${favLine}</div>` : '';
 }
 const HOW_ICON_SVG = k => `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${HOW_ICON[k]}</svg>`;
 function pickSize(eu, el){
@@ -3580,6 +3587,7 @@ function register(){
     if(r.delivered){ DELIVERED = r.delivered; renderRevs() }
     if(r.phone && !$('f-phone').value.trim()){ $('f-phone').value = r.phone; formatPhone(); phoneUi() }   // номер из прошлого заказа или из Telegram — на любом телефоне
     if(r.popular) POPULAR = r.popular;
+    if(r.favn){ FAVN = r.favn; if($('s-shop').classList.contains('active')) renderShop(); renderHome() }
     if(r.retail) Object.assign(RETAIL, r.retail);   // цены из таблицы важнее файла
     if(r.purchase && r.purchase.next){ BUY = r.purchase; renderHome(); if($('s-cart').classList.contains('active')) renderCart() }   // закупка: дата и сколько вещей уже ждут выкупа
     if(r.vibe && VIBES[r.vibe] && !VIBE){ VIBE = { key:r.vibe, at:Date.now(), scores:{} }; save('vibe', VIBE); renderHome() }   // вайб из таблицы на новом телефоне

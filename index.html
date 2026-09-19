@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19n';
+const BUILD = '2026-09-19o';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2984,7 +2984,7 @@ function openTrack(num){
 function certCancel(num){
   openSheet(`<span class="hand">отмена сертификата</span>
     <div class="h2" style="margin-top:4px">${esc(num)}</div>
-    <div class="small" style="margin:8px 0 14px;white-space:normal">Сертификат ещё не оплачен, отменить можно сразу. Если уже перевели деньги — напишите мне, верну.</div>
+    <div class="small" style="margin:8px 0 14px;white-space:normal">Отменить можно, только если вы ещё не перевели деньги. Если уже перевели — сертификат отменить нельзя: он придёт вам, как только я отмечу оплату.</div>
     <div class="list"><button class="btn block" onclick="certCancelNow('${esc(num)}')">Отменить сертификат</button><button class="btn ghost block" onclick="closeSheet()">Оставить</button></div>`);
 }
 async function certCancelNow(num){

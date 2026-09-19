@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-19j';
+const BUILD = '2026-09-19k';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -522,6 +522,9 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .intro.play .gl{animation:shine 5s ease-in-out infinite}
 @keyframes shine{0%{background-position:100% 0}36%,100%{background-position:0 0}}
 @media (prefers-reduced-motion:reduce){.intro.play .gl{animation:none}}
+/* заголовки разделов главной: тот же красный блик, что у «Надёжный посредник» */
+#s-home .sec .h2{background:linear-gradient(100deg,#121212 0 40%,#ff5d52 48%,#c81717 52%,#121212 60% 100%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shine 5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#s-home .sec .h2{animation:none}}
 /* ползунок цены «от — до» */
 .fgrp .fh b{font-size:13px;font-weight:800;letter-spacing:0;text-transform:none;color:var(--ink)}
 .range2{position:relative;height:40px;margin:2px 11px 0}

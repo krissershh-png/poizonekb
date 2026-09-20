@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-20i';
+const BUILD = '2026-09-20j';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -839,7 +839,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
         <button class="btn sm ghost" onclick="go('calc')">Расчёт</button>
       </div>
     </div>
-    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><video class="mascot" id="hero-vid" autoplay muted playsinline preload="auto" disablepictureinpicture></video></button>
+    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><img class="mascot" id="hero-vid" src="vid/home.webp" alt="Крис с коробкой"></button>
   </div>
 
   <!-- вводная о магазине — реплика Крис под шапкой: кто она, что такое Poizon и три факта -->
@@ -1441,16 +1441,6 @@ function searchMatcher(q){
   const words = s.split(/[\s,]+/).filter(Boolean);
   return p => { const hay = (p.brand + ' ' + p.name + ' ' + (p.art || '') + ' ' + (CAT_WORDS[p.cat] || '') + ' ' + (SUB_WORDS[p.sub] || '')).toLowerCase().replace(/ё/g, 'е'); return words.every(w => hay.includes(w)) };
 }
-/* видео в шапке: iOS не умеет webm с прозрачностью — там играет mp4 на белом фоне, он сливается с карточкой.
-   Если автозапуск заблокирован, пробуем ещё раз при первом касании экрана */
-(function(){
-  // Safari «играет» webm без прозрачности — чёрным фоном, поэтому айфону отдаём mp4 на белом
-  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Android/.test(navigator.userAgent));
-  const start = () => { const v = $('hero-vid'); if(!v) return; if(!v.src) v.src = ios ? 'vid/home-ios.mp4' : 'vid/home.webm'; const p = v.play(); if(p && p.catch) p.catch(() => {}) };
-  document.addEventListener('DOMContentLoaded', start);
-  ['touchstart', 'click'].forEach(e => document.addEventListener(e, start, { once: true, passive: true }));
-  setTimeout(start, 600);
-})();
 /* опрос с розыгрышем 2 000 ₽ (Google Форма). Всплывает, когда человек провёл в приложении минуту и ничего не делает в окне;
    «Позже» — спросим через 3 дня, «Ответить» — больше не показываем */
 const SURVEY_URL = 'https://forms.gle/9GdovFG2H4JxvRPZA';

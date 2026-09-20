@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-20h';
+const BUILD = '2026-09-20i';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -839,7 +839,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
         <button class="btn sm ghost" onclick="go('calc')">Расчёт</button>
       </div>
     </div>
-    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><video class="mascot" id="hero-vid" autoplay muted playsinline preload="auto" disablepictureinpicture><source src="vid/home.webm" type="video/webm"><source src="vid/home-ios.mp4" type="video/mp4"></video></button>
+    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><video class="mascot" id="hero-vid" autoplay muted playsinline preload="auto" disablepictureinpicture></video></button>
   </div>
 
   <!-- вводная о магазине — реплика Крис под шапкой: кто она, что такое Poizon и три факта -->
@@ -1444,7 +1444,9 @@ function searchMatcher(q){
 /* видео в шапке: iOS не умеет webm с прозрачностью — там играет mp4 на белом фоне, он сливается с карточкой.
    Если автозапуск заблокирован, пробуем ещё раз при первом касании экрана */
 (function(){
-  const start = () => { const v = $('hero-vid'); if(!v) return; const p = v.play(); if(p && p.catch) p.catch(() => {}) };
+  // Safari «играет» webm без прозрачности — чёрным фоном, поэтому айфону отдаём mp4 на белом
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Android/.test(navigator.userAgent));
+  const start = () => { const v = $('hero-vid'); if(!v) return; if(!v.src) v.src = ios ? 'vid/home-ios.mp4' : 'vid/home.webm'; const p = v.play(); if(p && p.catch) p.catch(() => {}) };
   document.addEventListener('DOMContentLoaded', start);
   ['touchstart', 'click'].forEach(e => document.addEventListener(e, start, { once: true, passive: true }));
   setTimeout(start, 600);

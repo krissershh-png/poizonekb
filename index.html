@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-20d';
+const BUILD = '2026-09-20e';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -3773,8 +3773,12 @@ const IMG = s => (window.IMGPACK || {})[s] || s;
 function renderRevs(){
   const tile = (s,i) => `<button class="revimg" onclick="openRev(${i})"><img src="${IMG(s)}" alt="Отзыв клиента" loading="lazy"></button>`;
   // отзывы и распаковки одной лентой вперемешку: скрин, видео, скрин… Отзывы только на главной: в форме заказа они отвлекают
-  const out = [], n = Math.max(REVIEWS.length, VIDS.length);
-  for(let i = 0; i < n; i++){ if(REVIEWS[i]) out.push(tile(REVIEWS[i], i)); if(VIDS[i]) out.push(vidTile(VIDS[i])) }
+  // первыми — три выбранные плитки, дальше всё остальное вперемешку
+  const firstVid = ['v2', 'v8'], firstRev = 2;
+  const out = [vidTile(VIDS.find(v => v[0] === 'v2')), tile(REVIEWS[firstRev], firstRev), vidTile(VIDS.find(v => v[0] === 'v8'))];
+  const revRest = REVIEWS.map((s, i) => [s, i]).filter(([, i]) => i !== firstRev), vidRest = VIDS.filter(v => !firstVid.includes(v[0]));
+  const n = Math.max(revRest.length, vidRest.length);
+  for(let i = 0; i < n; i++){ if(revRest[i]) out.push(tile(revRest[i][0], revRest[i][1])); if(vidRest[i]) out.push(vidTile(vidRest[i])) }
   $('home-revs').innerHTML = out.join('');
 }
 /* «Все отзывы»: лента из канала отзывов прямо в приложении (revs.json + img/revall). Сверху те же три, что первыми на главной */

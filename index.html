@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-20b';
+const BUILD = '2026-09-20c';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -91,7 +91,7 @@ a{color:inherit;text-decoration:none}
 .hero .cta .btn.sm{padding:0 12px}
 .hero .mascot-wrap{display:block;width:156px;max-width:none;margin:-8px -16px -16.5px -8px;padding:0;border:0;background:none;position:relative;z-index:1;align-self:end;-webkit-tap-highlight-color:transparent;cursor:pointer}
 /* живой маскот: дышит, иногда подпрыгивает с коробкой; нажали — прыжок и сердечки */
-.hero .mascot{display:block;width:100%;max-width:none;margin:0;transform-origin:50% 100%;animation:m-float 4s ease-in-out infinite}
+.hero .mascot{display:block;width:100%;max-width:none;margin:0;border-radius:14px;transform-origin:50% 100%;animation:m-float 4s ease-in-out infinite}
 /* дыхание от нижнего края: низ маскота всегда стоит на рамке, без зазора и без выхода за неё */
 @keyframes m-float{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
 .m-fx{position:absolute;left:46%;bottom:34%;width:22px;height:22px;pointer-events:none;animation:mfx 1.05s cubic-bezier(.2,.7,.3,1) forwards}
@@ -838,14 +838,13 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
         <button class="btn sm ghost" onclick="go('calc')">Расчёт</button>
       </div>
     </div>
-    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><picture style="display:block"><source srcset="img/mascot.webp?v=2" type="image/webp"><img class="mascot" src="img/mascot.png?v=2" alt=""></picture></button>
+    <button class="mascot-wrap" id="mascot" onclick="mascotTap()" aria-label="Крис с коробкой — нажмите"><video class="mascot" src="vid/home.mp4" poster="vid/home.jpg" autoplay muted loop playsinline preload="metadata"></video></button>
   </div>
 
   <!-- вводная о магазине — реплика Крис под шапкой: кто она, что такое Poizon и три факта -->
   <div class="intro" id="facts"></div>
 
   <!-- настоящие скриншоты клиентов — сразу под героем, до первого призыва купить -->
-  <video class="home-vid" src="vid/home.mp4" poster="vid/home.jpg" autoplay muted loop playsinline preload="metadata"></video>
   <div class="sec"><h2 class="h2">Отзывы и распаковки</h2><button class="more" onclick="openAllRevs()">Все отзывы</button></div>
   <div class="hs" id="home-revs"></div>
 

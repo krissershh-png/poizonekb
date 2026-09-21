@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-21c';
+const BUILD = '2026-09-21d';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1084,7 +1084,7 @@ const CFG = {
   channel: 'buypoizonekb',
   appLink: 'https://t.me/poizonekbb_bot',   // ссылки друзьям ведут в бота (?start=…): он встречает, начисляет подарок и открывает магазин
   hours: 'с 10 до 22',                       // когда отвечаю; то же число в bot/Code.gs, CFG.hours
-  pay: { bank: 'Сбербанк', phone: '+7 922 666-29-04', raw: '+79226662904' },   // куда переводить оплату; то же в bot/Code.gs, CFG.pay
+  pay: { bank: 'Сбербанк', link: '' },   // номер не показываем; link — ссылка на перевод по СБП (то же в bot/Code.gs). Пусто — реквизиты Крис пишет в личке
   rateChannel: 'amblixObmen',
   rateFallback: { small: 13.75, big: 13.7, date: '13 сентября' },   // запасной курс; свежий приходит из канала, из prices.json (GitHub, 3 раза в день) или из таблицы
   /* Доставка = max(minParcelKg, объёмный вес посылки) × kgRate + shipRisk × цена товаров (защита от рисков Ракеты).
@@ -1165,6 +1165,10 @@ function writeKris(from){
   openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t);
 }
 /* msg: готовый текст. Если браузер не дал открыть Telegram, показываем его с кнопками «Открыть» и «Скопировать» */
+/* оплата без номера телефона: ссылка СБП из банка или реквизиты в личке */
+const payHow = () => CFG.pay.link ? 'По СБП: кнопка «Оплатить» откроет перевод в вашем банке. Потом пришлите скриншот — отмечу оплату' : 'Реквизиты пришлю в личные сообщения. После перевода пришлите скриншот — отмечу оплату';
+function payLink(){ if(inTg && tg.openLink) tg.openLink(CFG.pay.link); else window.open(CFG.pay.link, '_blank') }
+function askPay(num, sum){ const t = `Привет! Хочу оплатить заказ ${num}${sum ? ' на ' + fmt(sum) : ''}, пришлите реквизиты`; openTg(`https://t.me/${CFG.admin}`, t) }
 function openTg(u, msg){
   if(inTg && tg.openTelegramLink){
     // текст подставляется в поле ввода чата сам (t.me/ник?text=…); копия в буфер — на случай старого Telegram
@@ -2449,7 +2453,7 @@ setPvz('cdek');
 setCity('ekb');
 if(user) $('f-name').value = [user.first_name,user.last_name].filter(Boolean).join(' ');
 $('hours-note').textContent = `На связи ${CFG.hours} по Екатеринбургу`;
-$('faq-pay').textContent = `Переводом на ${CFG.pay.bank}, из другого банка — через СБП. Реквизиты появятся сразу после оформления заказа. После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
+$('faq-pay').textContent = `Переводом по СБП из любого банка. ${CFG.pay.link ? 'Кнопка оплаты появится сразу после оформления заказа.' : 'Реквизиты пришлю в личные сообщения после оформления заказа.'} После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
 if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.near) $('f-pvz-near').checked = true; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr; if(CONTACT.pvzId && CONTACT.addr) PVZ_ID = CONTACT.pvzId }
@@ -2674,7 +2678,7 @@ function orderDone(num, left, nb, rush){
   openSheet(`<span class="hand">заказ принят</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${left > 0 ? ' · '+fmt(left) : ''}</div>
     <div class="howmore"><div class="slip"><dl>
-      <div class="row"><dt>Оплата</dt><dd>${left > 0 ? `${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}. Пришлите скриншот — отмечу оплату` : 'Оплачено сертификатом полностью'}</dd></div>
+      <div class="row"><dt>Оплата</dt><dd>${left > 0 ? payHow() : 'Оплачено сертификатом полностью'}</dd></div>
       <div class="row"><dt>Выкуп</dt><dd>Вещь ${when}</dd></div>
       <div class="row"><dt>Статус</dt><dd>Трек и этапы посылки пришлю в Telegram сама, заказ виден в профиле</dd></div>
     </dl></div></div>
@@ -2736,7 +2740,7 @@ function payCard(o){
     ${orderHead(o, false)}
     <div class="seg8">${JOURNEY.map((_,i)=>`<i class="${i === 0 ? 'on' : ''}"></i>`).join('')}</div>
     <div class="st"><div><b>Заказ оформлен</b><span>${esc(o.date||'')} · ${o.local ? 'дальше оплата' : 'не оплачен'}</span></div><span class="sum">${fmt(o.pay||0)}</span></div>
-    <div class="note">${o.local ? `Если ещё не оплатили: ${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}, потом пришлите скриншот.` : 'Оплатите, и я сразу выкуплю на Poizon: цены там меняются каждый день. Росток начнёт расти после оплаты.'}</div>
+    <div class="note">${o.local ? `Если ещё не оплатили: ${payHow()}` : 'Оплатите, и я сразу выкуплю на Poizon: цены там меняются каждый день. Росток начнёт расти после оплаты.'}</div>
     <button class="btn block light" onclick="payOrder('${n}')">${o.local ? SEND_SVG + 'Написать Кристине' : 'Оплатить'}</button>
     ${o.local ? `<div class="acts"><button onclick="reportGot('${n}')">Уже получили? Напишите мне</button><button onclick="hideOrder('${n}')">Убрать из списка</button></div>` : ''}
   </div>`;
@@ -2811,8 +2815,7 @@ function openPay(num, sum){
   openSheet(`<span class="hand">оплата заказа</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${sum ? ' · '+fmt(sum) : ''}</div>
     <div class="howmore"><div class="slip"><dl>
-      <div class="row"><dt>Банк</dt><dd>${esc(CFG.pay.bank)}. Из другого банка — через СБП</dd></div>
-      <div class="row"><dt>Номер</dt><dd><button class="paynum" onclick="copyText('${CFG.pay.raw}','Номер скопирован, вставьте в приложении банка')"><span class="num">${esc(CFG.pay.phone)}</span><b>Копировать</b></button></dd></div>
+      <div class="row"><dt>Оплата</dt><dd>${CFG.pay.link ? `<button class="btn sm" onclick="payLink()">Оплатить по СБП</button>` : `Реквизиты пришлю в личку — <button class="btn sm ghost" onclick="askPay('${esc(num)}',${sum || 0})">получить</button>`}</dd></div>
       ${sum ? `<div class="row"><dt>Сумма</dt><dd class="num">${fmt(sum)}</dd></div>` : ''}
       <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, бот сразу пришлёт подтверждение, а вещь уйдёт в закупку</dd></div>
     </dl></div></div>
@@ -3267,11 +3270,11 @@ function certDone(num, sum, img){
     <div class="h2" style="margin-top:4px">${esc(num)} · ${fmt(sum)}</div>
     ${img ? `<img class="cert-img" src="${img}" alt="Подарочный сертификат ${esc(num)}">` : ''}
     <div class="howmore"><div class="slip"><dl>
-      <div class="row"><dt>Оплата</dt><dd>${esc(CFG.pay.bank)}, перевод по номеру ${esc(CFG.pay.phone)}. Из другого банка — через СБП</dd></div>
+      <div class="row"><dt>Оплата</dt><dd>${payHow()}</dd></div>
       <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, и сертификат сразу придёт вам в Telegram с кнопкой «Подарить»</dd></div>
     </dl></div></div>
     <div class="list" style="margin-top:16px">
-      <button class="btn block" onclick="copyText('${CFG.pay.raw}','Номер скопирован, вставьте в приложении банка')">Скопировать номер для перевода</button>
+      ${CFG.pay.link ? `<button class="btn block" onclick="payLink()">Оплатить по СБП</button>` : `<button class="btn block" onclick="askPay('${esc(num)}',${sum || 0})">Получить реквизиты</button>`}
       <button class="btn ghost block" onclick="certShot('${esc(num)}',${sum})">Отправить скриншот оплаты</button></div>`);
 }
 function certShot(num, sum){ const t = `Оплатил(а) сертификат ${num} на ${fmt(sum)}, скриншот прикладываю`; openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t) }

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-20j';
+const BUILD = '2026-09-21a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1164,7 +1164,8 @@ function writeKris(from){
 /* msg: готовый текст. Если браузер не дал открыть Telegram, показываем его с кнопками «Открыть» и «Скопировать» */
 function openTg(u, msg){
   if(inTg && tg.openTelegramLink){
-    if(msg){ try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(()=>{}) }catch(e){} u = u.replace(/\?text=.*$/, ''); setTimeout(() => toast('Текст скопирован — вставьте его в чат'), 300) }
+    // текст подставляется в поле ввода чата сам (t.me/ник?text=…); копия в буфер — на случай старого Telegram
+    if(msg){ try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(()=>{}) }catch(e){} if(!/\?text=/.test(u)) u += (u.includes('?') ? '&' : '?') + 'text=' + encodeURIComponent(msg) }
     tg.openTelegramLink(u); return false }
   let w = null; try{ w = window.open(u, '_blank') }catch(e){}
   if(!w) msg ? showMsg(u, msg) : showLink(u);   // браузер не дал открыть окно: показываем ссылку, по ней можно нажать

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-21e';
+const BUILD = '2026-09-21f';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2472,7 +2472,7 @@ function phoneFromTg(){
 }
 $('f-phone').addEventListener('input', phoneUi);
 phoneUi();
-/* 89226662904 → +7 922 666-29-04: номер легче проверить глазами */
+/* 89001234567 → +7 900 123-45-67: номер легче проверить глазами */
 function formatPhone(){
   const d = $('f-phone').value.replace(/\D/g, ''), n = d.length === 11 && /^[78]/.test(d) ? d.slice(1) : d.length === 10 ? d : '';
   if(n) $('f-phone').value = `+7 ${n.slice(0,3)} ${n.slice(3,6)}-${n.slice(6,8)}-${n.slice(8)}`;

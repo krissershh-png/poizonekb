@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-21b';
+const BUILD = '2026-09-21c';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -815,6 +815,12 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .cert-row{align-items:center}
 .cert-row .btn{margin-left:auto;flex:0 0 auto}
 .certcard{cursor:pointer}
+/* вход в сертификат — превью настоящего нового дизайна, а не старая карточка */
+.certcard.certcard-new{display:grid;gap:10px;min-height:0;margin:0 0 6px;padding:0;border-radius:0;background:none;color:var(--ink)}
+.certcard.certcard-new::before{content:none}
+.certcard-new .cert-img{border-radius:16px;box-shadow:0 10px 24px rgba(200,23,23,.18)}
+.certcard-new .cc-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--mute)}
+.certcard-new .cc-row b{color:var(--red);font-weight:900}
 .cert-form.open .certcard{cursor:default}
 .cc-go{margin-left:auto;padding:5px 12px;border-radius:999px;background:#fff;color:var(--red);font-family:var(--dela);font-weight:800;font-size:11px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 </style>
@@ -1013,14 +1019,10 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 
   <div class="cap" id="cert"><span>Сертификат в подарок</span></div>
   <div class="box cert-form" id="cert-box">
-    <div class="certcard" role="button" tabindex="0" aria-label="Оформить подарочный сертификат" onclick="certOpen()" onkeydown="if(event.key==='Enter')certOpen()">
-      <div class="dots"></div><div class="cc-bow" aria-hidden="true"></div>
-      <span class="cc-brand">POIZON.EKB</span>
-      <span class="hand cc-hand">подарочный сертификат</span>
-      <div class="cc-amt num" id="cert-amt">15 000 ₽</div>
-      <div class="cc-who"><span>Кому <b id="cc-to">—</b></span><span>От кого <b id="cc-from">—</b></span></div>
-      <div class="cc-foot"><span class="cc-pill">Бессрочно</span><span class="cc-kind" id="cc-kind">электронный</span><span class="cc-go" id="cc-go">Подарить →</span></div>
-    </div>
+    <div class="certcard certcard-new" role="button" tabindex="0" aria-label="Оформить подарочный сертификат" onclick="certOpen()" onkeydown="if(event.key==='Enter')certOpen()">
+<canvas class="cert-img" id="cert-teaser" width="1280" height="800" aria-hidden="true"></canvas>
+<div class="cc-row"><span>Электронный · бессрочно · от 500 ₽</span><b>Оформить →</b></div>
+</div>
     <div id="cert-body" hidden>
     <span class="hand" style="font-size:24px">электронный сертификат</span>
     <canvas class="cert-img" id="cert-canvas" width="1280" height="800" aria-label="Так будет выглядеть сертификат"></canvas>
@@ -2708,7 +2710,7 @@ function renderMeView(){
   const rest = G.coupons.filter(c => !(best && c.id === best.id && (!guest || true)));   // лучший купон уже показан наверху
   $('my-coupons').innerHTML = rest.map(c=>`<div class="coupon"><span class="v">−${c.v} ₽</span><span class="t"><b>${esc(c.why)}</b>${c.min ? 'от '+fmt(c.min)+' · ' : ''}сгорит ${dmyhm(c.until)}</span></div>`).join('')
     + perks.map(x=>`<div class="coupon"><span class="v">+</span><span class="t"><b>Подарок в посылку</b>к следующему заказу</span></div>`).join('');
-  renderMyCerts();
+  renderMyCerts(); certTeaser();
   $('me-spin').hidden = !spinAvailable() || (guest && !best);   // у гостя кнопка колеса уже в главной карточке
   $('gifts-sec').hidden = !rest.length && !perks.length && $('me-spin').hidden;
   renderHeroCard(); renderGames(); renderMyLink(); renderOrders(); renderVibeRow();
@@ -3211,6 +3213,7 @@ function certPreview(){
   }), 120);
 }
 /* сначала только карточка сертификата; нажали — раскрывается форма */
+function certTeaser(){ const c = $('cert-teaser'); if(!c || c.dataset.done) return; c.dataset.done = 1; certFonts().then(() => certDraw(c, 'red', { amount: fmt(15000), ins: 'Это тебе', to: '', from: '', num: 'SR-•••••-•••' }, 1280)) }
 function certOpen(){
   const b = $('cert-body'); if(!b.hidden) return;
   b.hidden = false; $('cert-box').classList.add('open'); haptic('tick');

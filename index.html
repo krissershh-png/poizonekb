@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-21d';
+const BUILD = '2026-09-21e';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1084,7 +1084,7 @@ const CFG = {
   channel: 'buypoizonekb',
   appLink: 'https://t.me/poizonekbb_bot',   // ссылки друзьям ведут в бота (?start=…): он встречает, начисляет подарок и открывает магазин
   hours: 'с 10 до 22',                       // когда отвечаю; то же число в bot/Code.gs, CFG.hours
-  pay: { bank: 'Сбербанк', link: '' },   // номер не показываем; link — ссылка на перевод по СБП (то же в bot/Code.gs). Пусто — реквизиты Крис пишет в личке
+  pay: { bank: 'Сбербанк', link: 'https://www.sberbank.com/sms/pbpn?requisiteNumber=79226662904' },   // номер не показываем; link — ссылка на перевод по СБП (то же в bot/Code.gs). Пусто — реквизиты Крис пишет в личке
   rateChannel: 'amblixObmen',
   rateFallback: { small: 13.75, big: 13.7, date: '13 сентября' },   // запасной курс; свежий приходит из канала, из prices.json (GitHub, 3 раза в день) или из таблицы
   /* Доставка = max(minParcelKg, объёмный вес посылки) × kgRate + shipRisk × цена товаров (защита от рисков Ракеты).

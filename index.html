@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-21f';
+const BUILD = '2026-09-22a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1100,15 +1100,16 @@ const CFG = {
     { k:'small',    t:'Духи, очки, часы, кошелёк',  w:0.3 },
   ],
   kgRate: 650, minParcelKg: 1, shipRisk: 0.008,
-  /* комиссия: первая вещь 2 000 ₽, каждая следующая в том же заказе 1 000 ₽. В карточке цена как для первой вещи */
-  fee: 2000, feeNext: 1000,
+  /* комиссия: первая вещь 2 500 ₽, каждая следующая в том же заказе 1 000 ₽. В карточке цена как для первой вещи.
+     minMargin: скидки и подарки никогда не опускают заработок с заказа ниже 2 000 ₽ — запас 500 ₽ уже в цене каждой вещи */
+  fee: 2500, feeNext: 1000, minMargin: 2000,
   /* «Расчёт»: меньше 50 ¥ — посчитаю лично; вещь дешевле 1 500 ₽ одна не везётся, только к основной */
   minYen: 50, minItemRub: 1500,
   /* закупка раз в месяц: next — ближайшая дата; когда она прошла, берётся число day следующего месяца (1–28).
      early — выкупаю досрочно, если столько вещей набралось; rushFee — срочный отдельный выкуп */
   purchase: { day: 28, next: '2026-09-28', early: 8, rushFee: 1200 },
   /* Колесо подарков: 8 равных секторов, шанс у каждого одинаковый. Значения — скидка в ₽. */
-  wheel: [300, 500, 300, 700, 300, 500, 300, 500],
+  wheel: [300, 500, 300, 400, 300, 500, 300, 400],
   /* Программа подарков: скидок немного, и все они приводят новых клиентов.
      К заказу только один денежный подарок: колесо при первом входе (на первый заказ), подарок от друга (первый заказ от 10 000 ₽)
      или бонус за приглашённого друга, который оплатил заказ. Скидки за объём и колеса после каждого заказа нет.
@@ -1262,7 +1263,7 @@ async function loadRate(){
   }
 }
 /* цена = товар (¥ × курс × n) + доставка + комиссия, округление до …90 вверх.
-   доставка = max(1 кг, вес × n) × 650 + 0,8% от цены товара; комиссия = 2 000 + 1 000 × (n − 1).
+   доставка = max(1 кг, вес × n) × 650 + 0,8% от цены товара; комиссия = 2 500 + 1 000 × (n − 1).
    Цена вещи посчитана как отдельная посылка; в корзине вещи едут одной посылкой, разница вычитается (shipCut) */
 const parcelShip = kg => Math.max(CFG.minParcelKg, kg) * CFG.kgRate;
 const shipCost = (rub, kg, n = 1) => parcelShip(kg * n) + CFG.shipRisk * rub;
@@ -1313,7 +1314,8 @@ function sizesOf(p){
     return (p.sizes||[]).map(eu => ({ eu, price:p.from, ok:true, post:true })).sort((a,b)=> sizeKey(a.eu)-sizeKey(b.eu));
   }
   const d = PRICES.items[p.id]; if(!d) return [];
-  return Object.entries(d.sizes).map(([eu,[cny]]) => ({ eu: (/undefined|^(one|one size|os|f)$/i.test(eu) ? 'Один' : eu), cny, ok: cny>0, price: cny>0 ? priceFrom(cny, itemKg(p)) : 0 }))
+  const stale = d.t && Date.now()/1000 - d.t > 2*86400;   // наличие не подтверждалось двое суток (страница не открывалась) — не продаём вслепую
+  return Object.entries(d.sizes).map(([eu,[cny]]) => ({ eu: (/undefined|^(one|one size|os|f)$/i.test(eu) ? 'Один' : eu), cny, ok: cny>0 && !stale, price: cny>0 ? priceFrom(cny, itemKg(p)) : 0 }))
     .sort((a,b)=> sizeKey(a.eu)-sizeKey(b.eu));
 }
 const CLOTH = ['XXS','XS','S','M','L','XL','XXL','2XL','3XL','4XL'];
@@ -1422,7 +1424,7 @@ const priceDrop = p => favs.includes(p.id) && FP[p.id] && favPrice(p) && favPric
 const CATS = [ {id:'shoes',t:'Обувь'}, {id:'clothes',t:'Одежда'}, {id:'bags',t:'Сумки'}, {id:'beauty',t:'Косметика'}, {id:'acc',t:'Аксессуары'} ];
 const isBeauty = p => p.sub === 'beauty';
 const SUBS = {
-  shoes:   [ {id:'sneakers',t:'Кроссовки'}, {id:'keds',t:'Кеды и слипоны'}, {id:'boots',t:'Ботинки и сапоги'}, {id:'heels',t:'Туфли и балетки'} ],
+  shoes:   [ {id:'sneakers',t:'Кроссовки'}, {id:'keds',t:'Кеды и слипоны'}, {id:'pumps',t:'Каблуки'}, {id:'loafers',t:'Лоферы'}, {id:'ballet',t:'Балетки'}, {id:'maryjane',t:'Мэри джейн'}, {id:'sandals',t:'Босоножки'}, {id:'mules',t:'Мюли'}, {id:'ankle',t:'Ботильоны'}, {id:'boots',t:'Ботинки и сапоги'}, {id:'heels',t:'Другие туфли'} ],
   clothes: [ {id:'hoodies',t:'Худи и свитшоты'}, {id:'tees',t:'Футболки и поло'}, {id:'knit',t:'Свитера и кардиганы'}, {id:'outer',t:'Куртки и пуховики'}, {id:'pants',t:'Брюки и шорты'}, {id:'other',t:'Другое'} ],
   acc:     [ {id:'watch',t:'Часы'}, {id:'glasses',t:'Очки'}, {id:'scarf',t:'Шарфы'}, {id:'hats',t:'Шапки и кепки'}, {id:'wallet',t:'Кошельки'}, {id:'toys',t:'Labubu и игрушки'}, {id:'beauty',t:'Косметика'}, {id:'other',t:'Другое'} ],
 };
@@ -2175,7 +2177,7 @@ function renderGiftBanner(){
   $('gift-ic').innerHTML = unpaid ? PAY_IC : GIFT_IC;
   if(unpaid){ $('gift-title').textContent = `Заказ ${unpaid.num} ждёт оплаты`; $('gift-sub').textContent = 'Оплатите, и я сразу выкуплю на Poizon'; b.hidden = false; b.onclick = () => { go('me') } }
   else if(cartWaiting()){ const n = cart.length, sum = cart.reduce((a, c) => a + (c.price || 0), 0); $('gift-ic').innerHTML = CART_IC; $('gift-title').textContent = `В заказе ${n} ${plural(n,['вещь','вещи','вещей'])} ${n === 1 ? 'ждёт' : 'ждут'} оформления`; $('gift-sub').textContent = (sum ? 'Сейчас '+fmt(sum)+' · ' : '') + 'закупка '+buyDate(); b.hidden = false; b.onclick = () => go('cart') }
-  else if(mode==='welcome'){ $('gift-title').textContent='Подарок на первый заказ'; $('gift-sub').textContent='Крутите колесо — скидка до 700 ₽'; b.hidden=false; b.onclick=openWheel }
+  else if(mode==='welcome'){ $('gift-title').textContent='Подарок на первый заказ'; $('gift-sub').textContent='Крутите колесо — скидка до 500 ₽'; b.hidden=false; b.onclick=openWheel }
   else if(mode==='repeat'){ $('gift-title').textContent='Колесо открыто'; $('gift-sub').textContent = G.spinUntil ? 'Крутить до '+dmyhm(G.spinUntil) : 'Подарок на следующий заказ'; b.hidden=false; b.onclick=openWheel }
   else if(best){ $('gift-title').textContent='Ваш подарок −'+best.v+' ₽'; $('gift-sub').textContent = G.coupons.filter(c=>c.first).length > 1 && !orderedBefore() ? 'скидки не суммируются · к заказу одна, самая выгодная' : 'сгорит '+dmyhm(best.until); b.hidden=false; b.onclick=()=>go('shop') }
   else b.hidden = true;
@@ -2216,7 +2218,7 @@ function openWheel(){
   openSheet(`<div class="wheel-sheet">
     <span class="hand">${mode==='welcome'?'подарок для вас':'спасибо за заказ'}</span>
     <div class="h1" style="font-size:19px;margin-top:4px">Колесо подарков</div>
-    <div style="font-weight:800;margin-top:6px">${mode==='welcome' ? 'Первый раз здесь? Крутите. Выпадет от 300 до 700 ₽ на первый заказ.' : 'Спасибо за заказ! Крутите: подарок на следующий заказ' + (G.spinUntil ? ', колесо открыто до ' + dmyhm(G.spinUntil) : '') + '.'}</div>
+    <div style="font-weight:800;margin-top:6px">${mode==='welcome' ? 'Первый раз здесь? Крутите. Выпадет от 300 до 500 ₽ на первый заказ.' : 'Спасибо за заказ! Крутите: подарок на следующий заказ' + (G.spinUntil ? ', колесо открыто до ' + dmyhm(G.spinUntil) : '') + '.'}</div>
     <div class="wheel-stage" id="stage">${wheelSVG()}</div>
     <div id="wheel-res"><button class="btn teal block" id="spin-btn" onclick="spin('${mode}')">Крутить</button></div>
   </div>`);
@@ -2487,14 +2489,14 @@ const payByCert = () => !!($('f-cert') && $('f-cert').checked);
 function orderedBefore(){ return (typeof SRV_ORDERS !== 'undefined' && SRV_ORDERS || []).some(o => o.st !== 'отменён') || orders.length > 0 }
 const couponOk = (c,sum) => !payByCert() && sum >= (c.min||0) && !(c.first && orderedBefore());
 function bestCoupon(sum){ let bi = -1; G.coupons.forEach((c,i)=>{ if(!c.used && c.until > Date.now() && couponOk(c,sum) && (bi < 0 || c.v > G.coupons[bi].v)) bi = i }); return bi }
-/* комиссия: первая вещь под выкуп 2 000 ₽, каждая следующая 1 000 ₽. Цена вещи посчитана с 2 000, в корзине разница вычитается.
+/* комиссия: первая вещь под выкуп 2 500 ₽, каждая следующая 1 000 ₽. Цена вещи посчитана с 2 500, в корзине разница вычитается.
    Вещи в наличии не выкупаются и в счёт не идут */
 const isBuy = c => c.custom || !(CAT.find(x=>x.id===c.id)||{}).stock;
 const buyCount = () => cart.filter(isBuy).length;                                  // строк под выкуп: от них скидка на комиссию
 const buyItems = () => cart.filter(isBuy).reduce((a,c) => a + (c.qty||1), 0);     // вещей под выкуп: для закупки
 const itemsCount = () => cart.reduce((a,c) => a + (c.qty||1), 0);
 function feeCut(){ const k = buyCount(); return k > 1 ? (k-1)*(CFG.fee - CFG.feeNext) : 0 }
-/* комиссия заказа: у строки 2 000 + 1 000 за каждую вещь сверх одной (заказ по ссылке на несколько штук), минус скидка за вторую и следующие строки */
+/* комиссия заказа: у строки 2 500 + 1 000 за каждую вещь сверх одной (заказ по ссылке на несколько штук), минус скидка за вторую и следующие строки */
 const feeTotal = () => cart.reduce((a,c) => a + feeFor(c.qty||1), 0) - feeCut();
 const rushFee = () => buyCount() && $('f-rush') && $('f-rush').checked ? CFG.purchase.rushFee : 0;
 const minShip = () => Math.min(...CFG.cats.map(c => c.w)) * CFG.kgRate;   // вторая вещь в посылке добавляет только свой объём
@@ -2507,8 +2509,8 @@ function shipCut(){
   const apart = L.reduce((a, c) => a + parcelShip(lineKg(c)), 0), together = parcelShip(L.reduce((a, c) => a + lineKg(c), 0));
   return Math.max(0, Math.round(apart - together));
 }
-/* защитный пол: купон забирает не больше 40% комиссии заказа (с одной вещи максимум −800 ₽) */
-function couponCut(sum){ const bi = bestCoupon(sum); return bi < 0 ? 0 : Math.max(0, Math.min(G.coupons[bi].v, Math.floor(feeTotal()*0.4))) }
+/* защитный пол: подарок не опускает заработок с заказа ниже CFG.minMargin (2 000 ₽) — с одной вещи максимум −500 ₽ */
+function couponCut(sum){ const bi = bestCoupon(sum); return bi < 0 ? 0 : Math.max(0, Math.min(G.coupons[bi].v, feeTotal() - CFG.minMargin)) }
 function activePerk(){ return (G.perks||[]).find(x=>!x.used && x.until > Date.now()) || null }
 /* цена в корзине пересчитывается по текущему курсу и ценам Poizon: в заказ уходит свежая цена, а не та, что была при добавлении */
 function refreshCart(){
@@ -2552,6 +2554,7 @@ function renderCart(){
     : bi >= 0 && firstPair && !orderedBefore() ? 'Подарок от друга и скидка с колеса не суммируются: к первому заказу применяется одна скидка, самая выгодная.'
     : bi >= 0 && G.coupons.length > 1 ? 'К заказу применяется один подарок, самый выгодный.' : '';
   if(nb === 1 && n === 1) hint += (hint ? ' ' : '') + `Добавьте вторую вещь — вместе выйдет дешевле.`;
+  if(applied && cut < applied.v) hint += (hint ? ' ' : '') + (cut ? `С этим заказом подарок работает на −${fmt(cut)}. Добавьте ещё вещь — сработает целиком.` : 'К этому заказу подарок не применяется, он останется на следующий.');
   if(perk) hint += (hint ? ' ' : '') + 'В посылку положу подарок за «Вырасти пару».';
   $('c-hint').textContent = hint; $('c-hint').hidden = !hint;
   $('c-sum').textContent = fmt(sum) + (cart.some(c=>c.custom&&!c.price)?' +':'');
@@ -2667,22 +2670,22 @@ function sendOrder(name, phone, addr, write){
     cart = []; save('cart', cart); badge(); $('f-rush').checked = false;
     $('f-cert').checked = false; $('f-cert-num').value = ''; $('f-cert-msg').hidden = true; CERT = null; CERT_FAIL = '';
     go('home');
-    if(r && r.ok) orderDone(num, pay - certUse, nb, rush);
+    if(r && r.ok) orderDone(num, pay - certUse, nb, rush, !!r.hold);
     else openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(msg)}`, msg);
     haptic('ok'); if(offline) setTimeout(()=>{ if(spinAvailable()==='repeat' && !$('sheet-bg').classList.contains('open')) openWheel() }, 700);
   });
 }
 /* заказ записан в таблицу и уже у Кристины в боте: вместо простыни текста — понятный итог и один следующий шаг */
-function orderDone(num, left, nb, rush){
+function orderDone(num, left, nb, rush, hold){
   const when = rush ? 'выкуплю сразу после оплаты, отдельно от закупки' : nb ? `уйдёт в закупку ${buyDate()}, после выкупа дорога ${CFG.journey.text}` : 'привезу сразу после оплаты';
   openSheet(`<span class="hand">заказ принят</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${left > 0 ? ' · '+fmt(left) : ''}</div>
     <div class="howmore"><div class="slip"><dl>
-      <div class="row"><dt>Оплата</dt><dd>${left > 0 ? payHow() : 'Оплачено сертификатом полностью'}</dd></div>
+      <div class="row"><dt>Оплата</dt><dd>${hold ? 'Пока ничего не переводите: сверяю наличие вашего размера на Poizon и напишу в Telegram' : left > 0 ? payHow() : 'Оплачено сертификатом полностью'}</dd></div>
       <div class="row"><dt>Выкуп</dt><dd>Вещь ${when}</dd></div>
       <div class="row"><dt>Статус</dt><dd>Трек и этапы посылки пришлю в Telegram сама, заказ виден в профиле</dd></div>
     </dl></div></div>
-    <div class="list" style="margin-top:16px">${left > 0 ? `<button class="btn block" onclick="openPay('${esc(num)}', ${left})">Оплатить ${fmt(left)}</button>` : ''}
+    <div class="list" style="margin-top:16px">${left > 0 && !hold ? `<button class="btn block" onclick="openPay('${esc(num)}', ${left})">Оплатить ${fmt(left)}</button>` : ''}
       <button class="btn ghost block" onclick="closeSheet();go('me');scrollToId('orders-sec')">Мои заказы</button></div>`);
   // магазин на экране телефона: возвращаться за статусом и новыми вещами проще, чем искать бота
   if(inTg && tg.checkHomeScreenStatus && tg.addToHomeScreen) try{ tg.checkHomeScreenStatus(st => {
@@ -2756,7 +2759,7 @@ function orderCard(o){
   </button>`;
 }
 function guestCard(){
-  if(spinAvailable()) return `<div class="hcard"><div class="st"><div><div class="big" style="font-size:36px">до −700 ₽</div><span style="margin-top:8px;font-size:13px">подарок на первый заказ: крутите колесо</span></div></div>
+  if(spinAvailable()) return `<div class="hcard"><div class="st"><div><div class="big" style="font-size:36px">до −500 ₽</div><span style="margin-top:8px;font-size:13px">подарок на первый заказ: крутите колесо</span></div></div>
     <button class="btn block light" onclick="openWheel()">Крутить колесо</button></div>`;
   return `<div class="hcard"><div class="st"><div><b style="font-size:17px">Оригиналы с Poizon под заказ</b><span>цена по размеру, дорога ${CFG.journey.text}</span></div></div>
     <button class="btn block light" onclick="go('shop')">Выбрать вещь</button></div>`;

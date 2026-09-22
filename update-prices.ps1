@@ -1,4 +1,4 @@
-# Updates prices.json: Poizon yuan price and availability for every size.
+﻿# Updates prices.json: Poizon yuan price and availability for every size.
 # Runs daily in GitHub Actions (pwsh) and can be run by hand on Windows.
 $ErrorActionPreference = 'SilentlyContinue'
 $root = $PSScriptRoot
@@ -34,7 +34,8 @@ function Get-Sizes([string]$slug) {
 $ok = 0; $fail = 0
 foreach ($p in $data.items.PSObject.Properties) {
   $sz = Get-Sizes $p.Value.slug
-  if ($sz) { $p.Value.sizes = $sz; $ok++ } else { $fail++ }
+  # t — когда наличие последний раз подтвердилось: приложение не продаёт вещь, если проверки не было двое суток
+  if ($sz) { $p.Value.sizes = $sz; $p.Value | Add-Member -NotePropertyName t -NotePropertyValue ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Force; $ok++ } else { $fail++ }
   Start-Sleep -Milliseconds 400
 }
 $data.updated = [DateTime]::UtcNow.AddHours(5).ToString('dd.MM, HH:mm')   # время Екатеринбурга: цены обновляются три раза в день

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-22f';
+const BUILD = '2026-09-22g';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1428,7 +1428,7 @@ const priceDrop = p => favs.includes(p.id) && FP[p.id] && favPrice(p) && favPric
 const CATS = [ {id:'shoes',t:'Обувь'}, {id:'clothes',t:'Одежда'}, {id:'bags',t:'Сумки'}, {id:'beauty',t:'Косметика'}, {id:'acc',t:'Аксессуары'} ];
 const isBeauty = p => p.sub === 'beauty';
 const SUBS = {
-  shoes:   [ {id:'sneakers',t:'Кроссовки'}, {id:'keds',t:'Кеды и слипоны'}, {id:'pumps',t:'Каблуки'}, {id:'loafers',t:'Лоферы'}, {id:'ballet',t:'Балетки'}, {id:'maryjane',t:'Мэри джейн'}, {id:'sandals',t:'Босоножки'}, {id:'mules',t:'Мюли'}, {id:'ankle',t:'Ботильоны'}, {id:'boots',t:'Ботинки и сапоги'}, {id:'heels',t:'Другие туфли'} ],
+  shoes:   [ {id:'sneakers',t:'Кроссовки'}, {id:'boots',t:'Ботинки и сапоги'}, {id:'keds',t:'Кеды и слипоны'}, {id:'pumps',t:'Каблуки'}, {id:'loafers',t:'Лоферы'}, {id:'ballet',t:'Балетки'}, {id:'maryjane',t:'Мэри джейн'}, {id:'sandals',t:'Босоножки'}, {id:'mules',t:'Мюли'}, {id:'ankle',t:'Ботильоны'}, {id:'heels',t:'Другие туфли'} ],
   clothes: [ {id:'hoodies',t:'Худи и свитшоты'}, {id:'tees',t:'Футболки и поло'}, {id:'knit',t:'Свитера и кардиганы'}, {id:'outer',t:'Куртки и пуховики'}, {id:'pants',t:'Брюки и шорты'}, {id:'other',t:'Другое'} ],
   acc:     [ {id:'watch',t:'Часы'}, {id:'glasses',t:'Очки'}, {id:'scarf',t:'Шарфы'}, {id:'hats',t:'Шапки и кепки'}, {id:'wallet',t:'Кошельки'}, {id:'toys',t:'Labubu и игрушки'}, {id:'beauty',t:'Косметика'}, {id:'other',t:'Другое'} ],
 };
@@ -2715,7 +2715,7 @@ function renderMeView(){
   renderWant(guest);
   $('me-how').innerHTML = guest ? `<div class="how"><div class="cap">Схема работы</div>
     <div class="st"><i>1</i>Выбираете вещь в каталоге или присылаете ссылку с Poizon</div>
-    <div class="st"><i>2</i>Оплачиваете, вещь уходит в ближайшую закупку ${buyDate()}: выкупаю и присылаю фото коробки</div>
+    <div class="st"><i>2</i>Оплачиваете, вещь уходит в ближайшую закупку: выкупаю и присылаю фото коробки</div>
     <div class="st"><i>3</i>После выкупа посылка едет ${CFG.journey.text}: привожу до двери в Екатеринбурге и Пышме или отправляю в пункт выдачи в вашем городе</div></div>` : '';
   const perks = (G.perks||[]).filter(x=>!x.used && x.until > Date.now());
   const rest = G.coupons.filter(c => !(best && c.id === best.id && (!guest || true)));   // лучший купон уже показан наверху
@@ -3643,7 +3643,7 @@ const VQ = [
     { t:'Беговые кроссовки', id:'3544', v:['sport','street'] },
     { t:'Данки и джорданы', id:'4364', v:['street','sport'] },
     { t:'Угги и ботинки', id:'n1777105', v:['cozy','minimal'] },
-    { t:'Туфли', id:'4239', v:['y2k','minimal'] } ] },
+    { t:'Туфли', id:'n1612624', v:['y2k','minimal'] } ] },
   { q:'В чём ходите чаще?', o:[
     { t:'Спортивный костюм', id:'4080', v:['sport','y2k'] },
     { t:'Оверсайз-худи', id:'n7619798', v:['street','cozy'] },

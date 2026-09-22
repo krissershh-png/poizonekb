@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-22a';
+const BUILD = '2026-09-22b';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -219,7 +219,7 @@ a{color:inherit;text-decoration:none}
 .sheet{width:100%;max-width:480px;background:#fff;border-radius:24px 24px 0 0;padding:10px 16px calc(20px + var(--safe-b));max-height:93vh;overflow:auto;animation:up .24s cubic-bezier(.2,.8,.2,1)}
 @keyframes up{from{transform:translateY(60px);opacity:.5}to{transform:none;opacity:1}}
 .grip{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
-.gal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+.gal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none;margin:0 -16px;padding:0 16px}
 .gal::-webkit-scrollbar{display:none}
 .gal img{flex:0 0 80%;aspect-ratio:4/5;object-fit:cover;border-radius:16px;scroll-snap-align:start;background:var(--aqua-2)}
 .sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
@@ -443,12 +443,12 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .how div.st{display:flex;gap:12px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.35}
 .how i{width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:var(--aqua);color:var(--teal-d);font-style:normal;font-weight:900;font-size:12px;display:grid;place-items:center}
 /* скидка в профиле: крупно, в фирменном градиенте с точками */
-.pcard{position:relative;overflow:hidden;margin-top:12px;border-radius:22px;background:var(--jade);color:#fff;padding:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;box-shadow:0 10px 24px -12px rgba(22,128,74,.45)}
+.pcard{position:relative;overflow:hidden;margin-top:12px;border-radius:22px;background:linear-gradient(135deg,#ef4a3d 0%,#c81717 50%,#8f0e14 100%);color:#fff;padding:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;box-shadow:0 10px 24px -12px rgba(200,23,23,.55)}
 .pcard>:not(.dots){position:relative}
 .pcard .dots{right:-40px;top:-60px;width:220px;height:220px;opacity:.7;background-image:radial-gradient(circle,rgba(255,255,255,.75) 1.3px,transparent 1.7px)}
 .pcard .pr{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pcard .lbl{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;min-width:0}
-.pcard .left{padding:6px 11px;border-radius:999px;background:#fff;color:var(--jade);font-weight:900;font-size:12px;white-space:nowrap}
+.pcard .left{padding:6px 11px;border-radius:999px;background:#fff;color:var(--red);font-weight:900;font-size:12px;white-space:nowrap}
 .pcard .big{font-family:var(--dela);font-weight:900;font-size:48px;line-height:1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 0 rgba(60,10,10,.2)}
 .pcard .when{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;line-height:1.3}
 .pcard .when svg{flex:0 0 16px}
@@ -766,7 +766,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 /* градиенты на крупных словах и цифрах в карточках — как «Баллы» у Unicorn; цвета подобраны под фон каждой карточки */
 .gift .t b{background:linear-gradient(90deg,#ffffff 0%,#ffd3cf 60%,#ff9a8f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .buyday .t b{background:linear-gradient(90deg,#ffffff 0%,#dce8ff 60%,#b3ccff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-.pcard .big{background:linear-gradient(90deg,#ffffff 0%,#dff7e8 55%,#a8e6c1 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none}
+.pcard .big{background:linear-gradient(90deg,#ffffff 0%,#ffd3cf 60%,#ff9a8f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none}
 .hcard .big{background:linear-gradient(90deg,#ffffff 0%,#ffd3cf 60%,#ff9a8f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .coupon:not(.sel) .v{background:linear-gradient(90deg,#1d4fb8 0%,#2f6fed 55%,#6aa0ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .prize .big{background:linear-gradient(90deg,#b3121a 0%,#e0342a 55%,#ff6f5e 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
@@ -816,10 +816,10 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 .cert-row .btn{margin-left:auto;flex:0 0 auto}
 .certcard{cursor:pointer}
 /* вход в сертификат — превью настоящего нового дизайна, а не старая карточка */
-.certcard.certcard-new{display:grid;gap:10px;min-height:0;margin:0 0 6px;padding:0;border-radius:0;background:none;color:var(--ink)}
+.certcard.certcard-new{display:grid;gap:12px;min-height:0;margin:0 0 6px;padding:8px 8px 14px;border-radius:24px;background:#fff;border:1.5px solid var(--line);box-shadow:0 14px 28px -20px rgba(200,23,23,.45);color:var(--ink)}
 .certcard.certcard-new::before{content:none}
-.certcard-new .cert-img{border-radius:16px;box-shadow:0 10px 24px rgba(200,23,23,.18)}
-.certcard-new .cc-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--mute)}
+.certcard-new .cert-img{margin-top:0;border-radius:17px;box-shadow:none}
+.certcard-new .cc-row{padding:0 8px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--mute)}
 .certcard-new .cc-row b{color:var(--red);font-weight:900}
 .cert-form.open .certcard{cursor:default}
 .cc-go{margin-left:auto;padding:5px 12px;border-radius:999px;background:#fff;color:var(--red);font-family:var(--dela);font-weight:800;font-size:11px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
@@ -1107,7 +1107,7 @@ const CFG = {
   minYen: 50, minItemRub: 1500,
   /* закупка раз в месяц: next — ближайшая дата; когда она прошла, берётся число day следующего месяца (1–28).
      early — выкупаю досрочно, если столько вещей набралось; rushFee — срочный отдельный выкуп */
-  purchase: { day: 28, next: '2026-09-28', early: 8, rushFee: 1200 },
+  purchase: { day: 28, next: '2026-09-30', early: 8, rushFee: 1200 },
   /* Колесо подарков: 8 равных секторов, шанс у каждого одинаковый. Значения — скидка в ₽. */
   wheel: [300, 500, 300, 400, 300, 500, 300, 400],
   /* Программа подарков: скидок немного, и все они приводят новых клиентов.
@@ -1360,7 +1360,7 @@ function closeSheet(){
 
 /* ---------- карточки ---------- */
 /* студийное фото Poizon: без фона и с полями. В превью фото подменены данными, поэтому есть ещё window.STUDIO */
-const isStudio = s => /\/(cv|pz)\//.test(s) || !!(window.STUDIO && window.STUDIO.has(s));
+const isStudio = s => /\/(cv|pz|sh)\//.test(s) || !!(window.STUDIO && window.STUDIO.has(s));
 /* фото в жизни (p.look) показываем без студийных полей, даже если оно из карточки Poizon */
 const studioAt = (p, i) => isStudio(p.img[i]) && ((p.orig || p.img)[i] !== p.look);
 const HEART = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.4 12 21 12 21z"/></svg>';
@@ -1968,7 +1968,7 @@ function openProduct(id){
     if(b){ b.classList.add('mine'); pickSize(b.querySelector('b').textContent, b) }
   }
   if(!p.stock && !p.post) hint('rate', $('p-price'), 'Цена считается по сегодняшнему курсу юаня. Курс меняется каждый день — поэтому и цена то чуть выше, то чуть ниже');
-  if(!p.stock && !p.post) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');
+  if(!p.stock && !p.post && sizesOf(p).filter(s => s.ok).length > 1) hint('sizes', document.querySelector('#sheet .sizes'), 'У каждого размера своя цена — нажмите на размер');
   hint('fit', document.querySelector('#sheet .fit'), 'Впишите длину стопы — подберу размер');
 }
 /* ---------- расцветки одной модели и похожие вещи в карточке ----------
@@ -2721,9 +2721,10 @@ function renderMeView(){
   $('me-spin').hidden = !spinAvailable() || (guest && !best);   // у гостя кнопка колеса уже в главной карточке
   $('gifts-sec').hidden = !rest.length && !perks.length && $('me-spin').hidden;
   renderHeroCard(); renderGames(); renderMyLink(); renderOrders(); renderVibeRow();
-  // игры, полка и герой — после первого заказа: новичку они мешают понять главное, а покупателю дарят радость
+  // герой всегда первым — это лицо профиля; игры и полка — после первого заказа: новичку они мешают понять главное
   const veteran = orderedBefore() || boxesOf().length > 0;
-  ['me-hero', 'games-cap', 'me-games', 'me-shelf'].forEach(id => { $(id).hidden = !veteran });
+  $('me-hero').hidden = false;
+  ['games-cap', 'me-games', 'me-shelf'].forEach(id => { $(id).hidden = !veteran });
   if(veteran) hint('grow', document.querySelector('#me-games .game'), 'Росток растёт, пока едет посылка');
 }
 function orderSub(o){ const sz = (o.ids||[]).map(x=>x.s).filter(s=>s && s !== 'Один'); return `${sz.length ? 'размер '+sz.join(', ')+' · ' : ''}${fmt(o.pay||0)}${itemsOf(o).length ? ' · '+o.num : ' · '+(o.date||'')}` }

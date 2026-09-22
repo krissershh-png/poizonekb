@@ -6,7 +6,8 @@ $file = Join-Path $root 'prices.json'
 $ua = @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36' }
 $data = Get-Content $file -Raw -Encoding utf8 | ConvertFrom-Json
 
-function Get-Sizes([string]$slug) {
+# g — первое фото варианта (цвета): карточка = один цвет, остальные цвета той же модели не учитываем
+function Get-Sizes([string]$slug, [string]$g) {
   $r = Invoke-WebRequest -Uri "https://unicorngo.ru/product/$slug" -TimeoutSec 40 -UseBasicParsing -Headers $ua
   if (-not $r) { return $null }
   $h = $r.Content
@@ -18,7 +19,12 @@ function Get-Sizes([string]$slug) {
   $map = @{}
   foreach ($line in ($rsc -split "`n")) { $lm = [regex]::Match($line, '^([0-9a-f]+):(.*)$'); if ($lm.Success) { $map[$lm.Groups[1].Value] = $lm.Groups[2].Value } }
   $sizes = [ordered]@{}
-  foreach ($m in [regex]::Matches($rsc, '\{"skuId":(\d+),"price":(\d+),"cnyPrice":(\d+),"size":"\$([0-9a-f]+)"')) {
+  foreach ($m in [regex]::Matches($rsc, '\{"skuId":(\d+),"price":(\d+),"cnyPrice":(\d+),"size":"\$([0-9a-f]+)"([^}]*)\}')) {
+    if ($g) {
+      $im = [regex]::Match($m.Groups[5].Value, '"images":"\$([0-9a-f]+)"').Groups[1].Value; $first = ''
+      if ($im -and $map.ContainsKey($im)) { $first = [regex]::Match($map[$im], '"(https?://[^"]+)"').Groups[1].Value }
+      if ($first -ne $g) { continue }
+    }
     $ref = $m.Groups[4].Value; $eu = ''
     if ($map.ContainsKey($ref)) {
       foreach ($key in 'eu', 'size', 'primary') { $v = [regex]::Match($map[$ref], '"' + $key + '":"([^"]+)"').Groups[1].Value; if ($v -and -not $v.StartsWith('$')) { $eu = $v; break } }
@@ -33,7 +39,7 @@ function Get-Sizes([string]$slug) {
 
 $ok = 0; $fail = 0
 foreach ($p in $data.items.PSObject.Properties) {
-  $sz = Get-Sizes $p.Value.slug
+  $sz = Get-Sizes $p.Value.slug $p.Value.g
   # t — когда наличие последний раз подтвердилось: приложение не продаёт вещь, если проверки не было двое суток
   if ($sz) { $p.Value.sizes = $sz; $p.Value | Add-Member -NotePropertyName t -NotePropertyValue ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Force; $ok++ } else { $fail++ }
   Start-Sleep -Milliseconds 400

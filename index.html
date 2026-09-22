@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-22e';
+const BUILD = '2026-09-22f';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1316,7 +1316,10 @@ function sizesOf(p){
   }
   const d = PRICES.items[p.id]; if(!d) return [];
   const stale = d.t && Date.now()/1000 - d.t > 2*86400;   // наличие не подтверждалось двое суток (страница не открывалась) — не продаём вслепую
-  return Object.entries(d.sizes).map(([eu,[cny]]) => ({ eu: (/undefined|^(one|one size|os|f)$/i.test(eu) ? 'Один' : eu), cny, ok: cny>0 && !stale, price: cny>0 ? priceFrom(cny, itemKg(p)) : 0 }))
+  const keys = Object.keys(d.sizes), one = k => /undefined|^(one|one size|os|f)$/i.test(k);
+  // «Один» рядом с обычными размерами — это вариант без размера на Poizon, в карточке он лишний
+  const src = keys.length > 1 && keys.some(k => !one(k)) ? keys.filter(k => !one(k)) : keys;
+  return src.map(eu => [eu, d.sizes[eu][0]]).map(([eu,cny]) => ({ eu: (one(eu) ? 'Один' : eu), cny, ok: cny>0 && !stale, price: cny>0 ? priceFrom(cny, itemKg(p)) : 0 }))
     .sort((a,b)=> sizeKey(a.eu)-sizeKey(b.eu));
 }
 const CLOTH = ['XXS','XS','S','M','L','XL','XXL','2XL','3XL','4XL'];

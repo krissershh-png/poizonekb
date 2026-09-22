@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-22c';
+const BUILD = '2026-09-22d';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1281,7 +1281,8 @@ try{ fetch('retail.json?v=' + BUILD).then(r => r.ok ? r.json() : {}).then(j => {
    // сколько заказов привезено: из таблицы (выданные + CFG.deliveredBefore в bot/Code.gs)
 var POPULAR = {};   // из таблицы: сколько раз вещь заказывали
 function nextBuy(){
-  if(BUY && BUY.next) return new Date(BUY.next + 'T00:00:00');
+  // дата из бота; если в приложении закупка уже перенесена позже (бот ещё не обновлён) — берём более позднюю
+  if(BUY && BUY.next && !(CFG.purchase.next && CFG.purchase.next > BUY.next)) return new Date(BUY.next + 'T00:00:00');
   const p = CFG.purchase, t = new Date(); t.setHours(0,0,0,0);
   let d = p.next ? new Date(p.next + 'T00:00:00') : null;
   if(!d || isNaN(d) || d < t){ d = new Date(t.getFullYear(), t.getMonth(), p.day); if(d < t) d = new Date(t.getFullYear(), t.getMonth()+1, p.day) }
@@ -1369,7 +1370,7 @@ function card(p){
   const inSize = FLT.sizes.length ? sizesOf(p).filter(s => s.ok && s.eu !== 'Один' && FLT.sizes.includes(sizeNorm(s.eu))) : [];
   const mp = inSize.length ? Math.min(...inSize.map(s => s.price)) : minPrice(p), S = sizesOf(p).filter(s=>s.ok), n = S.length;
   const studio = studioAt(p, 0) ? 'studio' : '';
-  const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(/очки/i.test(p.name) ? ' мм' : ''));   // у очков размер — ширина линзы
+  const range = p.stock ? 'EU '+p.size : (!n ? '' : S[0].eu==='Один' ? 'один размер' : (p.cat==='shoes' && S[0].eu===S[n-1].eu ?'EU ':'')+(S[0].eu===S[n-1].eu ? S[0].eu : S[0].eu+'–'+S[n-1].eu)+(p.sub === 'glasses' ? ' мм' : ''));   // у очков размер — ширина линзы
   const tag = p.stock ? `<span class="tag stock">В наличии</span>` : (!mp ? `<span class="tag off">Нет на Poizon</span>` : priceDrop(p) ? `<span class="tag drop">Цена ниже −${fmt(FP[p.id]-favPrice(p))}</span>` : !p.post && n === 1 && (p.cat === 'shoes' || p.cat === 'clothes') && sizesOf(p).length > 2 ? `<span class="tag last">Последний размер</span>` : (p.fresh ? `<span class="tag new">Новинка</span>` : p.hit>=7 ? `<span class="tag hot">Хит</span>` : ''));
   const fv = FAVN[p.id] || 0;
   const meta = fv >= FAV_SHOW ? `<span class="favn-heart">♥</span>${fv} в избранном` : p.stock ? `<i></i>${range} · отправлю сегодня` : p.post ? `<i></i>${range ? range+' · ' : ''}выкуп ${buyShort()}` : (n ? `<i></i>${range} · выкуп ${buyShort()}` : `<i class="no"></i>уточню наличие`);

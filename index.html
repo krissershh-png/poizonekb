@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-23b';
+const BUILD = '2026-09-23c';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -1608,7 +1608,7 @@ function vidsFor(p){
 function openVid(k, t){ openSheet(`<span class="hand">${esc(t)}</span><video class="vid-full" src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`) }
 /* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */
 function renderRusRail(){
-  const list = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a))).slice(0, 12);
+  const list = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a)));   // показываем все вещи с проверенной ценой в РФ
   $('rus-home').hidden = list.length < 2;
   $('home-rus').innerHTML = list.map(card).join('');
 }

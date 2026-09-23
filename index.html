@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-23e';
+const BUILD = '2026-09-23f';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2846,7 +2846,7 @@ function openPay(num, sum){
   const shot = `Оплатил(а) заказ ${num}${sum ? ` на ${fmt(sum)}` : ''}, скриншот прикладываю`;
   openSheet(`<span class="hand">оплата заказа</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${sum ? ' · '+fmt(sum) : ''}</div>
-    ${CFG.pay.qr ? `<div class="payqr"><img src="${CFG.pay.qr}" alt="QR-код для оплаты в ${esc(CFG.pay.bank)}"><span>Задержите палец на коде и сохраните его в фото. Дальше в приложении вашего банка: «Оплата по QR» → выбрать из галереи. Так перевод пройдёт даже без VPN</span></div>` : ''}
+    ${CFG.pay.qr ? `<div class="payqr"><img src="${CFG.pay.qr}" alt="QR-код для оплаты в ${esc(CFG.pay.bank)}"><button class="btn sm ghost" onclick="qrToChat('${esc(num)}',${sum || 0})">Сохранить QR</button><span>Пришлю код картинкой в чат — сохраните её в фото. Дальше в приложении банка: «Оплата по QR» → выбрать из галереи. Так перевод пройдёт и без VPN</span></div>` : ''}
     <div class="howmore"><div class="slip"><dl>
       <div class="row"><dt>Оплата</dt><dd>${CFG.pay.link ? `<button class="btn sm" onclick="payLink()">Оплатить</button>` : `Реквизиты пришлю в личку — <button class="btn sm ghost" onclick="askPay('${esc(num)}',${sum || 0})">получить</button>`}</dd></div>
       ${sum ? `<div class="row"><dt>Сумма</dt><dd class="num">${fmt(sum)}</dd></div>` : ''}
@@ -2858,6 +2858,17 @@ function openPay(num, sum){
       <button class="btn ghost block" onclick="askPay('${esc(num)}',${sum || 0})">Оплатить по номеру телефона</button>
       <button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(shot)}')">Отправить скриншот</button></div>`);
   payReady(num);
+}
+/* QR картинкой в чат: в Telegram картинку из приложения не сохранить долгим нажатием, а из чата — обычным способом.
+   Если Telegram новый, сохраняем сразу в галерею через downloadFile */
+function qrToChat(num, sum){
+  const url = location.href.replace(/[^/]*$/, '') + CFG.pay.qr;
+  try{ if(inTg && tg.downloadFile){ tg.downloadFile({ url, file_name: 'oplata-' + num + '.png' }, ok => { if(!ok) qrSend(num, sum) }); return } }catch(e){}
+  qrSend(num, sum);
+}
+function qrSend(num, sum){
+  if(!(inTg && CFG.api)) return toast('Сделайте скриншот этого экрана — по нему банк тоже читает код');
+  api('payqr', { num, sum }).then(r => toast(r && r.ok ? 'Отправила QR в чат с ботом — сохраните картинку оттуда' : 'Сделайте скриншот экрана, банк прочитает код и с него'));
 }
 /* оплата картой прямо в приложении: форма Telegram, деньги идут на счёт, заказ отмечается сам.
    Кнопка появляется, только если у бота подключён платёжный провайдер (иначе остаются QR и реквизиты) */

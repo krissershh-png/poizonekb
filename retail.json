@@ -1,198 +1,234 @@
 {
-  "updated": "17.09.2026",
-  "note": "Цены проверены вручную в российских магазинах, ссылки для перепроверки в поле url",
-  "items": {
-    "3075": {
-      "p": 19570,
-      "w": "Rendez-Vous",
-      "d": "16.09",
-      "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1116109_temno_korichnevyy-3083793/"
-    },
-    "3245": {
-      "p": 20999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-nike-dd1391-100/"
-    },
-    "3407": {
-      "p": 17499,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-nike-bv1358-001/"
-    },
-    "3472": {
-      "p": 18490,
-      "w": "Sneakerhead",
-      "d": "17.09",
-      "url": "https://sneakerhead.ru/shoes/sneakers/sl-72-og-ie3425/"
-    },
-    "3544": {
-      "p": 16990,
-      "w": "Sneakerhead",
-      "d": "17.09",
-      "url": "https://sneakerhead.ru/shoes/sneakers/wmns-v2k-run-fd0736-100/"
-    },
-    "3610": {
-      "p": 15690,
-      "w": "Brandshop",
-      "d": "17.09",
-      "url": "https://brandshop.ru/goods/488200/dd1391-601/"
-    },
-    "3664": {
-      "p": 12999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-adidas-originals-id0478/"
-    },
-    "3739": {
-      "p": 11890,
-      "w": "Brandshop",
-      "d": "16.09",
-      "url": "https://brandshop.ru/goods/492735/id1481/"
-    },
-    "3749": {
-      "p": 21999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-new_balance-mr530sg/"
-    },
-    "3922": {
-      "p": 12999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-adidas-originals-if6490/"
-    },
-    "3942": {
-      "p": 20999,
-      "w": "Street Beat",
-      "d": "16.09",
-      "url": "https://street-beat.ru/d/krossovki-nike-cw2288-111/"
-    },
-    "4159": {
-      "p": 17499,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-nike-bv1358-001/"
-    },
-    "n1075817": {
-      "p": 61550,
-      "w": "ЦУМ",
-      "d": "16.09",
-      "url": "https://www.tsum.ru/product/7036445-kashemirovyi-sharf-burberry-chernyi/"
-    },
-    "n5253317": {
-      "p": 37790,
-      "w": "Superstep",
-      "d": "16.09",
-      "url": "https://superstep.ru/product/NF0A3C8D_GOE1/"
-    },
-    "n3690919": {
-      "p": 18650,
-      "w": "ЦУМ",
-      "d": "16.09",
-      "url": "https://www.tsum.ru/product/7119755-sumka-le-pliage-original-small-longchamp-temno-bezhevyi/"
-    },
-    "n1763792": {
-      "p": 37790,
-      "w": "Superstep",
-      "d": "17.09",
-      "url": "https://superstep.ru/product/NF0A3C8D_GOE1/"
-    },
-    "n17389071": {
-      "p": 24690,
-      "w": "Brandshop",
-      "d": "17.09",
-      "url": "https://brandshop.ru/goods/504531/i015264-00e-01/"
-    },
-    "n20455818": {
-      "p": 27990,
-      "w": "Sneakerhead",
-      "d": "17.09",
-      "url": "https://sneakerhead.ru/clothes/jackets/og-detroit-jacket-i035614-black/"
-    },
-    "n1103222": {
-      "p": 30340,
-      "w": "Rendez-Vous",
-      "d": "17.09",
-      "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1016222_chernyy-2420140/"
-    },
-    "n18624": {
-      "p": 32999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-timberland-tbl10361w/"
-    },
-    "n7012035": {
-      "p": 39999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/boots-timberland-tb1100730011/"
-    },
-    "n56095": {
-      "p": 24290,
-      "w": "Brandshop",
-      "d": "17.09",
-      "url": "https://brandshop.ru/goods/123864/"
-    },
-    "n64724": {
-      "p": 29630,
-      "w": "Rendez-Vous",
-      "d": "17.09",
-      "url": "https://www.rendez-vous.ru/catalog/unisex/botinki/dr__martens_11853001_chernyy-4115695/"
-    },
-    "n3281105": {
-      "p": 29999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-new_balance-u9060gry/"
-    },
-    "n8468439": {
-      "p": 24999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-new_balance-m2002rbk/"
-    },
-    "n3260851": {
-      "p": 22990,
-      "w": "Sneakerhead",
-      "d": "17.09",
-      "url": "https://sneakerhead.ru/shoes/sneakers/1906-m1906rww/"
-    },
-    "n2515554": {
-      "p": 19999,
-      "w": "Street Beat",
-      "d": "17.09",
-      "url": "https://street-beat.ru/d/krossovki-new_balance-ml574evn/"
-    },
-    "n4472988": {
-      "p": 17690,
-      "w": "Brandshop",
-      "d": "17.09",
-      "url": "https://brandshop.ru/goods/485012/1201a789-103/"
-    },
-    "n1454540": {
-      "p": 15500,
-      "w": "ЦУМ",
-      "d": "17.09",
-      "url": "https://www.tsum.ru/product/7105474-sumka-le-pliage-filet-mesh-large-longchamp-kremovyi/"
-    },
-    "n4055308": {
-      "p": 39950,
-      "w": "ЦУМ",
-      "d": "17.09",
-      "url": "https://www.tsum.ru/product/7119752-sumka-le-panier-pliage-xs-longchamp-temno-korichnevyi/"
-    },
-    "n5046519": {
-      "p": 64450,
-      "w": "ЦУМ",
-      "d": "17.09",
-      "url": "https://www.tsum.ru/catalog/ochki-18457/?brand=711842&color=1202819"
-    },
-    "n3627849": {
-      "p": 20950,
-      "w": "ЦУМ",
-      "d": "17.09",
-      "url": "https://www.tsum.ru/product/5457482-kombinirovannye-sapogi-icon-moon-boot-chernyi/"
-    }
+ "updated": "17.09.2026",
+ "note": "Цены проверены вручную в российских магазинах, ссылки для перепроверки в поле url",
+ "items": {
+  "3075": {
+   "p": 19570,
+   "w": "Rendez-Vous",
+   "d": "16.09",
+   "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1116109_temno_korichnevyy-3083793/"
+  },
+  "3245": {
+   "p": 20999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-nike-dd1391-100/"
+  },
+  "3407": {
+   "p": 17499,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-nike-bv1358-001/"
+  },
+  "3472": {
+   "p": 18490,
+   "w": "Sneakerhead",
+   "d": "17.09",
+   "url": "https://sneakerhead.ru/shoes/sneakers/sl-72-og-ie3425/"
+  },
+  "3544": {
+   "p": 16990,
+   "w": "Sneakerhead",
+   "d": "17.09",
+   "url": "https://sneakerhead.ru/shoes/sneakers/wmns-v2k-run-fd0736-100/"
+  },
+  "3610": {
+   "p": 15690,
+   "w": "Brandshop",
+   "d": "17.09",
+   "url": "https://brandshop.ru/goods/488200/dd1391-601/"
+  },
+  "3664": {
+   "p": 12999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-adidas-originals-id0478/"
+  },
+  "3739": {
+   "p": 11890,
+   "w": "Brandshop",
+   "d": "16.09",
+   "url": "https://brandshop.ru/goods/492735/id1481/"
+  },
+  "3749": {
+   "p": 21999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-new_balance-mr530sg/"
+  },
+  "3922": {
+   "p": 12999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-adidas-originals-if6490/"
+  },
+  "3942": {
+   "p": 20999,
+   "w": "Street Beat",
+   "d": "16.09",
+   "url": "https://street-beat.ru/d/krossovki-nike-cw2288-111/"
+  },
+  "4159": {
+   "p": 17499,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-nike-bv1358-001/"
+  },
+  "n1075817": {
+   "p": 61550,
+   "w": "ЦУМ",
+   "d": "16.09",
+   "url": "https://www.tsum.ru/product/7036445-kashemirovyi-sharf-burberry-chernyi/"
+  },
+  "n5253317": {
+   "p": 37790,
+   "w": "Superstep",
+   "d": "16.09",
+   "url": "https://superstep.ru/product/NF0A3C8D_GOE1/"
+  },
+  "n3690919": {
+   "p": 18650,
+   "w": "ЦУМ",
+   "d": "16.09",
+   "url": "https://www.tsum.ru/product/7119755-sumka-le-pliage-original-small-longchamp-temno-bezhevyi/"
+  },
+  "n1763792": {
+   "p": 37790,
+   "w": "Superstep",
+   "d": "17.09",
+   "url": "https://superstep.ru/product/NF0A3C8D_GOE1/"
+  },
+  "n17389071": {
+   "p": 24690,
+   "w": "Brandshop",
+   "d": "17.09",
+   "url": "https://brandshop.ru/goods/504531/i015264-00e-01/"
+  },
+  "n20455818": {
+   "p": 27990,
+   "w": "Sneakerhead",
+   "d": "17.09",
+   "url": "https://sneakerhead.ru/clothes/jackets/og-detroit-jacket-i035614-black/"
+  },
+  "n1103222": {
+   "p": 30340,
+   "w": "Rendez-Vous",
+   "d": "17.09",
+   "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1016222_chernyy-2420140/"
+  },
+  "n18624": {
+   "p": 32999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-timberland-tbl10361w/"
+  },
+  "n7012035": {
+   "p": 39999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/boots-timberland-tb1100730011/"
+  },
+  "n56095": {
+   "p": 24290,
+   "w": "Brandshop",
+   "d": "17.09",
+   "url": "https://brandshop.ru/goods/123864/"
+  },
+  "n64724": {
+   "p": 29630,
+   "w": "Rendez-Vous",
+   "d": "17.09",
+   "url": "https://www.rendez-vous.ru/catalog/unisex/botinki/dr__martens_11853001_chernyy-4115695/"
+  },
+  "n3281105": {
+   "p": 29999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-new_balance-u9060gry/"
+  },
+  "n8468439": {
+   "p": 24999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-new_balance-m2002rbk/"
+  },
+  "n3260851": {
+   "p": 22990,
+   "w": "Sneakerhead",
+   "d": "17.09",
+   "url": "https://sneakerhead.ru/shoes/sneakers/1906-m1906rww/"
+  },
+  "n2515554": {
+   "p": 19999,
+   "w": "Street Beat",
+   "d": "17.09",
+   "url": "https://street-beat.ru/d/krossovki-new_balance-ml574evn/"
+  },
+  "n4472988": {
+   "p": 17690,
+   "w": "Brandshop",
+   "d": "17.09",
+   "url": "https://brandshop.ru/goods/485012/1201a789-103/"
+  },
+  "n1454540": {
+   "p": 15500,
+   "w": "ЦУМ",
+   "d": "17.09",
+   "url": "https://www.tsum.ru/product/7105474-sumka-le-pliage-filet-mesh-large-longchamp-kremovyi/"
+  },
+  "n4055308": {
+   "p": 39950,
+   "w": "ЦУМ",
+   "d": "17.09",
+   "url": "https://www.tsum.ru/product/7119752-sumka-le-panier-pliage-xs-longchamp-temno-korichnevyi/"
+  },
+  "n5046519": {
+   "p": 64450,
+   "w": "ЦУМ",
+   "d": "17.09",
+   "url": "https://www.tsum.ru/catalog/ochki-18457/?brand=711842&color=1202819"
+  },
+  "n3627849": {
+   "p": 20950,
+   "w": "ЦУМ",
+   "d": "17.09",
+   "url": "https://www.tsum.ru/product/5457482-kombinirovannye-sapogi-icon-moon-boot-chernyi/"
+  },
+  "n1124528": {
+   "p": 22500,
+   "w": "ЦУМ",
+   "d": "23.09.2026",
+   "url": "https://www.tsum.ru/product/6523301-zamshevye-uggi-classic-ultra-mini-ugg-chernyi/"
+  },
+  "n22917": {
+   "p": 30340,
+   "w": "Rendez-Vous",
+   "d": "23.09.2026",
+   "url": "https://www.rendez-vous.ru/catalog/female/obuv-tipa-uggi/ugg_1016222_chernyy-2420140/"
+  },
+  "n4970667": {
+   "p": 25999,
+   "w": "Street Beat",
+   "d": "23.09.2026",
+   "url": "https://street-beat.ru/d/myuli-birkenstock-159711/"
+  },
+  "n3400192": {
+   "p": 29630,
+   "w": "Rendez-Vous",
+   "d": "23.09.2026",
+   "url": "https://www.rendez-vous.ru/catalog/unisex/botinki/dr__martens_11853001_chernyy-4115695/"
+  },
+  "n1130807": {
+   "p": 34899,
+   "w": "Street Beat",
+   "d": "23.09.2026",
+   "url": "https://street-beat.ru/d/kurtki-the-north-face-ta4qyxjk3/"
+  },
+  "n1834391": {
+   "p": 37799,
+   "w": "Street Beat",
+   "d": "23.09.2026",
+   "url": "https://street-beat.ru/d/kurtki-the-north-face-ta3xeole4/"
   }
+ }
 }

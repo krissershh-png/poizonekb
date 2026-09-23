@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-23d';
+const BUILD = '2026-09-23e';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2853,9 +2853,30 @@ function openPay(num, sum){
       <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, бот сразу пришлёт подтверждение, а вещь уйдёт в закупку</dd></div>
     </dl></div></div>
     <div class="list" style="margin-top:16px">
+      <button class="btn block" id="pay-tg" onclick="payInApp('${esc(num)}')" hidden>Оплатить картой в приложении</button>
       ${CFG.pay.link ? `<button class="btn ghost block" onclick="copyText('${CFG.pay.link}','Ссылка скопирована. Откройте её в обычном браузере — без VPN')">Скопировать ссылку на оплату</button>` : ''}
       <button class="btn ghost block" onclick="askPay('${esc(num)}',${sum || 0})">Оплатить по номеру телефона</button>
       <button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(shot)}')">Отправить скриншот</button></div>`);
+  payReady(num);
+}
+/* оплата картой прямо в приложении: форма Telegram, деньги идут на счёт, заказ отмечается сам.
+   Кнопка появляется, только если у бота подключён платёжный провайдер (иначе остаются QR и реквизиты) */
+function payReady(num){
+  if(!(inTg && CFG.api && tg.openInvoice)) return;
+  api('invoice', { num }).then(r => { const b = $('pay-tg'); if(b && r && r.ok && r.url){ b.hidden = false; b.dataset.url = r.url } }).catch(()=>{});
+}
+function payInApp(num){
+  const b = $('pay-tg'), url = b && b.dataset.url;
+  if(!url) return toast('Секунду, готовлю оплату');
+  b.disabled = true;
+  try{
+    tg.openInvoice(url, st => {
+      b.disabled = false;
+      if(st === 'paid'){ haptic('ok'); closeSheet(); toast('Оплата прошла, спасибо! Заказ уже у меня'); loadMyOrders() }
+      else if(st === 'failed') toast('Банк не пропустил платёж. Попробуйте по QR или по номеру');
+      else if(st === 'cancelled') toast('Оплата отменена');
+    });
+  }catch(e){ b.disabled = false; toast('Не получилось открыть оплату, попробуйте по QR') }
 }
 /* отменённый заказ: вернуть вещи в корзину выбора (открываем карточку первой вещи) или убрать строку насовсем */
 function orderAgain(num){

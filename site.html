@@ -303,7 +303,33 @@ footer a:hover{color:#fff}
 .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(12px);padding:13px 22px;border-radius:15px;background:rgba(17,16,16,.94);color:#fff;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease);z-index:90}
 .toast.on{opacity:1;transform:translateX(-50%)}
 
-@media (max-width:1180px){
+/* кабинет */
+.cap{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:8px 0 14px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.acct{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(18px,2.2vw,34px);align-items:start;padding-bottom:70px}
+.acct-side{display:grid;gap:14px}
+.order{border-radius:20px;box-shadow:0 0 0 1.5px var(--hair);padding:20px;margin-bottom:14px;background:#fff}
+.ohead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.ohead b{font-family:var(--dela);font-weight:900;font-size:16px}
+.ost{padding:6px 12px;border-radius:999px;background:var(--bg);font-size:12px;font-weight:800}
+.ost.done{background:rgba(47,179,107,.16);color:#1d8a52}
+.ost.dead{background:var(--hair-2);color:var(--mute)}
+.oitems{margin-top:12px;display:grid;gap:5px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.steps-line{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px}
+.steps-line i{height:6px;border-radius:999px;background:var(--hair)}
+.steps-line i.on{background:var(--red)}
+.ofoot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--hair-2);flex-wrap:wrap}
+.ofoot b{font-family:var(--dela);font-weight:900;font-size:18px}
+/* избранное на карточке */
+.fav{position:absolute;right:10px;top:10px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;box-shadow:0 6px 18px -10px rgba(18,18,18,.5);transition:transform .25s var(--ease)}
+.fav:hover{transform:scale(1.08)}
+.fav svg{width:17px;height:17px;fill:none;stroke:var(--ink);stroke-width:2}
+.fav.on svg{fill:var(--red);stroke:var(--red)}
+/* калькулятор */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(18px,2.2vw,34px);align-items:start;padding-bottom:70px}
+.calcbox{border-radius:22px;background:var(--bg);padding:26px}
+.calcout{margin-top:20px;padding:20px;border-radius:18px;background:#fff;min-height:96px;display:flex;align-items:center}
+.calcsum{font-family:var(--dela);font-weight:900;font-size:34px;letter-spacing:-.03em;margin-top:4px}
+@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1180px){
   .wrap{padding:0 28px}
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .grid.wide{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -334,6 +360,75 @@ footer a:hover{color:#fff}
   .saleitem .gain{grid-column:2;justify-self:start}
   .card .bd{padding:12px 13px 15px}
 }
+
+
+/* ---------- поиск по фото ---------- */
+.qphoto{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:50%;background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.qphoto:hover{background:#eee6e6}
+.hsearch{position:relative}
+.hsearch input{padding-right:40px}
+.vs-wait{display:flex;gap:14px;align-items:center;margin:14px 0}
+.vs-thumb{width:84px;height:84px;object-fit:cover;border-radius:16px;background:var(--bg);flex:0 0 auto}
+.vs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px;max-height:56vh;overflow:auto}
+.vs-grid a{display:block;text-decoration:none;color:inherit}
+.vs-grid .ph{aspect-ratio:1;border-radius:16px;overflow:hidden;background:linear-gradient(155deg,#fbfdfd,#eef5f6);display:grid;place-items:center}
+.vs-grid .ph img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.vs-grid b{display:block;font-size:13px;font-weight:800;margin-top:7px}
+.vs-grid span{display:block;font-size:12.5px;color:var(--mute)}
+.photo-prev{display:block;width:100%;max-height:280px;object-fit:contain;border-radius:16px;background:var(--bg);margin:12px 0}
+
+/* ---------- отзывы ---------- */
+.revs{columns:4 240px;column-gap:14px;padding-bottom:50px}
+.rev{break-inside:avoid;margin:0 0 14px;border-radius:20px;overflow:hidden;background:#fff;border:1px solid var(--hair);cursor:pointer;display:block;width:100%;text-align:left;padding:0}
+.rev img{display:block;width:100%;height:auto}
+.rev .cap2{padding:11px 13px 13px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.rev .n{position:absolute;right:10px;top:10px;background:rgba(18,16,16,.72);color:#fff;font-size:12px;font-weight:800;border-radius:999px;padding:3px 9px}
+.rev .wrapimg{position:relative}
+.revbig img{width:100%;border-radius:18px;background:var(--bg)}
+.revnav{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+
+/* ---------- сертификат ---------- */
+.certpage{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:36px;align-items:start;padding-bottom:60px}
+@media(max-width:900px){.certpage{grid-template-columns:1fr}}
+.cert-img{display:block;width:100%;height:auto;aspect-ratio:1280/800;border-radius:18px;background:var(--bg);box-shadow:0 22px 40px -26px rgba(40,10,10,.6)}
+.cdz{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:9px}
+.cdz button{padding:0;border:2px solid transparent;background:none;border-radius:14px;cursor:pointer;display:block}
+.cdz button.on{border-color:var(--red)}
+.cdz canvas{display:block;width:100%;height:auto;aspect-ratio:1280/800;border-radius:11px;background:var(--bg)}
+.cdz span{display:block;font-size:12px;color:var(--mute);margin-top:4px;font-weight:700}
+.denoms{display:flex;flex-wrap:wrap;gap:8px}
+.denoms button,.cins button{border:1.6px solid var(--line);background:#fff;border-radius:999px;padding:9px 15px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.denoms button.on,.cins button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cins{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.cins-g{margin-bottom:10px}
+.cins-g>span{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.certside{position:sticky;top:96px;display:grid;gap:12px}
+
+/* ---------- вайб ---------- */
+.vq-bar{height:5px;border-radius:999px;background:var(--line);overflow:hidden;margin:12px 0 18px}
+.vq-bar i{display:block;height:100%;background:var(--red);transition:width .3s var(--ease)}
+.vq-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vq-o{border:1.6px solid var(--line);background:#fff;border-radius:18px;padding:0 0 10px;cursor:pointer;font:inherit;overflow:hidden;text-align:center}
+.vq-o:hover{border-color:var(--ink)}
+.vq-o img{display:block;width:100%;aspect-ratio:1;object-fit:contain;background:linear-gradient(155deg,#fbfdfd,#eef5f6);mix-blend-mode:multiply}
+.vq-o span{display:block;font-size:13.5px;font-weight:700;margin-top:8px;padding:0 8px}
+.vq-o.mood{min-height:96px;display:grid;place-items:center;border:0;padding:16px}
+.vq-o.mood b{font-family:var(--disp);font-weight:900;font-size:15px}
+.vr-head{border-radius:26px;padding:30px 28px;position:relative;overflow:hidden;margin-bottom:22px}
+.vr-head .dots{position:absolute;right:-30px;top:-40px;width:230px;height:230px;opacity:.5;background-image:radial-gradient(circle,rgba(255,255,255,.75) 1.4px,transparent 1.8px);background-size:10px 10px}
+.vr-k{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.vr-t{font-family:var(--disp);font-weight:900;font-size:clamp(28px,4vw,44px);text-transform:uppercase;line-height:1;margin:8px 0 10px}
+.vr-l{font-size:15px;max-width:52ch;line-height:1.6}
+
+/* ---------- колесо ---------- */
+.wheelwrap{position:relative;width:min(300px,78vw);margin:12px auto 0}
+.wheelwrap canvas{display:block;width:100%;height:auto;transition:transform 4.2s cubic-bezier(.14,.72,.12,1)}
+.wheelwrap .pin{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:20px solid var(--ink)}
+
+/* ---------- образы ---------- */
+.looks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.looks a{display:block;border-radius:20px;overflow:hidden;background:var(--bg)}
+.looks img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover}
 </style>
 </head>
 <body>
@@ -344,21 +439,27 @@ footer a:hover{color:#fff}
     <nav class="main" id="nav">
       <a href="#/catalog">Каталог</a>
       <a href="#/sale">Выгода к России</a>
+      <a href="#/calc">Расчёт по ссылке</a>
+      <a href="#/cert">Сертификат</a>
       <a href="#/delivery">Доставка и оплата</a>
       <a href="#/reviews">Отзывы</a>
       <a href="#/about">О магазине</a>
     </nav>
-    <label class="hsearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8080" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Samba, Dunk, угги…" autocomplete="off"></label>
+    <label class="hsearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8080" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Samba, Dunk, угги…" autocomplete="off"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото" title="Найти по фото"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></label>
+    <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">
     <div class="hicons">
       <button class="burger" id="burger" aria-label="Меню"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <a class="icobtn" href="#/cart" aria-label="Заказ"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><b id="cart-n" hidden>0</b></a>
+      <a class="btn ghost sm" id="auth-btn" href="#">Войти</a>
       <a class="btn red sm" href="https://t.me/poizonekbb_bot" target="_blank" rel="noopener">В Telegram</a>
     </div>
   </div>
 </header>
 <div class="mob" id="mob"><div class="wrap">
-  <a href="#/catalog">Каталог</a><a href="#/sale">Выгода к России</a><a href="#/delivery">Доставка и оплата</a>
+  <a href="#/catalog">Каталог</a><a href="#/sale">Выгода к России</a><a href="#/vibe">Мой вайб</a>
+  <a href="#/cert">Подарочный сертификат</a><a href="#/calc">Расчёт по ссылке</a><a href="#/delivery">Доставка и оплата</a>
   <a href="#/reviews">Отзывы</a><a href="#/about">О магазине</a><a href="#/faq">Вопросы</a>
+  <a href="#/account">Личный кабинет</a><a href="#/favs">Избранное</a>
 </div></div>
 
 <main id="view"></main>
@@ -379,6 +480,7 @@ footer a:hover{color:#fff}
       <div>
         <h4>Покупателю</h4>
         <a href="#/delivery">Доставка и оплата</a><br><a href="#/sale">Выгода к России</a><br>
+        <a href="#/cert">Подарочный сертификат</a><br><a href="#/vibe">Мой вайб</a><br>
         <a href="#/faq">Вопросы и ответы</a><br><a href="#/about">О магазине</a>
       </div>
       <div>
@@ -398,13 +500,52 @@ footer a:hover{color:#fff}
 
 <script src="catalog.js"></script>
 <script>
+
 /* Данные те же, что в мини-приложении: catalog.js, prices.json, retail.json.
    Формула цены повторяет приложение: товар (юани × курс) + доставка + комиссия, округление вверх до …90. */
-const BOT = 'https://t.me/poizonekbb_bot', KRIS = 'https://t.me/kristinaershhova';
+const BOT_NAME = 'poizonekbb_bot', BOT = 'https://t.me/' + BOT_NAME, KRIS = 'https://t.me/kristinaershhova';
+const API = 'https://script.google.com/macros/s/AKfycbzzE0kwM4nW-RLMEY0Jw4dfeT6pCyE0EoGYgIG3jATVMcgQgGMfIGNZwv8NR7VUFpZq/exec';
 const CFG = { kgRate: 650, minParcelKg: 1, shipRisk: 0.008, fee: 2500, feeNext: 1000, rate: { small: 13.75, big: 13.7 }, purchase: '2026-09-30', journey: '3–4 недели' };
 const CAT = (window.CATALOG || []).filter(p => p && p.img && p.img.length);
 let PRICES = window.PRICES || { items: {} }, RETAIL = {};
 let cart = load('site_cart', []), more = 24, chosen = null;
+let AUTH = load('site_auth', null), ME = load('site_me', null), FAVS = load('site_favs', []), ORDERS = null;
+const authed = () => !!(AUTH && AUTH.id);
+/* тот же сервер, что у мини-приложения: вход подписан Telegram, поэтому заказы и статусы общие */
+function api(t, data){
+  if(!authed() && t !== 'track') return Promise.resolve(null);
+  return fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ t, auth: AUTH }, data || {})) }).then(r => r.json()).catch(() => null);
+}
+function onTgAuth(u){
+  AUTH = u; save('site_auth', u); closeModal();
+  api('open').then(r => { if(r && r.ok){ ME = r; save('site_me', r); if(Array.isArray(r.favs)) { FAVS = r.favs; save('site_favs', FAVS) } }
+    toast('Вы вошли как ' + (u.username ? '@' + u.username : u.first_name)); renderAuth(); go('/account') });
+}
+function logout(){ AUTH = null; ME = null; save('site_auth', null); save('site_me', null); renderAuth(); toast('Вы вышли'); go('/') }
+function renderAuth(){
+  const b = $('auth-btn'); if(!b) return;
+  b.textContent = authed() ? (AUTH.first_name || 'Кабинет') : 'Войти';
+  b.setAttribute('href', authed() ? '#/account' : '#');
+  b.onclick = authed() ? null : (e => { e.preventDefault(); loginModal() });
+}
+function loginModal(){
+  $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+    <div style="text-align:center;padding:10px 6px 4px">
+      <div class="hand" style="font-size:24px">вход за секунду</div>
+      <h3 style="margin:10px 0 12px">Войдите через Telegram</h3>
+      <p class="mute" style="font-size:14px;line-height:1.6;max-width:42ch;margin:0 auto 18px">Пароли не нужны: Telegram подтвердит, что это вы. После входа на сайте появятся ваши заказы, путь посылки и избранное — те же, что в приложении.</p>
+      <div id="tg-login" style="display:flex;justify-content:center;min-height:48px"></div>
+      <p class="mute" style="font-size:12.5px;margin-top:16px">Мы видим только имя и ник в Telegram. Телефон и адрес вы указываете сами при заказе.</p>
+    </div>`;
+  const s = document.createElement('script');
+  s.async = true; s.src = 'https://telegram.org/js/telegram-widget.js?22';
+  s.setAttribute('data-telegram-login', BOT_NAME);
+  s.setAttribute('data-size', 'large'); s.setAttribute('data-userpic', 'false'); s.setAttribute('data-radius', '14');
+  s.setAttribute('data-request-access', 'write'); s.setAttribute('data-onauth', 'onTgAuth(user)');
+  $('tg-login').appendChild(s);
+  $('modal').classList.add('open'); document.body.style.overflow = 'hidden';
+}
 
 function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d }catch(e){ return d } }
 function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
@@ -480,11 +621,17 @@ function route(scroll){
   if(scroll !== false) window.scrollTo(0, 0);
   $('mob').classList.remove('open');
   document.querySelectorAll('nav.main a').forEach(a => a.classList.toggle('on', a.getAttribute('href').slice(2) === parts[0]));
-  if(parts[0] === 'p' && parts[1]) viewProduct(parts[1]);
+  if(parts[0] === 'account') viewAccount(params);
+  else if(parts[0] === 'favs') viewFavs();
+  else if(parts[0] === 'calc') viewCalc();
+  else if(parts[0] === 'p' && parts[1]) viewProduct(parts[1]);
   else if(parts[0] === 'catalog') viewCatalog(params);
   else if(parts[0] === 'sale') viewSale();
   else if(parts[0] === 'cart') viewCart();
   else if(parts[0] === 'reviews') viewReviews();
+  else if(parts[0] === 'cert') viewCert(params);
+  else if(parts[0] === 'c' && parts[1]) viewCertLink(parts[1]);
+  else if(parts[0] === 'vibe') viewVibe(parts[1]);
   else if(PAGES[parts[0]]) viewText(parts[0]);
   else viewHome();
   watch();
@@ -498,7 +645,7 @@ function cardHTML(p, i){
   const tag = p.stock ? '<span class="tag stock">В наличии</span>' : rusOk(p, mn) ? '<span class="tag sale">−' + fmt(r.p - mn) + ' к РФ</span>' : p.fresh ? '<span class="tag">Новинка</span>' : '';
   const range = p.stock ? 'EU ' + p.size : s.length ? (s[0].eu === 'Один' ? 'один размер' : s[0].eu + '–' + s[s.length - 1].eu) : '';
   return `<a class="card reveal ${i ? 'd' + ((i % 4) || 1) : ''}" href="#/p/${encodeURIComponent(p.id)}">
-    <div class="ph">${tag}<img src="${esc(p.img[0])}" alt="${esc(p.brand + ' ' + p.name)}" loading="lazy"></div>
+    <div class="ph">${tag}<button class="fav ${FAVS.includes(p.id) ? 'on' : ''}" data-fav="${esc(p.id)}" onclick="toggleFav(event,'${esc(p.id)}')" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7 2.7C19 15.4 12 20 12 20z"/></svg></button><img src="${esc(p.img[0])}" alt="${esc(p.brand + ' ' + p.name)}" loading="lazy"></div>
     <div class="bd">
       <div class="brand">${esc(p.brand)}</div>
       <div class="name">${esc(p.name)}</div>
@@ -537,7 +684,7 @@ function viewHome(){
           <span class="hand">привет, я Крис</span>
           <h1>Вещи с Poizon<br>без переплат</h1>
           <p class="lead">Кроссовки, одежда, сумки и косметика из Китая — с проверкой подлинности. Цена видна под каждый размер и уже включает доставку до меня: доплат при получении нет.</p>
-          <div class="cta"><a class="btn red" href="#/catalog">Смотреть каталог</a><a class="btn ghost" href="${BOT}" target="_blank" rel="noopener">Посчитать свою вещь</a></div>
+          <div class="cta"><a class="btn red" href="#/catalog">Смотреть каталог</a><a class="btn ghost" href="#/calc">Посчитать свою вещь</a></div>
           <div class="facts">
             <div><b class="count" data-n="${shown.length}">0</b><span>вещей в каталоге</span></div>
             <div><b>${CFG.journey}</b><span>дорога после выкупа</span></div>
@@ -591,6 +738,18 @@ function viewHome(){
     </section>
 
     <section>
+      <div class="sechead reveal"><div><span class="kicker">Если сложно выбрать</span><h2>Три способа не гадать</h2></div></div>
+      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+        <div class="tcard reveal"><div class="dots"></div><b>Подборка под ваш стиль</b><span>Четыре вопроса с картинками — и я соберу вещи из каталога под то, что вы носите: обувь, верх, аксессуары.</span>
+          <button class="btn ghost sm block" style="margin-top:14px" onclick="startVibe()">${VIBE ? 'Пройти заново' : 'Пройти за минуту'}</button></div>
+        <div class="tcard dark reveal d1"><div class="dots"></div><b>Подарочный сертификат</b><span>Когда боязно не угадать с размером: дарите сумму, а вещь и размер человек выберет сам. Остаток не сгорает.</span>
+          <a class="btn ghost sm block" style="margin-top:14px;background:#fff" href="#/cert">Оформить сертификат</a></div>
+        <div class="tcard reveal d2"><div class="dots"></div><b>Поиск по фото</b><span>Есть картинка из TikTok или Pinterest? Нажмите на камеру в поиске — сравню с каталогом прямо в браузере, фото никуда не уходит.</span>
+          <button class="btn ghost sm block" style="margin-top:14px" onclick="photoPick()">Загрузить фото</button></div>
+      </div>
+    </section>
+
+    <section>
       <div class="sechead reveal"><div><span class="kicker">Как это выглядит вживую</span><h2>Распаковки</h2></div><a class="link" href="#/reviews">Все видео</a></div>
       <div class="vids">${VIDS.slice(0, 4).map(vidHTML).join('')}</div>
     </section>
@@ -638,6 +797,7 @@ function viewCatalog(params){
           <div class="chips">
             <a class="chip ${cat === 'all' ? 'on' : ''}" href="#/catalog">Все</a>
             ${CATS.map(x => `<a class="chip ${cat === x.id ? 'on' : ''}" href="#/catalog?cat=${x.id}">${x.t}</a>`).join('')}
+            ${VIBE ? `<a class="chip ${params.vibe ? 'on' : ''}" href="#/catalog${params.vibe ? '' : '?vibe=' + VIBE.key}">Мой вайб</a>` : `<a class="chip" href="#/vibe">Мой вайб</a>`}
           </div>
           <button class="btn ghost sm" id="fbtn" style="display:none" onclick="document.getElementById('side').classList.toggle('open')">Фильтры</button>
           <select class="sort" onchange="setParam('sort',this.value)">
@@ -667,6 +827,7 @@ function renderList(params){
     && (!only || p.stock)
     && (!brands.length || brands.includes(p.brand))
     && (!sizes.length || okSizes(p).some(s => sizes.includes(s.eu)))
+    && (!params.vibe || inVibe(p, params.vibe))
     && (!q || (p.brand + ' ' + p.name).toLowerCase().includes(q))
     && (!min || minPrice(p) >= min) && (!max || minPrice(p) <= max));
   const gain = p => { const r = RETAIL[p.id]; return r ? r.p - minPrice(p) : -1 };
@@ -682,6 +843,7 @@ function renderList(params){
   const act = $('active');
   if(act){
     const tags = [];
+    if(params.vibe && VIBES[params.vibe]) tags.push(['Вайб «' + VIBES[params.vibe].t + '»', `setParam('vibe','')`]);
     if(sub) tags.push([subTitle(cat, sub), `setParam('sub','')`]);
     if(only) tags.push(['Только в наличии', 'toggleOnly()']);
     sizes.forEach(s2 => tags.push(['Размер ' + s2, `toggleSize('${s2}')`]));
@@ -717,6 +879,8 @@ function viewProduct(id){
   chosen = null;
   const s = sizesOf(p), ok = s.filter(x => x.ok), mn = minPrice(p), mx = maxPrice(p), r = RETAIL[p.id];
   const similar = CAT.filter(x => x.id !== p.id && visible(x) && catOf(x) === catOf(p) && (!p.sub || x.sub === p.sub)).slice(0, 4);
+  const vk = (p.vibe || [])[0];
+  const looks = CAT.filter(x => x.look && visible(x) && (x.id === p.id || (vk && inVibe(x, vk) && catOf(x) === catOf(p)))).slice(0, 4);
   $('view').innerHTML = `
   <div class="wrap">
     <div class="crumbs"><a href="#/">Главная</a><span>·</span><a href="#/catalog?cat=${catOf(p)}">${esc(catTitle(catOf(p)))}</a>${p.sub && subTitle(catOf(p), p.sub) ? `<span>·</span><a href="#/catalog?cat=${catOf(p)}&sub=${p.sub}">${esc(subTitle(catOf(p), p.sub))}</a>` : ''}</div>
@@ -738,6 +902,7 @@ function viewProduct(id){
         <div class="acts">
           <button class="btn red" onclick="addToCart('${esc(p.id)}')">Добавить в заказ</button>
           <a class="btn ghost" href="${KRIS}?text=${encodeURIComponent('Привет! Вопрос по ' + p.brand + ' ' + p.name)}" target="_blank" rel="noopener">Спросить о размере</a>
+          <button class="btn ghost" onclick="giftItem('${esc(p.id)}')">Подарить сертификатом</button>
         </div>
         <div class="pnote">${p.stock ? 'Вещь уже у меня в Екатеринбурге — отдам в день заказа.' : `Выкуплю лично под вас в закупку ${ruDate(CFG.purchase)}, дорога ${CFG.journey}. В цене уже доставка до Екатеринбурга: доплат при получении нет.`}</div>
         <div class="acc">
@@ -747,6 +912,7 @@ function viewProduct(id){
         </div>
       </div>
     </div>
+    ${looks.length ? `<section style="padding-top:20px"><div class="sechead reveal"><div><span class="kicker">Как носят</span><h2>Образы с этими вещами</h2></div></div>${looksHTML(looks)}</section>` : ''}
     ${similar.length ? `<section style="padding-top:20px"><div class="sechead reveal"><div><span class="kicker">Смотрите также</span><h2>Похожее в этом разделе</h2></div></div><div class="grid">${similar.map(cardHTML).join('')}</div></section>` : ''}
   </div>`;
 }
@@ -782,7 +948,8 @@ function viewCart(){
       <div class="cta"><a class="btn red" href="#/catalog">Открыть каталог</a></div></div></div>`;
     return;
   }
-  const sum = cartSum(), cut = cartCut();
+  const sum = cartSum(), cut = cartCut(), coup = couponCut(sum), best = CERT ? null : bestCoupon(sum);
+  const total = sum - cut - coup, certUse = CERT ? Math.min(CERT.rest, total) : 0;
   $('view').innerHTML = `
   <div class="wrap">
     <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Заказ</span></div>
@@ -800,14 +967,19 @@ function viewCart(){
         <div class="field"><span>Город</span><input id="f-town" value="${esc(contact.town || 'Екатеринбург')}"></div>
         <div class="field"><span>Адрес или пункт выдачи</span><input id="f-addr" value="${esc(contact.addr || '')}" placeholder="Улица, дом, квартира или адрес пункта выдачи"></div>
         <div class="field"><span>Комментарий</span><textarea id="f-note" placeholder="Например: нужен запасной размер или доставка после 18:00"></textarea></div>
+        <label class="agree"><input type="checkbox" id="f-cert" ${CERT ? 'checked' : ''} onchange="certToggle(this)"> Оплачу сертификатом</label>
+        <div class="field" id="f-cert-f" ${CERT ? '' : 'hidden'}><span>Номер сертификата</span><input id="f-cert-num" value="${CERT ? esc(CERT.num) : ''}" placeholder="SR-12345" autocapitalize="characters" autocomplete="off" oninput="certInput()" onblur="checkCert()"><div class="mute" id="f-cert-msg" ${CERT ? '' : 'hidden'} style="font-size:13px;margin-top:6px">${CERT ? 'Сертификат найден, остаток ' + fmt(CERT.rest) : ''}</div></div>
         <label class="agree"><input type="checkbox" id="f-agree"> Понимаю, что вещь выкупается лично под меня и возврата нет</label>
       </div>
       <aside class="sum">
         <div class="row"><span>Вещей</span><b>${cart.length}</b></div>
         <div class="row"><span>Стоимость</span><b>${fmt(sum)}</b></div>
         ${cut ? `<div class="row"><span>Скидка за вторую вещь</span><b style="color:var(--red)">−${fmt(cut)}</b></div>` : ''}
-        <div class="row total"><span>Итого</span><b>${fmt(sum - cut)}</b></div>
-        <button class="btn red block" style="margin-top:18px" onclick="sendOrder()">Оформить в Telegram</button>
+        ${coup ? `<div class="row"><span>Ваша скидка · ${esc((best && best.why) || 'подарок')}</span><b style="color:var(--red)">−${fmt(coup)}</b></div>` : ''}
+        ${CERT ? `<div class="row"><span>Сертификатом ${esc(CERT.num)}</span><b style="color:var(--red)">−${fmt(certUse)}</b></div>` : ''}
+        <div class="row total"><span>${certUse ? 'К переводу' : 'Итого'}</span><b>${fmt(total - certUse)}</b></div>
+        ${authed() ? '' : `<p class="mute" style="font-size:12.5px;margin-top:10px">Войдите через Telegram — подставлю ваши скидки и сертификаты из приложения.</p>`}
+        <button class="btn red block" style="margin-top:18px" onclick="sendOrder()">Оформить заказ</button>
         <button class="btn ghost block" style="margin-top:10px" onclick="copyOrder()">Скопировать заказ</button>
         <p class="mute" style="font-size:12.5px;margin-top:14px;line-height:1.55">Оплата после подтверждения наличия: пришлю QR или ссылку, комиссии нет.</p>
       </aside>
@@ -818,10 +990,12 @@ function orderText(){
   const g = id => (($(id) || {}).value || '').trim();
   const lines = cart.map(c => { const p = CAT.find(x => x.id === c.id) || { brand: '', name: c.id };
     return `• ${p.brand} ${p.name} — размер ${c.size} — ${fmt(c.price)}` });
-  const cut = cartCut();
+  const cut = cartCut(), coup = couponCut(cartSum());
   return ['Здравствуйте! Заказ с сайта:', ...lines, '',
     cut ? `Скидка за вторую вещь: −${fmt(cut)}` : null,
-    `Итого: ${fmt(cartSum() - cut)}`, '',
+    coup ? `Моя скидка: −${fmt(coup)}` : null,
+    CERT ? `Оплачу сертификатом ${CERT.num}` : null,
+    `Итого: ${fmt(cartSum() - cut - coup)}`, '',
     `Имя: ${g('f-name')}`, `Телефон: ${g('f-phone')}`, `Город: ${g('f-town')}`, `Адрес: ${g('f-addr')}`,
     g('f-note') ? `Комментарий: ${g('f-note')}` : null].filter(v => v !== null).join('\n');
 }
@@ -833,9 +1007,43 @@ function sendOrder(){
   if(!$('f-agree').checked) return toast('Отметьте, что возврата нет');
   saveContact();
   const t = orderText();
-  try{ navigator.clipboard && navigator.clipboard.writeText(t) }catch(e){}
-  window.open(`${BOT}?text=${encodeURIComponent(t)}`, '_blank', 'noopener');
-  toast('Заказ скопирован и открыт в Telegram');
+  if(!authed()){
+    try{ navigator.clipboard && navigator.clipboard.writeText(t) }catch(e){}
+    window.open(`${BOT}?text=${encodeURIComponent(t)}`, '_blank', 'noopener');
+    return toast('Заказ скопирован и открыт в Telegram');
+  }
+  // вошёл через Telegram: заказ уходит сразу в таблицу и бот пишет клиенту, как из приложения
+  const btn = document.querySelector('.sum .btn.red'); if(btn){ btn.disabled = true; btn.textContent = 'Отправляю…' }
+  const num = 'PZ-' + Date.now().toString().slice(-5), vol = cartCut(), sum0 = cartSum();
+  const coup = couponCut(sum0), best = CERT ? null : bestCoupon(sum0), pay = sum0 - vol - coup;
+  const lines = cart.map(c => { const p = CAT.find(x => x.id === c.id) || { brand: '', name: c.id };
+    return `• ${p.brand} ${p.name} — размер ${c.size} — ${fmt(c.price)}` });
+  const town = $('f-town').value.trim(), addr = $('f-addr').value.trim();
+  api('order', { order: { num, items: lines, ids: cart.map(c => ({ id: c.id, s: c.size })), photos: [],
+    n: cart.length, nb: cart.length, rush: 0, ship: 0, pay, vol, cut: coup, couponId: (best && best.id) || '', gift: '', perk: false,
+    certPay: !!CERT, certNum: (CERT && CERT.num) || '', margin: CFG.fee * cart.length - vol - coup,
+    addr: (town ? town + ': ' : '') + addr, name: $('f-name').value.trim(), phone: $('f-phone').value.trim(),
+    note: ($('f-note').value || '').trim() + ' (заказ с сайта)', ref: '' }, write: true })
+    .then(r => {
+      if(btn){ btn.disabled = false; btn.textContent = 'Оформить заказ' }
+      if(!(r && r.ok)){
+        try{ navigator.clipboard && navigator.clipboard.writeText(t) }catch(e){}
+        window.open(`${BOT}?text=${encodeURIComponent(t)}`, '_blank', 'noopener');
+        return toast('Сервер не ответил — открыла Telegram с готовым заказом');
+      }
+      cart = []; save('site_cart', cart); badge();
+      orderDoneView(num, pay, !!r.hold);
+    });
+}
+function orderDoneView(num, pay, hold){
+  document.title = 'Заказ принят — POIZON.EKB';
+  $('view').innerHTML = `<div class="wrap"><div class="pagehead" style="padding-top:40px">
+    <span class="hand">заказ принят</span>
+    <h1 style="margin-top:10px">${esc(num)}</h1>
+    <p class="lead">${hold ? 'Проверяю наличие вашего размера на Poizon — напишу в Telegram в ближайшее время. Пока ничего переводить не нужно.' : 'Отправила вам в Telegram сумму и способ оплаты. После перевода пришлите скриншот — отмечу оплату, и вещь уйдёт в закупку.'}</p>
+    <div class="cta"><a class="btn red" href="${BOT}" target="_blank" rel="noopener">Открыть чат с ботом</a>
+      <a class="btn ghost" href="#/account">Мои заказы</a></div>
+    <p class="mute" style="margin-top:22px;font-size:14px">К оплате: ${fmt(pay)}. Статус заказа и трек будут в кабинете и в Telegram.</p></div></div>`;
 }
 function copyOrder(){ saveContact(); const t = orderText();
   try{ navigator.clipboard.writeText(t).then(() => toast('Заказ скопирован'), () => toast('Скопируйте текст вручную')) }catch(e){ toast('Скопируйте текст вручную') } }
@@ -851,16 +1059,6 @@ function viewSale(){
     <div style="display:grid;gap:12px;padding-bottom:60px">${list.map(saleItemHTML).join('') || '<div class="empty">Пока пусто</div>'}</div></div>`;
 }
 
-/* ---------- отзывы ---------- */
-function viewReviews(){
-  document.title = 'Отзывы и распаковки — POIZON.EKB';
-  $('view').innerHTML = `<div class="wrap">
-    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Отзывы</span></div>
-    <div class="pagehead"><span class="kicker">Живые посылки</span><h1 style="margin-top:12px">Отзывы и распаковки</h1>
-      <p class="lead">Снимаю каждую большую закупку: как приходят коробки, что внутри и как вещи сидят. Отзывы покупателей с фото собраны в отдельном канале.</p>
-      <div class="cta"><a class="btn red" href="https://t.me/feedbackpoizonekb" target="_blank" rel="noopener">Канал с отзывами</a><a class="btn ghost" href="https://t.me/buypoizonekb" target="_blank" rel="noopener">Канал с новинками</a></div></div>
-    <section><div class="vids">${VIDS.map(vidHTML).join('')}</div></section></div>`;
-}
 function playVid(k, t){
   $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button><h3 style="margin:0 0 14px">${esc(t)}</h3>
     <video src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline style="width:100%;max-height:70vh;border-radius:18px;background:#000"></video>`;
@@ -870,6 +1068,132 @@ function closeModal(){ $('modal').classList.remove('open'); document.body.style.
 $('modal').onclick = e => { if(e.target.id === 'modal') closeModal() };
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal() });
 
+/* ---------- личный кабинет: заказы, путь посылки, избранное, скидки ---------- */
+const ST_ORDER = ['новый','оплачен','выкуплен','в пути','готово к выдаче','в Екатеринбурге','выдан'];
+const ST_LABEL = { 'новый':'Ждёт оплаты','оплачен':'Оплачен','выкуплен':'Выкуплен','в пути':'В пути','готово к выдаче':'Готово к выдаче','в Екатеринбурге':'В Екатеринбурге','выдан':'Получен','отменён':'Отменён' };
+function viewAccount(){
+  document.title = 'Личный кабинет — POIZON.EKB';
+  if(!authed()){
+    $('view').innerHTML = `<div class="wrap"><div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Кабинет</span></div>
+      <div class="pagehead"><span class="kicker">Личный кабинет</span><h1 style="margin-top:12px">Ваши заказы и посылки</h1>
+      <p class="lead">Войдите через Telegram — и здесь появятся заказы, статус выкупа, трек-номер, избранное и ваши скидки. Это тот же аккаунт, что в мини-приложении: история не потеряется.</p>
+      <div class="cta"><button class="btn red" onclick="loginModal()">Войти через Telegram</button><a class="btn ghost" href="#/catalog">В каталог</a></div></div></div>`;
+    return;
+  }
+  const u = AUTH;
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Кабинет</span></div>
+    <div class="pagehead" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap">
+      <div><span class="kicker">Личный кабинет</span><h1 style="margin-top:12px">${esc(u.first_name || 'Привет')}${u.username ? `<span class="mute" style="font-family:var(--body);font-weight:600;font-size:16px;text-transform:none;letter-spacing:0"> @${esc(u.username)}</span>` : ''}</h1></div>
+      <button class="btn ghost sm" onclick="logout()">Выйти</button>
+    </div>
+    <div class="acct">
+      <div>
+        <div class="cap"><span>Мои заказы</span></div>
+        <div id="acc-orders"><div class="empty">Загружаю заказы…</div></div>
+      </div>
+      <aside class="acct-side">
+        ${ME && ME.link ? `<div class="tcard dark"><div class="dots"></div><b>Приведи друга</b><span>Другу −500 ₽ на первый заказ от 10 000 ₽, вам −500 ₽ на следующий, когда друг оплатит.</span>
+          <button class="btn ghost sm block" style="margin-top:14px;background:#fff" onclick="copyText('${esc(ME.link)}')">Скопировать ссылку</button></div>` : ''}
+        ${ME && (ME.coupons || []).length ? `<div class="tcard"><div class="dots"></div><b>Ваши скидки</b>${ME.coupons.map(c => `<span style="display:block;margin-top:8px">−${c.v} ₽ · ${esc(c.why || 'подарок')}${c.until ? ', до ' + new Date(c.until).toLocaleDateString('ru-RU') : ''}</span>`).join('')}</div>` : ''}
+        ${ME && (ME.welcome || (ME.spinUntil && ME.spinUntil > Date.now())) ? `<div class="tcard"><div class="dots"></div><b>${ME.welcome ? 'Подарок за знакомство' : 'Колесо после заказа'}</b><span>Скидка от 300 до 500 ₽ из моей комиссии — цены в каталоге от неё не меняются.</span>
+          <button class="btn red sm block" style="margin-top:14px" onclick="wheelModal('${ME.welcome ? 'welcome' : ''}')">Крутить колесо</button></div>` : ''}
+        <div class="tcard"><div class="dots"></div><b>Сертификаты</b>${ME && (ME.certs || []).length ? ME.certs.map(c => `<span style="display:block;margin-top:8px">${esc(c.num)} · ${esc(c.status || '')} · остаток ${fmt(c.rest || c.value || 0)}</span>`).join('') : '<span>Пока ни одного. Сертификатом удобно дарить, когда не знаешь размер.</span>'}
+          <a class="btn ghost sm block" style="margin-top:14px" href="#/cert">Оформить сертификат</a></div>
+        <div class="tcard"><div class="dots"></div><b>Мой вайб</b><span>${VIBE ? 'Подборка «' + VIBES[VIBE.key].t + '» собрана под ваш стиль.' : 'Четыре вопроса — и соберу подборку под ваш стиль.'}</span>
+          <button class="btn ghost sm block" style="margin-top:14px" onclick="${VIBE ? `go('/vibe/${VIBE.key}')` : 'startVibe()'}">${VIBE ? 'Открыть подборку' : 'Пройти за минуту'}</button></div>
+        <div class="tcard"><div class="dots"></div><b>Избранное</b><span>${FAVS.length ? FAVS.length + ' ' + plural(FAVS.length, ['вещь','вещи','вещей']) + ' под присмотром: напишу, если подешевеет.' : 'Пока пусто. Нажимайте на сердечко в каталоге — буду следить за ценой.'}</span>
+          <a class="btn ghost sm block" style="margin-top:14px" href="#/favs">Открыть избранное</a></div>
+      </aside>
+    </div></div>`;
+  loadOrders();
+}
+function loadOrders(){
+  api('orders').then(r => {
+    const box = $('acc-orders'); if(!box) return;
+    ORDERS = (r && r.orders) || [];
+    if(!ORDERS.length){ box.innerHTML = `<div class="empty">Заказов пока нет. <a href="#/catalog" style="color:var(--red)">Выбрать вещь</a></div>`; return }
+    box.innerHTML = ORDERS.map(orderHTML).join('');
+  });
+}
+function orderHTML(o){
+  const st = String(o.st || 'новый'), i = ST_ORDER.indexOf(st), done = st === 'выдан', dead = st === 'отменён';
+  const items = (o.items || '').split('\n').filter(Boolean);
+  return `<div class="order">
+    <div class="ohead">
+      <div><b>${esc(o.num)}</b><span class="mute"> · ${esc(o.date || '')}</span></div>
+      <div class="ost ${done ? 'done' : dead ? 'dead' : ''}">${esc(ST_LABEL[st] || st)}</div>
+    </div>
+    ${items.length ? `<div class="oitems">${items.slice(0, 6).map(t => `<div>${esc(t.replace(/^•\s*/, ''))}</div>`).join('')}</div>` : ''}
+    ${!dead ? `<div class="steps-line">${ST_ORDER.map((s, k) => `<i class="${k <= i ? 'on' : ''}" title="${esc(ST_LABEL[s])}"></i>`).join('')}</div>
+      <div class="mute" style="font-size:12.5px;margin-top:7px">${esc(o.stage || ST_LABEL[st] || '')}${o.track ? ' · трек ' + esc(o.track) : ''}</div>` : ''}
+    <div class="ofoot">
+      <b>${fmt(o.pay || 0)}</b>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${st === 'новый' ? `<a class="btn red sm" href="${BOT}" target="_blank" rel="noopener">Оплатить</a>
+          <button class="btn ghost sm" onclick="cancelOrder('${esc(o.num)}')">Отменить</button>` : ''}
+        ${st !== 'новый' ? `<button class="btn ghost sm" onclick="openOrderTrack('${esc(o.num)}')">Где посылка</button>` : ''}
+      </div>
+    </div></div>`;
+}
+function cancelOrder(num){
+  if(!confirm('Отменить заказ ' + num + '? Если деньги уже переведены, лучше написать мне.')) return;
+  api('cancel', { num }).then(r => { toast(r && r.ok ? 'Заказ отменён' : 'Не получилось — напишите мне в Telegram'); loadOrders() });
+}
+
+/* ---------- избранное ---------- */
+function toggleFav(e, id){
+  e.preventDefault(); e.stopPropagation();
+  const i = FAVS.indexOf(id);
+  i < 0 ? FAVS.push(id) : FAVS.splice(i, 1);
+  save('site_favs', FAVS);
+  document.querySelectorAll(`[data-fav="${id}"]`).forEach(b => b.classList.toggle('on', i < 0));
+  if(authed()) api('favs', { list: FAVS });
+  toast(i < 0 ? 'Добавила в избранное — напишу, если подешевеет' : 'Убрала из избранного');
+}
+function viewFavs(){
+  document.title = 'Избранное — POIZON.EKB';
+  const list = CAT.filter(p => FAVS.includes(p.id) && visible(p));
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Избранное</span></div>
+    <div class="pagehead"><span class="kicker">Избранное</span><h1 style="margin-top:12px">Вещи под присмотром</h1>
+      <p class="lead">${list.length ? 'Слежу за ценой: если вещь подешевеет, напишу в Telegram.' : 'Пока пусто. Нажмите на сердечко у любой вещи — и она появится здесь.'}</p></div>
+    <div class="grid wide" style="padding-bottom:60px">${list.map(cardHTML).join('') || ''}</div></div>`;
+}
+
+/* ---------- расчёт по ссылке с Poizon ---------- */
+function viewCalc(){
+  document.title = 'Расчёт стоимости — POIZON.EKB';
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Расчёт</span></div>
+    <div class="pagehead"><span class="kicker">Любая вещь с Poizon</span><h1 style="margin-top:12px">Посчитать свою вещь</h1>
+      <p class="lead">Если вещи нет в каталоге — это не проблема. Введите цену в юанях с Poizon, и увидите конечную стоимость с доставкой до Екатеринбурга. Точную цену подтвержу перед оплатой: курс меняется каждый день.</p></div>
+    <div class="calc">
+      <div class="calcbox">
+        <div class="field"><span>Цена на Poizon, ¥</span><input id="c-yen" type="number" inputmode="numeric" placeholder="например, 520" oninput="calcNow()"></div>
+        <div class="field"><span>Что это за вещь</span>
+          <div class="chips" style="margin-top:2px">${[['1.55','Кроссовки, кеды'],['2.9','Ботинки, высокие кроссовки'],['1.05','Одежда'],['1.6','Сумка'],['0.45','Футболка'],['0.3','Мелочь, косметика']].map(([w, t], i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-w="${w}" onclick="pickKg(this)">${t}</button>`).join('')}</div></div>
+        <div class="calcout" id="c-out"><span class="mute">Введите цену — посчитаю</span></div>
+        <div class="field" style="margin-top:14px"><span>Ссылка на вещь (необязательно)</span><input id="c-link" placeholder="dw4.co/t/… или ссылка из приложения Poizon"></div>
+        <div class="field"><span>Размер</span><input id="c-size" placeholder="EU 38 или M"></div>
+        <div class="cta" style="margin-top:18px"><button class="btn red" onclick="calcSend()">Отправить Крис на проверку</button>
+          <button class="btn ghost" onclick="photoPick()">Найти по фото</button></div>
+        <p class="mute" style="font-size:12.5px;margin-top:12px">Сообщение уже будет заполнено — останется нажать «Отправить» в Telegram. Проверю наличие и подтвержу цену.</p>
+      </div>
+      <div class="tcard"><div class="dots"></div><b>Что входит в цену</b>
+        <span>Товар по курсу юаня, доставка Китай — Екатеринбург и моя работа. При получении ничего доплачивать не нужно: в другие города оплачивается только путь до пункта выдачи, 300–700 ₽.</span></div>
+    </div></div>`;
+}
+let calcKg = 1.55;
+function pickKg(b){ document.querySelectorAll('.calc .chip').forEach(x => x.classList.toggle('on', x === b)); calcKg = +b.dataset.w || 1.55; calcNow() }
+function calcNow(){
+  const y = +($('c-yen') || {}).value || 0, out = $('c-out');
+  if(!y) return out.innerHTML = '<span class="mute">Введите цену — посчитаю</span>';
+  const p = priceFrom(y, calcKg);
+  out.innerHTML = `<div><div class="mute" style="font-size:13px;font-weight:700">Конечная цена</div><div class="calcsum">${fmt(p)}</div>
+    <div class="mute" style="font-size:12.5px;margin-top:6px">Курс ${CFG.rate.small} ₽ за ¥, доставка и моя работа уже внутри</div></div>`;
+}
+function copyText(s){ try{ navigator.clipboard.writeText(s).then(() => toast('Скопировано'), () => toast('Скопируйте вручную: ' + s)) }catch(e){ toast(s) } }
 /* ---------- текстовые страницы ---------- */
 const PAGES = {
   delivery: { t: 'Доставка и оплата', k: 'Как всё происходит', html: `
@@ -927,12 +1251,609 @@ $('q').addEventListener('input', e => {
 });
 $('burger').onclick = () => $('mob').classList.toggle('open');
 
-badge();
+
+/* ================== всё, что есть в мини-приложении ================== */
+function openModal(html){ $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button>` + html; $('modal').scrollTop = 0; $('modal').classList.add('open'); document.body.style.overflow = 'hidden' }
+
+/* ---------- отзывы покупателей (те же, что в приложении) ---------- */
+let REVS = null;
+function loadRevs(){
+  if(REVS) return Promise.resolve(REVS);
+  return fetch('revs.json?' + Date.now()).then(r => r.json()).then(d => (REVS = Array.isArray(d) ? d : [])).catch(() => (REVS = []));
+}
+function revsHTML(){
+  if(!REVS || !REVS.length) return '<div class="empty">Отзывы загружаются…</div>';
+  return `<div class="revs">${REVS.map((r, i) => `<button class="rev" onclick="openRev(${i})">
+    <div class="wrapimg"><img src="${esc((r.photos || [])[0] || r.poster || '')}" alt="Отзыв покупателя" loading="lazy">${(r.photos || []).length > 1 ? `<span class="n">${r.photos.length} фото</span>` : ''}</div>
+    ${r.text ? `<div class="cap2">${esc(r.text)}</div>` : ''}</button>`).join('')}</div>`;
+}
+function openRev(i){
+  const r = REVS[i]; if(!r) return;
+  const ph = (r.photos || []);
+  openModal(`<div class="revbig">${ph.map(s => `<img src="${esc(s)}" alt="Отзыв покупателя" style="margin-bottom:10px">`).join('')}
+    ${r.video ? `<video src="${esc(r.video)}" poster="${esc(r.poster || '')}" controls playsinline style="width:100%;border-radius:18px;background:#000"></video>` : ''}
+    ${r.text ? `<p style="font-size:15px;line-height:1.6;margin:12px 0 0">${esc(r.text)}</p>` : ''}
+    <div class="revnav"><button class="btn ghost sm" onclick="openRev(${(i - 1 + REVS.length) % REVS.length})">← Прошлый</button>
+      <button class="btn ghost sm" onclick="openRev(${(i + 1) % REVS.length})">Следующий →</button></div></div>`);
+}
+function viewReviews(){
+  document.title = 'Отзывы и распаковки — POIZON.EKB';
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Отзывы</span></div>
+    <div class="pagehead"><span class="kicker">Живые посылки</span><h1 style="margin-top:12px">Отзывы и распаковки</h1>
+      <p class="lead">Снимаю каждую большую закупку: как приходят коробки, что внутри и как вещи сидят. Ниже — фото, которые присылают покупатели: ничего не выдумано и не срежиссировано.</p>
+      <div class="cta"><a class="btn red" href="https://t.me/feedbackpoizonekb" target="_blank" rel="noopener">Канал с отзывами</a><a class="btn ghost" href="https://t.me/buypoizonekb" target="_blank" rel="noopener">Канал с новинками</a></div></div>
+    <section><div class="sechead reveal"><div><span class="kicker">Видео</span><h2>Как приходят посылки</h2></div></div><div class="vids">${VIDS.map(vidHTML).join('')}</div></section>
+    <section><div class="sechead reveal"><div><span class="kicker">Фото покупателей</span><h2>Вещи у вас дома</h2></div></div><div id="revbox">${revsHTML()}</div></section></div>`;
+  loadRevs().then(() => { const b = $('revbox'); if(b) b.innerHTML = revsHTML(); watch() });
+}
+
+/* ---------- поиск по фото: нейросеть работает прямо в браузере ---------- */
+/* DINOv2-small (ml/) превращает фото в «отпечаток» из 384 чисел и сравнивает с заранее посчитанными
+   отпечатками фото каталога (ml/vecs.bin). Ничего никуда не отправляется, пока человек сам не нажмёт «Отправить Крис». */
+const VS = { session: null, vecs: null, ids: null, run: 0 };
+const VS_SURE = 0.72, VS_MAYBE = 0.62;
+let PHOTO = '';
+function loadScript(src){ return new Promise((ok, bad) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = bad; document.head.appendChild(s) }) }
+async function vsInit(){
+  if(VS.session) return;
+  const [, bin, ids] = await Promise.all([
+    window.ort ? null : loadScript('ml/ort.wasm.min.js'),
+    fetch('ml/vecs.bin').then(r => { if(!r.ok) throw 0; return r.arrayBuffer() }),
+    fetch('ml/vecs.json').then(r => { if(!r.ok) throw 0; return r.json() })
+  ]);
+  ort.env.wasm.wasmPaths = new URL('ml/', location.href).href; ort.env.wasm.numThreads = 1;
+  VS.vecs = new Int8Array(bin); VS.ids = ids;
+  VS.session = await ort.InferenceSession.create('ml/dinov2_small_q8.onnx', { executionProviders: ['wasm'] });
+}
+async function visualSearch(src){
+  await vsInit();
+  const S = 224, c = document.createElement('canvas'); c.width = c.height = S;
+  const k = 256 / Math.min(src.width, src.height), w = src.width * k, h = src.height * k;
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, (S - w) / 2, (S - h) / 2, w, h);
+  const px = x.getImageData(0, 0, S, S).data, t = new Float32Array(3 * S * S);
+  const M = [.485, .456, .406], SD = [.229, .224, .225];
+  for(let i = 0; i < S * S; i++) for(let ch = 0; ch < 3; ch++) t[i + ch * S * S] = (px[i * 4 + ch] / 255 - M[ch]) / SD[ch];
+  const out = await VS.session.run({ pixel_values: new ort.Tensor('float32', t, [1, 3, S, S]) });
+  const D = 384, q = out.last_hidden_state.data.subarray(0, D); let n = 0; for(const v of q) n += v * v; n = Math.sqrt(n);
+  const best = {};
+  for(let r = 0; r < VS.ids.length; r++){
+    let s = 0; const o = r * D; for(let i = 0; i < D; i++) s += VS.vecs[o + i] * q[i];
+    s = s / 127 / n; const id = VS.ids[r]; if(!(best[id] >= s)) best[id] = s;
+  }
+  return Object.entries(best).map(([id, s]) => ({ p: CAT.find(z => z.id === id), s })).filter(z => z.p && visible(z.p)).sort((a, b) => b.s - a.s);
+}
+function photoPick(){ const i = $('photo-in'); i.value = ''; i.click() }
+function photoChosen(inp){
+  const f = inp.files && inp.files[0]; if(!f) return;
+  if(!/^image\//.test(f.type)) return toast('Выберите фото');
+  const url = URL.createObjectURL(f), im = new Image();
+  im.onload = () => {
+    const k = Math.min(1, 1280 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+    c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+    PHOTO = c.toDataURL('image/jpeg', .85);
+    openModal(`<h3 style="margin:0 0 4px">Ищу в каталоге</h3>
+      <div class="vs-wait"><img class="vs-thumb" src="${PHOTO}" alt="Ваше фото"><div><b>Сравниваю с вещами каталога</b><br><span class="mute" style="font-size:13.5px" id="vs-status">${VS.session ? 'Пара секунд' : 'Первый раз загружаю поиск, это до минуты'}</span></div></div>`);
+    const token = (VS.run = (VS.run || 0) + 1);
+    visualSearch(c).then(list => { if(VS.run === token && $('vs-status')) photoResults(list) })
+      .catch(() => { if(VS.run === token && $('vs-status')) photoSendSheet('В этот раз поиск не запустился в браузере. Отправьте фото мне — найду сама.') });
+  };
+  im.onerror = () => { URL.revokeObjectURL(url); toast('Не получилось открыть фото, попробуйте другое') };
+  im.src = url;
+}
+function photoResults(list){
+  const top = list.length ? list[0].s : 0;
+  const sure = list.filter(z => z.s >= Math.max(VS_SURE, top - .15)).slice(0, 6);
+  const maybe = sure.length ? [] : list.filter(z => z.s >= Math.max(VS_MAYBE, top - .08)).slice(0, 4);
+  const found = sure.length ? sure : maybe;
+  if(!found.length) return photoSendSheet('В каталоге такого не нашлось. Отправьте фото мне — найду на Poizon и пришлю цену.');
+  openModal(`<h3 style="margin:0 0 4px">${sure.length ? 'Похожие вещи в каталоге' : 'Точного совпадения нет, но похожее есть'}</h3>
+    <div class="vs-wait"><img class="vs-thumb" src="${PHOTO}" alt="Ваше фото"><div class="mute" style="font-size:13.5px">Нажмите на вещь, чтобы открыть карточку</div></div>
+    <div class="vs-grid">${found.map(z => `<a href="#/p/${encodeURIComponent(z.p.id)}" onclick="closeModal()">
+      <div class="ph"><img src="${esc(z.p.img[0])}" alt="" loading="lazy"></div>
+      <b>${esc(z.p.brand)} ${esc(z.p.name)}</b><span>${minPrice(z.p) ? fmt(minPrice(z.p)) : 'по запросу'}</span></a>`).join('')}</div>
+    <button class="btn ghost block" style="margin-top:14px" onclick="photoSendSheet()">Не то — отправить фото Крис</button>`);
+}
+function photoSendSheet(lead){
+  openModal(`<h3 style="margin:0 0 6px">Найду по фото сама</h3>
+    <p class="mute" style="font-size:14px;line-height:1.6;margin:0">${esc(lead || 'Пришлю ссылку на Poizon и цену с доставкой.')}</p>
+    <img class="photo-prev" src="${PHOTO}" alt="Ваше фото">
+    <div class="field"><span>Что важно (необязательно)</span><input id="photo-note" maxlength="200" placeholder="Размер 38, хочу именно этот цвет"></div>
+    <button class="btn red block" style="margin-top:12px" id="photo-send" onclick="photoSend()">Отправить Крис</button>
+    <p class="mute" style="font-size:12.5px;margin-top:10px">${authed() ? 'Фото уйдёт мне в Telegram от вашего аккаунта.' : 'Войдите через Telegram, чтобы отправить фото прямо отсюда — или напишите мне в чат.'}</p>
+    ${authed() ? '' : `<button class="btn ghost block" style="margin-top:10px" onclick="loginModal()">Войти через Telegram</button>
+      <a class="btn ghost block" style="margin-top:10px" href="${KRIS}" target="_blank" rel="noopener">Открыть чат со мной</a>`}`);
+}
+function photoSend(){
+  if(!authed()) return loginModal();
+  const b = $('photo-send'); b.disabled = true; b.textContent = 'Отправляю…';
+  api('photo', { img: PHOTO, note: ($('photo-note') || {}).value || '' }).then(r => {
+    b.disabled = false; b.textContent = 'Отправить Крис';
+    if(r && r.ok){ closeModal(); toast('Отправила! Отвечу в Telegram') }
+    else toast('Не получилось отправить — напишите мне в чат');
+  });
+}
+
+/* ---------- образы: как эти вещи носят ---------- */
+function looksHTML(list){
+  return `<div class="looks">${list.map(p => `<a class="reveal" href="#/p/${encodeURIComponent(p.id)}"><img src="${esc(p.look)}" alt="${esc(p.brand + ' ' + p.name)}" loading="lazy"></a>`).join('')}</div>`;
+}
+
+/* ---------- мой вайб: подборка под стиль ---------- */
+const VIBES = {
+  sport:   { t:'Спорт',      line:'Беговые силуэты и техничные кроссовки, в которых удобно весь день', bg:'#2f6fed', ink:'#ffffff', mix:['sneakers','sneakers','tees|hoodies|outer','sneakers','watch|hats'] },
+  street:  { t:'Улица',      line:'Данки, джорданы, ботинки и оверсайз', bg:'linear-gradient(135deg,#eceff0,#aab3b7)', ink:'#121212', mix:['sneakers','hoodies|outer|pants','boots','sneakers','hats|watch'] },
+  minimal: { t:'Минимализм', line:'Кашемир, кожа и спокойные цвета без лишнего шума', bg:'linear-gradient(135deg,#f4f0e9,#d8cdbd)', ink:'#2b2622', mix:['bags','sneakers','knit','heels|keds','scarf|wallet|watch'] },
+  y2k:     { t:'Y2K',        line:'Металлик, розовый, очки и Labubu — как в двухтысячных', bg:'linear-gradient(135deg,#ffc9e3,#c9d4ff)', ink:'#3a1030', mix:['glasses','sneakers','toys','heels|keds|boots','beauty|bags|watch'] },
+  cozy:    { t:'Уют',        line:'Угги, пуховики и вязаное, чтобы зима прошла мягко', bg:'linear-gradient(135deg,#f6dcc0,#d9a36b)', ink:'#4a2a10', mix:['boots','outer','knit','keds|sneakers','scarf|hats'] },
+};
+const VQ = [
+  { q:'Что чаще носите?', o:[
+    { t:'Беговые кроссовки', id:'3544', v:['sport','street'] },
+    { t:'Данки и джорданы', id:'4364', v:['street','sport'] },
+    { t:'Угги и ботинки', id:'n1777105', v:['cozy','minimal'] },
+    { t:'Туфли', id:'n1612624', v:['y2k','minimal'] } ] },
+  { q:'В чём ходите чаще?', o:[
+    { t:'Спортивный костюм', id:'4080', v:['sport','y2k'] },
+    { t:'Оверсайз-худи', id:'n7619798', v:['street','cozy'] },
+    { t:'Пуховик или тёплое', id:'n6236874', v:['cozy','street'] },
+    { t:'Свитер или кардиган', id:'4143b', v:['minimal','cozy'] } ] },
+  { q:'Что бы взяли?', o:[
+    { t:'Кепку', id:'n18422850', v:['street','sport'] },
+    { t:'Сумку', id:'4012', v:['minimal','y2k'] },
+    { t:'Шарф', id:'n5234725', v:['cozy','minimal'] },
+    { t:'Очки', id:'n7210684', v:['y2k','minimal'] } ] },
+  { q:'Что ближе по настроению?', o:[
+    { t:'Спортивное', c:'sport', v:['sport','street'] },
+    { t:'Уличное', c:'street', v:['street','sport'] },
+    { t:'Спокойное и нейтральное', c:'minimal', v:['minimal','cozy'] },
+    { t:'Тёплое и уютное', c:'cozy', v:['cozy','minimal'] },
+    { t:'Яркое, как в двухтысячных', c:'y2k', v:['y2k','street'] } ] },
+];
+let VIBE = load('site_vibe', null), VQS = null;
+if(VIBE && !VIBES[VIBE.key]) VIBE = null;
+const inVibe = (p, k) => (p.vibe || []).includes(k);
+const vPhoto = id => { const p = CAT.find(x => x.id === id); return p ? (p.look || p.img[0]) : '' };
+function startVibe(){ VQS = { step: 0, picks: [] }; vibeStep() }
+function vibeStep(){
+  const s = VQS.step, Q = VQ[s];
+  openModal(`<div class="mute" style="font-size:12.5px;font-weight:700">Вопрос ${s + 1} из ${VQ.length}</div>
+    <div class="vq-bar"><i style="width:${(s + 1) / VQ.length * 100}%"></i></div>
+    <h3 style="margin:0 0 14px">${esc(Q.q)}</h3>
+    <div class="vq-grid">${Q.o.map((o, i) => o.c
+      ? `<button class="vq-o mood" style="background:${VIBES[o.c].bg};color:${VIBES[o.c].ink}" onclick="vibeAnswer(${i})"><b>${esc(o.t)}</b></button>`
+      : `<button class="vq-o" onclick="vibeAnswer(${i})"><img src="${esc(vPhoto(o.id))}" alt=""><span>${esc(o.t)}</span></button>`).join('')}</div>
+    ${s ? `<button class="btn ghost block" style="margin-top:12px" onclick="vibeBack()">Назад</button>` : `<p class="mute" style="font-size:12.5px;margin-top:12px">Соберу вещи из каталога под ваш ответ</p>`}`);
+  const next = VQ[s + 1]; if(next) next.o.forEach(o => { if(o.id){ const im = new Image(); im.src = vPhoto(o.id) } });
+}
+function vibeBack(){ if(VQS.step > 0){ VQS.step--; VQS.picks.pop(); vibeStep() } }
+function vibeAnswer(i){ VQS.picks.push(VQ[VQS.step].o[i].v); VQS.step++; VQS.step < VQ.length ? vibeStep() : finishVibe() }
+const vibeCount = (k, stock) => CAT.filter(p => inVibe(p, k) && (stock ? p.stock : minPrice(p))).length;
+function finishVibe(){
+  const sc = Object.fromEntries(Object.keys(VIBES).map(k => [k, 0]));
+  VQS.picks.forEach(v => { sc[v[0]] += 2; sc[v[1]] += 1 });
+  const key = Object.keys(sc).sort((a, b) => sc[b] - sc[a] || vibeCount(b, true) - vibeCount(a, true) || vibeCount(b) - vibeCount(a))[0];
+  VIBE = { key, at: Date.now() }; save('site_vibe', VIBE);
+  if(authed()) api('vibe', { key, scores: sc });
+  closeModal(); go('/vibe/' + key);
+}
+function vibePicks(k, n){
+  const w = p => (p.stock ? 100 : 0) + (p.fresh ? 12 : 0) + (p.look ? 3 : 0) + (p.pop || 0);
+  const pool = CAT.filter(p => inVibe(p, k) && minPrice(p)).sort((a, b) => w(b) - w(a));
+  const groups = VIBES[k].mix.map(m => { const keys = m.split('|'); return pool.filter(p => keys.includes(p.sub) || keys.includes(p.cat)) });
+  const out = [], brand = {};
+  const take = g => { const p = g.find(x => !out.includes(x) && (brand[x.brand] || 0) < 2); if(p){ out.push(p); brand[p.brand] = (brand[p.brand] || 0) + 1 } };
+  for(let round = 0; round < n && out.length < n; round++) groups.forEach(g => { if(out.length < n) take(g) });
+  pool.forEach(p => { if(out.length < n && !out.includes(p)) out.push(p) });
+  return out;
+}
+function viewVibe(key){
+  const k = VIBES[key] ? key : (VIBE && VIBE.key);
+  if(!k){
+    document.title = 'Мой вайб — POIZON.EKB';
+    $('view').innerHTML = `<div class="wrap"><div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Мой вайб</span></div>
+      <div class="pagehead"><span class="kicker">Подборка под вас</span><h1 style="margin-top:12px">Соберу вещи под ваш стиль</h1>
+        <p class="lead">Четыре вопроса с картинками — и я соберу из каталога подборку: обувь, верх, аксессуары. Ничего не нужно заполнять руками, ответы сохранятся только у вас в браузере.</p>
+        <div class="cta"><button class="btn red" onclick="startVibe()">Пройти за минуту</button><a class="btn ghost" href="#/catalog">Просто открыть каталог</a></div></div>
+      <div class="grid wide" style="padding-bottom:60px">${CAT.filter(visible).slice(0, 8).map(cardHTML).join('')}</div></div>`;
+    return;
+  }
+  const V = VIBES[k], items = vibePicks(k, 20);
+  const looks = CAT.filter(p => p.look && inVibe(p, k) && minPrice(p)).sort((a, b) => (a.lk ?? 999) - (b.lk ?? 999)).slice(0, 8);
+  document.title = `Вайб «${V.t}» — POIZON.EKB`;
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Мой вайб</span></div>
+    <div class="vr-head" style="background:${V.bg};color:${V.ink}"><div class="dots"></div>
+      <div class="vr-k">${VIBE && VIBE.key === k ? 'ваш вайб' : 'подборка'}</div><div class="vr-t">${esc(V.t)}</div><div class="vr-l">${esc(V.line)}</div></div>
+    <div class="grid wide">${items.map(cardHTML).join('')}</div>
+    <div class="cta" style="margin-top:22px"><a class="btn ghost" href="#/catalog?vibe=${k}">Все вещи в этом вайбе</a>
+      <button class="btn ghost" onclick="startVibe()">Пройти заново</button>
+      <button class="btn ghost" onclick="copyText(location.origin + location.pathname + '#/vibe/${k}')">Поделиться подборкой</button></div>
+    ${looks.length ? `<section><div class="sechead reveal"><div><span class="kicker">Как носят</span><h2>Образы с этими вещами</h2></div></div>${looksHTML(looks)}</section>` : ''}
+  </div>`;
+}
+
+/* ---------- колесо скидок ---------- */
+const WHEEL = [300, 500, 300, 400, 300, 500, 300, 400];
+let spinning = false;
+function wheelModal(mode){
+  openModal(`<h3 style="margin:0 0 6px">${mode === 'welcome' ? 'Подарок за знакомство' : 'Колесо после заказа'}</h3>
+    <p class="mute" style="font-size:14px;line-height:1.6;margin:0">Скидка пойдёт из моей комиссии, а не из цены вещи: цены в каталоге от этого не растут.</p>
+    <div class="wheelwrap"><div class="pin"></div><canvas id="wcv" width="600" height="600"></canvas></div>
+    <button class="btn red block" style="margin-top:16px" id="wbtn" onclick="doSpin('${mode}')">Крутить</button>`);
+  drawWheel();
+}
+function drawWheel(){
+  const c = $('wcv'); if(!c) return;
+  const x = c.getContext('2d'), n = WHEEL.length, R = 300;
+  x.clearRect(0, 0, 600, 600);
+  WHEEL.forEach((v, i) => {
+    const a0 = i * 2 * Math.PI / n - Math.PI / 2 - Math.PI / n, a1 = a0 + 2 * Math.PI / n;
+    x.beginPath(); x.moveTo(R, R); x.arc(R, R, R - 6, a0, a1); x.closePath();
+    x.fillStyle = i % 2 ? '#c81717' : '#121212'; x.fill();
+    x.save(); x.translate(R, R); x.rotate(a0 + Math.PI / n); x.fillStyle = '#fff';
+    x.font = '900 34px Unbounded, sans-serif'; x.textAlign = 'right'; x.textBaseline = 'middle';
+    x.fillText('−' + v, R - 40, 0); x.restore();
+  });
+  x.beginPath(); x.arc(R, R, 46, 0, 7); x.fillStyle = '#fff'; x.fill();
+}
+function doSpin(mode){
+  if(spinning) return; spinning = true;
+  const b = $('wbtn'); b.disabled = true; b.textContent = 'Кручу…';
+  api('spin', { mode: mode === 'welcome' ? 'welcome' : '' }).then(r => {
+    if(!(r && r.ok)){ spinning = false; b.disabled = false; b.textContent = 'Крутить'; return toast(r && r.error === 'used' ? 'Этот подарок уже получен' : 'Не получилось — напишите мне') }
+    const i = WHEEL.indexOf(r.value), c = $('wcv');
+    const deg = 360 * 6 + (360 - (i * 360 / WHEEL.length));
+    if(c) c.style.transform = `rotate(${deg}deg)`;
+    setTimeout(() => {
+      spinning = false;
+      if(ME){ ME.coupons = [{ id: r.id, v: r.value, min: 0, until: r.until, why: 'Колесо' }].concat(ME.coupons || []); if(mode === 'welcome') ME.welcome = false; else ME.spinUntil = 0; save('site_me', ME) }
+      closeModal(); toast('Ваша скидка −' + r.value + ' ₽ уже в кабинете'); route(false);
+    }, 4400);
+  });
+}
+
+/* ---------- купоны и сертификат в заказе ---------- */
+const MIN_MARGIN = 2000;
+const feeTotal = () => CFG.fee + Math.max(0, cart.length - 1) * CFG.feeNext;
+let couponId = null, CERT = null;
+function bestCoupon(sum){
+  const list = (ME && ME.coupons) || [];
+  let best = null;
+  list.forEach(c => { if((c.min || 0) > sum) return; if(!best || c.v > best.v) best = c });
+  return best;
+}
+function couponCut(sum){
+  if(CERT) return 0;                                   // к сертификату купоны не применяются: номинал фиксированный
+  const c = bestCoupon(sum); if(!c) return 0;
+  return Math.max(0, Math.min(c.v, feeTotal() - MIN_MARGIN));
+}
+function certInput(){ const m = $('f-cert-msg'); if(m){ m.hidden = true } CERT = null }
+function checkCert(){
+  const el = $('f-cert-num'); if(!el) return;
+  const num = el.value.trim().toUpperCase(); if(!num) return;
+  const msg = $('f-cert-msg'); msg.hidden = false; msg.textContent = 'Проверяю…';
+  if(!authed()){ msg.textContent = 'Войдите через Telegram — тогда смогу проверить сертификат'; return }
+  api('certcheck', { num }).then(r => {
+    if(r && r.ok){ CERT = { num, rest: r.rest }; msg.textContent = 'Сертификат найден, остаток ' + fmt(r.rest); cartRefresh() }
+    else { CERT = null; msg.textContent = r && r.error === 'unpaid' ? 'Сертификат ещё не оплачен' : r && r.error === 'used' ? 'Сертификат уже потрачен' : 'Такой сертификат не нашёлся'; }
+  });
+}
+
+/* ---------- подарочные сертификаты ---------- */
+const CERT_INS = [
+  { t:'Любой повод', list:['Это тебе','Выбирай сама','Выбирай сам','Порадуй себя','Просто так','С любовью','Спасибо!'] },
+  { t:'Кому', list:['Любимой подруге','Лучшей подруге','Любимой маме','Любимой сестрёнке','Любимой','Любимому','Для самой стильной','Для самого стильного','Коллеге'] },
+  { t:'Праздник', list:['С днём рождения!','С Новым годом!','С 8 Марта!','С 23 Февраля!'] },
+];
+let certDesign = 'red', certIns = 'Это тебе', certDenom = 15000;
+const CERT_DENOMS = [5000, 10000, 15000, 20000];
+const CW = 1280, CH = 800;
+const cDots = (x, cx, cy, r, color, step = 18, rad = 2.6) => { x.save(); x.fillStyle = color; for(let yy = cy - r; yy < cy + r; yy += step) for(let xx = cx - r; xx < cx + r; xx += step){ const d = Math.hypot(xx - cx, yy - cy); if(d < r){ x.globalAlpha = (1 - d / r) * .9; x.beginPath(); x.arc(xx, yy, rad, 0, 7); x.fill() } } x.restore() };
+const cGrad = (x, t, px, py, font, stops) => { x.font = font; const w = x.measureText(t).width, g = x.createLinearGradient(px, 0, px + w, 0); stops.forEach(([o, c]) => g.addColorStop(o, c)); x.fillStyle = g; x.fillText(t, px, py); return w };
+const cSpaced = (x, t, px, py, sp) => { let cx = px; for(const ch of t){ x.fillText(ch, cx, py); cx += x.measureText(ch).width + sp } return cx - px };
+function cBow(x, cx, cy, s, color, knot){ x.save(); x.translate(cx, cy); x.scale(s, s); x.fillStyle = color;
+  const loop = d => { x.beginPath(); x.moveTo(0, 0); x.bezierCurveTo(d*20, -60, d*95, -70, d*90, -18); x.bezierCurveTo(d*86, 18, d*30, 14, 0, 0); x.fill() }; loop(-1); loop(1);
+  x.beginPath(); x.moveTo(-6, 6); x.quadraticCurveTo(-30, 60, -52, 92); x.lineTo(-28, 90); x.quadraticCurveTo(-10, 56, 4, 10); x.fill();
+  x.beginPath(); x.moveTo(6, 6); x.quadraticCurveTo(30, 60, 52, 92); x.lineTo(28, 90); x.quadraticCurveTo(10, 56, -4, 10); x.fill();
+  x.fillStyle = knot || color; x.beginPath(); x.roundRect(-20, -18, 40, 36, 12); x.fill(); x.restore() }
+function cPill(x, t, px, py, fill, color, border){ x.save(); x.font = '800 22px Unbounded'; const w = cSpaced(x, t, -9999, -9999, 2); x.beginPath(); x.roundRect(px, py, w + 44, 48, 24);
+  if(fill){ x.fillStyle = fill; x.fill() } if(border){ x.strokeStyle = border; x.lineWidth = 3; x.stroke() } x.fillStyle = color; x.textBaseline = 'middle'; cSpaced(x, t, px + 22, py + 25, 2); x.restore(); return w + 44 }
+const cFit = (x, t, weight, size, family, maxW, min = 56) => { let fs = size; x.font = `${weight} ${fs}px ${family}`; while(x.measureText(t).width > maxW && fs > min){ fs -= 4; x.font = `${weight} ${fs}px ${family}` } return fs };
+function cBody(x, d, col, ox = 80, oy = 0, maxW = 900){
+  x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+  x.fillStyle = col.label; x.font = '800 24px Unbounded'; cSpaced(x, 'POIZON.EKB  ·  ПОДАРОЧНЫЙ СЕРТИФИКАТ', ox, oy + 110, 3);
+  cFit(x, d.ins, 700, 120, 'Caveat', maxW); x.fillStyle = col.ins; x.fillText(d.ins, ox - 4, oy + 250);
+  cFit(x, d.amount, 900, 124, 'Unbounded', maxW, 80); cGrad(x, d.amount, ox - 2, oy + 430, x.font, col.amt);
+  const who = [['Кому', d.to], ['От кого', d.from]].filter(p => p[1]);
+  who.forEach(([k, v], i) => { const px = ox + i * 300; x.font = '600 28px "Golos Text"'; x.fillStyle = col.mute; x.fillText(k, px, oy + 525);
+    cFit(x, v, 800, 38, '"Golos Text"', 280, 24); x.fillStyle = col.text; x.fillText(v, px, oy + 572) });
+  const pw = cPill(x, 'БЕССРОЧНО', ox, oy + 640, col.pillFill, col.pillText, col.pillBorder);
+  x.font = '800 26px "Golos Text"'; x.fillStyle = col.mute; x.fillText('№ ' + d.num, ox + pw + 20, oy + 674);
+}
+const heartPath = (x, hx, hy, s) => { x.save(); x.translate(hx, hy); x.scale(s, s); x.beginPath(); x.moveTo(0, 30); x.bezierCurveTo(-46, 2, -38, -40, 0, -18); x.bezierCurveTo(38, -40, 46, 2, 0, 30); x.closePath(); x.restore() };
+const CERT_DESIGNS = [
+  { id:'red', t:'Красный', draw(x, d){
+    const g = x.createLinearGradient(0, 0, CW, CH); g.addColorStop(0, '#ef4a3d'); g.addColorStop(.5, '#c81717'); g.addColorStop(1, '#8f0e14'); x.fillStyle = g; x.fillRect(0, 0, CW, CH);
+    cDots(x, 120, 820, 300, 'rgba(255,255,255,.3)');
+    x.fillStyle = 'rgba(255,255,255,.2)'; x.fillRect(1030, 0, 78, CH); x.fillRect(930, 470, 350, 78); x.fillStyle = 'rgba(255,255,255,.12)'; x.fillRect(1030, 0, 24, CH);
+    cBow(x, 1069, 509, 1.5, 'rgba(255,255,255,.95)', '#ffffff');
+    cBody(x, d, { label:'rgba(255,255,255,.85)', ins:'#ffffff', amt:[[0,'#ffffff'],[.6,'#ffe1dc'],[1,'#ffb4aa']], mute:'rgba(255,255,255,.75)', text:'#ffffff', pillBorder:'rgba(255,255,255,.8)', pillText:'#fff' }, 80, 0, 860) } },
+  { id:'party', t:'Праздник', draw(x, d){
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, CW, CH);
+    const cols = ['#c81717','#121212','#2f6fed','#16804a','#ff5d52']; let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for(let i = 0; i < 90; i++){ const px = 700 + rnd() * 600, py = rnd() * CH; if(px < 760 && py > 120) continue;
+      x.save(); x.translate(px, py); x.rotate(rnd() * 6.3); x.fillStyle = x.strokeStyle = cols[i % cols.length]; const k = i % 3;
+      if(k === 0) x.fillRect(-12, -5, 24, 10); else if(k === 1){ x.beginPath(); x.arc(0, 0, 7, 0, 7); x.fill() } else { x.lineWidth = 5; x.beginPath(); x.moveTo(-14, 0); x.quadraticCurveTo(0, -12, 14, 0); x.stroke() }
+      x.restore() }
+    cBody(x, d, { label:'#7a6f6f', ins:'#c81717', amt:[[0,'#121212'],[1,'#3d3535']], mute:'#7a6f6f', text:'#121212', pillFill:'#c81717', pillText:'#fff' }, 80, 0, 640) } },
+  { id:'night', t:'Ночь', draw(x, d){
+    x.fillStyle = '#121212'; x.fillRect(0, 0, CW, CH); cDots(x, 1200, 720, 380, 'rgba(255,75,62,.3)', 20, 2.6);
+    x.save(); x.translate(1040, 400); x.rotate(-1.2); x.fillStyle = '#c81717'; x.fillRect(-700, -46, 1400, 92);
+    x.fillStyle = '#fff'; x.font = '800 30px Unbounded'; x.textBaseline = 'middle'; for(let cx = -700; cx < 700; cx += 290){ cSpaced(x, 'POIZON.EKB', cx, 3, 4); x.beginPath(); x.arc(cx + 264, 3, 5, 0, 7); x.fill() } x.restore();
+    const star = (sx, sy, r) => { x.beginPath(); x.moveTo(sx, sy - r); x.quadraticCurveTo(sx + r*.2, sy - r*.2, sx + r, sy); x.quadraticCurveTo(sx + r*.2, sy + r*.2, sx, sy + r); x.quadraticCurveTo(sx - r*.2, sy + r*.2, sx - r, sy); x.quadraticCurveTo(sx - r*.2, sy - r*.2, sx, sy - r); x.fill() };
+    x.fillStyle = '#fff'; star(880, 150, 26); star(930, 610, 16); star(1210, 110, 14); x.fillStyle = '#ff5d52'; star(820, 420, 12);
+    cBody(x, d, { label:'rgba(255,255,255,.6)', ins:'#ff5d52', amt:[[0,'#ffffff'],[.7,'#ffd3cf'],[1,'#ff9a8f']], mute:'rgba(255,255,255,.6)', text:'#fff', pillFill:'#c81717', pillText:'#fff' }, 80, 0, 700) } },
+  { id:'hearts', t:'Сердечки', draw(x, d){
+    x.fillStyle = '#ffe7ea'; x.fillRect(0, 0, CW, CH); cDots(x, 80, 780, 300, 'rgba(200,23,23,.22)', 20, 2.6);
+    const heart = (hx, hy, s, fill, stroke) => { heartPath(x, hx, hy, s); if(fill){ x.fillStyle = fill; x.fill() } if(stroke){ x.lineWidth = 4; x.strokeStyle = stroke; x.stroke() } };
+    heart(1030, 400, 6.2, '#c81717'); heart(1030, 400, 7.6, null, '#c81717');
+    heart(1215, 110, 1.3, '#ff5d52'); heart(1100, 120, 1.0, null, '#c81717'); heart(1180, 720, 1.9, null, '#121212'); heart(880, 680, 1.1, '#121212');
+    x.fillStyle = '#fff'; x.font = '700 64px Caveat'; x.textAlign = 'center'; x.fillText('с любовью', 1030, 415); x.textAlign = 'left';
+    cBody(x, d, { label:'#9a6b70', ins:'#c81717', amt:[[0,'#b3121a'],[.55,'#e0342a'],[1,'#ff6f5e']], mute:'#9a6b70', text:'#121212', pillFill:'#c81717', pillText:'#fff' }, 80, 0, 640) } },
+  { id:'minimal', t:'Минимализм', draw(x, d){
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, CW, CH); x.strokeStyle = '#121212'; x.lineWidth = 2; x.strokeRect(36, 36, CW - 72, CH - 72);
+    x.fillStyle = '#c81717'; x.beginPath(); x.arc(1160, 120, 22, 0, 7); x.fill();
+    x.fillStyle = '#121212'; x.font = '800 22px Unbounded'; cSpaced(x, 'POIZON.EKB', 90, 118, 6);
+    x.fillStyle = '#7a6f6f'; x.font = '600 26px "Golos Text"'; x.fillText('подарочный сертификат', 90, 160);
+    cFit(x, d.ins, 700, 88, 'Caveat', 1000); x.fillStyle = '#c81717'; x.fillText(d.ins, 86, 300);
+    cFit(x, d.amount, 900, 190, 'Unbounded', 1100, 90); x.fillStyle = '#121212'; x.fillText(d.amount, 84, 520);
+    x.fillRect(90, 580, CW - 180, 2);
+    const cols = [['кому', d.to], ['от кого', d.from], ['номер', d.num]].filter(p => p[1]);
+    cols.forEach(([k, v], i) => { const px = 90 + [0, 340, 710][i]; x.font = '600 26px "Golos Text"'; x.fillStyle = '#7a6f6f'; x.fillText(k, px, 640); cFit(x, v, 800, 36, '"Golos Text"', 320, 22); x.fillStyle = '#121212'; x.fillText(v, px, 690) }) } },
+  { id:'china', t:'Китай', draw(x, d){
+    const g = x.createLinearGradient(0, 0, CW, CH); g.addColorStop(0, '#d62020'); g.addColorStop(1, '#9e1015'); x.fillStyle = g; x.fillRect(0, 0, CW, CH);
+    const gold = '#ffd9a8';
+    x.strokeStyle = 'rgba(255,217,168,.55)'; x.lineWidth = 3; x.strokeRect(28, 28, CW - 56, CH - 56); x.strokeRect(40, 40, CW - 80, CH - 80);
+    const fret = (fx, fy, sx, sy) => { x.save(); x.translate(fx, fy); x.scale(sx, sy); x.beginPath(); x.moveTo(0, 0); x.lineTo(60, 0); x.lineTo(60, 60); x.lineTo(20, 60); x.lineTo(20, 20); x.lineTo(40, 20); x.lineTo(40, 40); x.lineWidth = 6; x.strokeStyle = gold; x.stroke(); x.restore() };
+    fret(56, 56, 1, 1); fret(CW - 56, 56, -1, 1); fret(56, CH - 56, 1, -1); fret(CW - 56, CH - 56, -1, -1);
+    x.globalAlpha = .12; x.strokeStyle = gold; x.lineWidth = 3; [250, 200, 150].forEach(r => { x.beginPath(); x.arc(1060, 400, r, 0, 7); x.stroke() }); x.globalAlpha = 1;
+    x.save(); x.translate(1060, 390); x.rotate(-.08); x.fillStyle = gold; x.beginPath(); x.roundRect(-105, -105, 210, 210, 22); x.fill();
+    x.fillStyle = '#b3121a'; x.font = '900 165px "Noto Serif SC","Songti SC","SimSun",serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('礼', 0, 8); x.restore();
+    x.fillStyle = 'rgba(255,217,168,.85)'; x.font = '700 30px Caveat'; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText('«подарок»', 1060, 550); x.textAlign = 'left';
+    cBody(x, d, { label:'rgba(255,217,168,.9)', ins:'#fff3e0', amt:[[0,'#ffffff'],[1,'#ffd9a8']], mute:'rgba(255,243,224,.75)', text:'#fff', pillBorder:'rgba(255,217,168,.9)', pillText:'#fff3e0' }, 150, 0, 660) } },
+  { id:'stickers', t:'Стикеры', draw(x, d){
+    x.fillStyle = '#fff6f6'; x.fillRect(0, 0, CW, CH);
+    const sticker = fn => { x.save(); x.shadowColor = 'rgba(0,0,0,.15)'; x.shadowBlur = 10; x.shadowOffsetY = 4; x.lineJoin = 'round'; fn(); x.restore() };
+    const starPath = (sx, sy, r, n = 5) => { x.beginPath(); for(let i = 0; i < n * 2; i++){ const rr = i % 2 ? r * .45 : r, a = i * Math.PI / n - Math.PI / 2; x.lineTo(sx + rr * Math.cos(a), sy + rr * Math.sin(a)) } x.closePath() };
+    sticker(() => { starPath(1000, 170, 90); x.lineWidth = 16; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#c81717'; x.fill() });
+    sticker(() => { x.translate(1150, 420); x.rotate(.2); x.beginPath(); x.moveTo(-30, -110); x.lineTo(50, -110); x.lineTo(5, -10); x.lineTo(55, -10); x.lineTo(-40, 120); x.lineTo(-10, 20); x.lineTo(-55, 20); x.closePath(); x.lineWidth = 16; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#2f6fed'; x.fill() });
+    sticker(() => { x.translate(930, 560); x.rotate(-.15); heartPath(x, 0, 0, 3.2); x.lineWidth = 16; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#ff5d52'; x.fill() });
+    sticker(() => { x.translate(1110, 680); x.rotate(-.1); x.beginPath(); x.roundRect(-100, -44, 200, 88, 44); x.lineWidth = 12; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#121212'; x.fill(); x.fillStyle = '#fff'; x.font = '900 44px Unbounded'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('WOW', 0, 4) });
+    sticker(() => { starPath(820, 340, 40, 4); x.lineWidth = 10; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#16804a'; x.fill() });
+    cBody(x, d, { label:'#7a6f6f', ins:'#c81717', amt:[[0,'#121212'],[1,'#3d3535']], mute:'#7a6f6f', text:'#121212', pillFill:'#121212', pillText:'#fff' }, 80, 0, 680) } },
+  { id:'holo', t:'Голограмма', draw(x, d){
+    x.fillStyle = '#efe9fb'; x.fillRect(0, 0, CW, CH);
+    const blob = (bx, by, r, col) => { const g = x.createRadialGradient(bx, by, 0, bx, by, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, CW, CH) };
+    blob(1060, 160, 560, 'rgba(255,90,160,.95)'); blob(1200, 680, 520, 'rgba(80,150,255,.95)'); blob(820, 470, 400, 'rgba(120,240,200,.8)'); blob(280, 780, 460, 'rgba(255,200,110,.7)'); blob(100, 60, 420, 'rgba(170,130,255,.75)');
+    x.save(); x.fillStyle = 'rgba(255,255,255,.34)'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 3; x.beginPath(); x.roundRect(40, 40, CW - 80, CH - 80, 36); x.fill(); x.stroke(); x.restore();
+    cBody(x, d, { label:'#3f3656', ins:'#c81717', amt:[[0,'#121212'],[1,'#3f3656']], mute:'#4f4666', text:'#121212', pillFill:'#121212', pillText:'#fff' }, 90, 0, 900) } },
+  { id:'card', t:'Карта', draw(x, d){
+    x.fillStyle = '#ece6e6'; x.fillRect(0, 0, CW, CH);
+    x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 50; x.shadowOffsetY = 24;
+    const g = x.createLinearGradient(0, 0, CW, CH); g.addColorStop(0, '#2a2a2a'); g.addColorStop(.55, '#121212'); g.addColorStop(1, '#3a0d0f');
+    x.fillStyle = g; x.beginPath(); x.roundRect(70, 60, 1140, 680, 48); x.fill(); x.restore();
+    x.save(); x.beginPath(); x.roundRect(70, 60, 1140, 680, 48); x.clip(); x.strokeStyle = 'rgba(255,255,255,.05)'; x.lineWidth = 2; for(let r = 200; r < 1400; r += 40){ x.beginPath(); x.arc(1300, -100, r, 0, 7); x.stroke() } x.restore();
+    x.globalAlpha = .75; x.fillStyle = '#ff5d52'; x.beginPath(); x.arc(1060, 640, 58, 0, 7); x.fill(); x.globalAlpha = .9; x.fillStyle = '#c81717'; x.beginPath(); x.arc(1130, 640, 58, 0, 7); x.fill(); x.globalAlpha = 1;
+    const cg = x.createLinearGradient(130, 330, 250, 420); cg.addColorStop(0, '#e9d7a6'); cg.addColorStop(1, '#b8995a'); x.fillStyle = cg; x.beginPath(); x.roundRect(130, 300, 120, 92, 14); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = 2; [[130,331,250,331],[130,361,250,361],[172,300,172,392],[208,300,208,392]].forEach(([a,b,c,e]) => { x.beginPath(); x.moveTo(a,b); x.lineTo(c,e); x.stroke() });
+    x.strokeStyle = '#fff'; x.lineWidth = 5; x.lineCap = 'round'; [18, 34, 50].forEach(r => { x.beginPath(); x.arc(280, 346, r, -.7, .7); x.stroke() }); x.lineCap = 'butt';
+    x.textBaseline = 'alphabetic'; x.fillStyle = '#fff'; x.font = '800 30px Unbounded'; cSpaced(x, 'POIZON.EKB', 130, 150, 6);
+    x.fillStyle = 'rgba(255,255,255,.6)'; x.font = '600 26px "Golos Text"'; x.fillText('подарочная карта', 130, 192);
+    cFit(x, d.ins, 700, 72, 'Caveat', 560, 40); x.fillStyle = '#ff5d52'; x.textAlign = 'right'; x.fillText(d.ins, 1150, 180); x.textAlign = 'left';
+    cFit(x, d.amount, 900, 110, 'Unbounded', 760, 60); cGrad(x, d.amount, 380, 400, x.font, [[0,'#ffffff'],[1,'#ffd3cf']]);
+    x.fillStyle = '#fff'; x.font = '700 40px "Courier New",monospace'; x.fillText(d.num.replace(/-/g, '  '), 130, 520);
+    const cols = [['КОМУ', d.to], ['ОТ КОГО', d.from], ['СРОК', 'бессрочно']].filter(p => p[1]);
+    cols.forEach(([k, v], i) => { const px = [130, 400, 700][i]; x.fillStyle = 'rgba(255,255,255,.55)'; x.font = '600 22px "Golos Text"'; x.fillText(k, px, 600); cFit(x, v.toUpperCase(), 800, 32, '"Golos Text"', 250, 20); x.fillStyle = '#fff'; x.fillText(v.toUpperCase(), px, 642) }) } },
+  { id:'poster', t:'Постер', draw(x, d){
+    x.fillStyle = '#c81717'; x.fillRect(0, 0, CW, CH);
+    x.font = '900 120px Unbounded'; x.fillStyle = 'rgba(255,255,255,.12)';
+    for(let r = 0; r < 8; r++){ const yy = 110 + r * 116, sh = r % 2 ? -260 : 0; for(let k = -1; k < 4; k++) x.fillText('ВЫБИРАЙ', sh + k * 720, yy) }
+    x.save(); x.shadowColor = 'rgba(80,0,0,.35)'; x.shadowBlur = 30; x.shadowOffsetY = 12; x.fillStyle = '#fff'; x.beginPath(); x.roundRect(60, 60, 920, 680, 28); x.fill(); x.restore();
+    cBody(x, d, { label:'#7a6f6f', ins:'#c81717', amt:[[0,'#b3121a'],[.55,'#e0342a'],[1,'#ff6f5e']], mute:'#7a6f6f', text:'#121212', pillFill:'#121212', pillText:'#fff' }, 110, 0, 760) } },
+];
+let CERT_FONTS = null;
+const certFonts = () => CERT_FONTS || (CERT_FONTS = Promise.all(['900 100px Unbounded','800 30px Unbounded','700 80px Caveat','800 30px "Golos Text"','600 30px "Golos Text"'].map(f => document.fonts.load(f).catch(() => {}))));
+function certDraw(canvas, design, data, width){
+  const w = width || CW, h = Math.round(w * CH / CW);
+  if(canvas.width !== w) canvas.width = w; if(canvas.height !== h) canvas.height = h;
+  const x = canvas.getContext('2d'); x.setTransform(w / CW, 0, 0, w / CW, 0, 0); x.clearRect(0, 0, CW, CH);
+  (CERT_DESIGNS.find(z => z.id === design) || CERT_DESIGNS[0]).draw(x, data);
+  x.setTransform(1, 0, 0, 1, 0, 0);
+}
+const certVal = id => (($(id) || {}).value || '').trim();
+const certData = num => ({ amount: fmt(certDenom), ins: certIns || 'Это тебе', to: certVal('cert-to'), from: certVal('cert-from'), num: num || 'SR-•••••-•••' });
+function viewCert(params){
+  document.title = 'Подарочный сертификат — POIZON.EKB';
+  if(params && params.sum) certDenom = Math.max(500, parseInt(params.sum, 10) || 15000);
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Сертификат</span></div>
+    <div class="pagehead"><span class="kicker">Подарок без размера</span><h1 style="margin-top:12px">Подарочный сертификат</h1>
+      <p class="lead">Если не угадать с размером страшно — подарите сумму. Получатель сам выберет вещь в каталоге, а остаток сертификата сохранится до следующего заказа. Срок действия не ограничен.</p></div>
+    <div class="certpage">
+      <div>
+        <canvas class="cert-img" id="cert-canvas" width="1280" height="800" aria-label="Так будет выглядеть сертификат"></canvas>
+        <p class="mute" style="font-size:12.5px;margin:10px 0 22px">Так его увидит получатель. Номер появится после оформления.</p>
+        <div class="field"><span>Номинал</span><div class="denoms" id="denoms"></div></div>
+        <div class="field"><span>Или своя сумма</span><input id="cert-custom" type="number" inputmode="numeric" min="500" step="100" placeholder="от 500 ₽" oninput="certCustom()" value="${CERT_DENOMS.includes(certDenom) ? '' : certDenom}"></div>
+        <div class="field"><span>Дизайн</span><div class="cdz" id="cert-designs"></div></div>
+        <div class="field"><span>Надпись</span><div id="cert-ins"></div><input id="cert-ins-own" maxlength="22" placeholder="Своя надпись, до 22 знаков" oninput="certInsInput()" hidden style="margin-top:8px"></div>
+        <div class="field"><span>Кому</span><input id="cert-to" placeholder="Имя получателя, необязательно" maxlength="24" oninput="certPreview()"></div>
+        <div class="field"><span>От кого</span><input id="cert-from" maxlength="24" oninput="certPreview()" value="${esc((AUTH && AUTH.first_name) || '')}"></div>
+        <div class="field"><span>Поздравление</span><textarea id="cert-wish" placeholder="Придёт получателю вместе с сертификатом, необязательно" maxlength="300"></textarea></div>
+      </div>
+      <aside class="certside">
+        <div class="tcard"><div class="dots"></div><b>Как это работает</b>
+          <span style="display:block;margin-top:8px">1. Вы оформляете сертификат и переводите сумму.</span>
+          <span style="display:block;margin-top:6px">2. Я присылаю картинку с номером — её можно отправить кому угодно.</span>
+          <span style="display:block;margin-top:6px">3. При заказе получатель вводит номер, и сумма списывается.</span>
+          <button class="btn red block" style="margin-top:16px" id="cert-buy" onclick="buyCert()">Оформить сертификат</button>
+          <p class="mute" style="font-size:12px;margin:10px 0 0">Сертификат бессрочный, остаток не сгорает. Купоны и подарки к нему не применяются.</p></div>
+        ${authed() && ME && (ME.certs || []).length ? `<div class="tcard dark"><div class="dots"></div><b>Ваши сертификаты</b>
+          ${ME.certs.map(c => `<span style="display:block;margin-top:8px">${esc(c.num)} · ${esc(c.status || '')} · остаток ${fmt(c.rest || c.value || 0)}</span>`).join('')}</div>` : ''}
+      </aside>
+    </div></div>`;
+  $('denoms').innerHTML = CERT_DENOMS.map(d => `<button type="button" class="${d === certDenom ? 'on' : ''}" onclick="certPickDenom(${d})">${d / 1000}к</button>`).join('');
+  certInsRender(); certDesignsRender(); certPreview();
+}
+function certPickDenom(d){ certDenom = d; $('cert-custom').value = ''; document.querySelectorAll('#denoms button').forEach(b => b.classList.toggle('on', b.textContent === d / 1000 + 'к')); certPreview() }
+function certCustom(){ const v = parseInt($('cert-custom').value, 10) || 0; document.querySelectorAll('#denoms button').forEach(b => b.classList.remove('on')); if(v){ certDenom = v; certPreview() } }
+function certInsRender(){
+  $('cert-ins').innerHTML = CERT_INS.map(g => `<div class="cins-g"><span>${g.t}</span><div class="cins">${g.list.map(t => `<button type="button" class="${t === certIns && $('cert-ins-own').hidden ? 'on' : ''}" onclick="certPickIns(this)">${esc(t)}</button>`).join('')}</div></div>`).join('')
+    + `<div class="cins-g"><div class="cins"><button type="button" class="own ${$('cert-ins-own').hidden ? '' : 'on'}" onclick="certOwnIns()">Своя надпись</button></div></div>`;
+}
+function certPickIns(b){ certIns = b.textContent; $('cert-ins-own').hidden = true; certInsRender(); certPreview() }
+function certOwnIns(){ const i = $('cert-ins-own'); i.hidden = false; certInsRender(); i.focus(); if(i.value.trim()){ certIns = i.value.trim(); certPreview() } }
+function certInsInput(){ certIns = $('cert-ins-own').value.trim() || 'Это тебе'; certPreview() }
+function certDesignsRender(){
+  $('cert-designs').innerHTML = CERT_DESIGNS.map(z => `<button type="button" class="${z.id === certDesign ? 'on' : ''}" data-id="${z.id}" onclick="certPickDesign('${z.id}')"><canvas aria-hidden="true"></canvas><span>${z.t}</span></button>`).join('');
+  certFonts().then(() => document.querySelectorAll('#cert-designs button').forEach(b => certDraw(b.querySelector('canvas'), b.dataset.id, certData(), 264)));
+}
+function certPickDesign(id){ certDesign = id; document.querySelectorAll('#cert-designs button').forEach(b => b.classList.toggle('on', b.dataset.id === id)); certPreview() }
+let certPrevTimer = null;
+function certPreview(){
+  clearTimeout(certPrevTimer);
+  certPrevTimer = setTimeout(() => certFonts().then(() => {
+    const c = $('cert-canvas'); if(!c) return;
+    const d = certData(); certDraw(c, certDesign, d, 1280);
+    document.querySelectorAll('#cert-designs button').forEach(b => certDraw(b.querySelector('canvas'), b.dataset.id, d, 264));
+  }), 120);
+}
+async function buyCert(){
+  if($('cert-custom').value) certDenom = parseInt($('cert-custom').value, 10) || 0;
+  if(certDenom < 500) return toast('Сумма сертификата от 500 ₽');
+  if(certDenom > 500000) return toast('Напишите мне, если нужен сертификат больше 500 000 ₽');
+  const to = certVal('cert-to'), from = certVal('cert-from'), wish = certVal('cert-wish');
+  const num = 'SR-' + Date.now().toString().slice(-5) + '-' + Array.from({ length: 3 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+  const btn = $('cert-buy'); btn.disabled = true; btn.textContent = 'Оформляю…';
+  await certFonts();
+  const c = document.createElement('canvas'); certDraw(c, certDesign, certData(num), 1280);
+  const img = c.toDataURL('image/jpeg', .86);
+  const r = authed() ? await api('cert', { cert: { num, value: certDenom, to, from, wish, design: certDesign, ins: certIns }, img, write: true }) : null;
+  btn.disabled = false; btn.textContent = 'Оформить сертификат';
+  if(r && r.ok) return certDone(num, certDenom, img);
+  const msg = ['Здравствуйте! Хочу электронный подарочный сертификат POIZON.EKB, заявка ' + num, '',
+    `Сумма: ${fmt(certDenom)}`, `Дизайн: ${(CERT_DESIGNS.find(z => z.id === certDesign) || {}).t}`, `Надпись: ${certIns}`,
+    to ? `Кому: ${to}` : null, from ? `От кого: ${from}` : null, wish ? `Поздравление: ${wish}` : null,
+    '', 'Как оплатить?'].filter(v => v !== null).join('\n');
+  try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(() => {}) }catch(e){}
+  window.open(`${BOT}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+  toast(authed() ? 'Сервер не ответил — открыла Telegram с заявкой' : 'Заявка скопирована и открыта в Telegram');
+}
+function certDone(num, sum, img){
+  document.title = 'Заявка на сертификат — POIZON.EKB';
+  $('view').innerHTML = `<div class="wrap"><div class="pagehead" style="padding-top:40px">
+    <span class="hand">заявка принята</span><h1 style="margin-top:10px">${esc(num)} · ${fmt(sum)}</h1>
+    <p class="lead">Отправила вам в Telegram способ оплаты. Как только перевод придёт, сертификат заработает и его можно дарить — картинка с номером уже у вас в чате.</p>
+    <div class="cta"><a class="btn red" href="${BOT}" target="_blank" rel="noopener">Открыть чат с ботом</a><a class="btn ghost" href="#/cert">Оформить ещё один</a></div></div>
+    ${img ? `<img class="cert-img" style="max-width:720px;margin:0 auto 60px" src="${img}" alt="Подарочный сертификат ${esc(num)}">` : ''}</div>`;
+}
+/* «Подарить» из карточки: сертификат на сумму вещи, размер получатель выберет сам */
+function giftItem(id){
+  const p = CAT.find(x => x.id === id); if(!p) return;
+  const sum = Math.max(500, Math.ceil((minPrice(p) || 5000) / 500) * 500);
+  go('/cert?sum=' + sum);
+  setTimeout(() => { const w = $('cert-wish'); if(w && !w.value) w.value = `На ${p.brand} ${p.name}`.slice(0, 120); toast('Сертификат на сумму вещи — размер выберут сами') }, 300);
+}
+function certToggle(el){ $('f-cert-f').hidden = !el.checked; if(!el.checked && CERT){ CERT = null; cartRefresh() } }
+/* поля заказа не должны обнуляться, когда пересчитывается сумма */
+function cartRefresh(){
+  const ids = ['f-name','f-phone','f-town','f-addr','f-note','f-cert-num'], v = {};
+  ids.forEach(i => { const e = $(i); if(e) v[i] = e.value });
+  const agree = !!($('f-agree') && $('f-agree').checked);
+  saveContact(); route(false);
+  ids.forEach(i => { const e = $(i); if(e && v[i] != null) e.value = v[i] });
+  if(agree && $('f-agree')) $('f-agree').checked = true;
+}
+
+
+/* ---------- путь посылки: этапы, трек и фото заказа ---------- */
+const PICS = {};
+function openOrderTrack(num){
+  const o = (ORDERS || []).find(x => x.num === num); if(!o) return;
+  const st = String(o.st || 'новый'), i = ST_ORDER.indexOf(st);
+  openModal(`<h3 style="margin:0 0 4px">Путь посылки</h3>
+    <div class="mute" style="font-size:13.5px">${esc(o.num)} · ${fmt(o.pay || 0)}${o.track ? ' · трек ' + esc(o.track) : ''}</div>
+    <div class="steps-line" style="margin-top:16px">${ST_ORDER.map((s, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('')}</div>
+    <div style="display:grid;gap:8px;margin-top:14px">${ST_ORDER.map((s, k) => `<div style="display:flex;gap:10px;align-items:center;font-size:14px;color:${k <= i ? 'var(--ink)' : 'var(--mute)'}">
+      <span style="width:9px;height:9px;border-radius:50%;background:${k <= i ? 'var(--red)' : 'var(--line)'};flex:0 0 auto"></span>${esc(ST_LABEL[s])}</div>`).join('')}</div>
+    ${o.stage ? `<p class="mute" style="font-size:13.5px;margin:14px 0 0">${esc(o.stage)}</p>` : ''}
+    <div id="trk-box"></div>
+    ${(o.pics || []).length ? `<h4 style="margin:18px 0 8px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)">Фото вашей посылки</h4>
+      <div class="vs-grid" id="ord-pics">${o.pics.map((s, k) => `<div class="ph"><img id="pic-${k}" alt="Фото посылки" style="width:100%;height:100%;object-fit:cover"></div>`).join('')}</div>` : ''}
+    <p class="mute" style="font-size:12.5px;margin-top:14px">Статусы и трек приходят в Telegram сами — спрашивать не нужно.</p>`);
+  if(o.track) loadTrackLine(o.track);
+  if((o.pics || []).length) loadOrderPics(o);
+}
+function loadTrackLine(track){
+  api('track', { track }).then(r => {
+    const box = $('trk-box'); if(!box || !(r && r.ok) || !(r.line || []).length) return;
+    box.innerHTML = `<h4 style="margin:18px 0 8px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)">Где посылка сейчас</h4>
+      <div style="display:grid;gap:8px">${r.line.map(s => `<div style="display:flex;gap:10px;align-items:center;font-size:14px;color:${s.active ? 'var(--ink)' : 'var(--mute)'}">
+        <span style="width:9px;height:9px;border-radius:50%;background:${s.active ? 'var(--red)' : 'var(--line)'};flex:0 0 auto"></span>${esc(s.name)}</div>`).join('')}</div>`;
+  });
+}
+async function loadOrderPics(o){
+  for(let i = 0; i < (o.pics || []).length; i++){
+    const k = o.num + '#' + i;
+    if(!PICS[k]){ const r = await api('photo', { num: o.num, i }); if(r && r.ok) PICS[k] = r.src }
+    const im = $('pic-' + i); if(im && PICS[k]) im.src = PICS[k];
+  }
+}
+
+/* ---------- сертификат по ссылке: её присылают в подарок ---------- */
+function viewCertLink(num){
+  document.title = 'Подарочный сертификат — POIZON.EKB';
+  const n = decodeURIComponent(num || '').toUpperCase();
+  $('view').innerHTML = `<div class="wrap"><div class="pagehead" style="padding-top:40px">
+    <span class="hand">вам подарок</span><h1 style="margin-top:10px">Сертификат ${esc(n)}</h1>
+    <p class="lead" id="cl-txt">${authed() ? 'Смотрю сертификат…' : 'Войдите через Telegram — покажу номинал и остаток, и сертификат закрепится за вами.'}</p>
+    <div class="cta" id="cl-cta">${authed() ? '' : `<button class="btn red" onclick="loginModal()">Войти через Telegram</button>`}</div></div></div>`;
+  if(!authed()) return;
+  api('certinfo', { num: n }).then(r => {
+    const t = $('cl-txt'), cta = $('cl-cta'); if(!t) return;
+    if(!(r && r.ok)){ t.textContent = r && r.error === 'nf' ? 'Такой сертификат не нашёлся. Проверьте номер или напишите мне.' : 'Не получилось проверить сертификат — напишите мне в Telegram.';
+      cta.innerHTML = `<a class="btn ghost" href="${KRIS}" target="_blank" rel="noopener">Написать Крис</a>`; return }
+    const c = r.cert;
+    t.innerHTML = `${c.ins ? '«' + esc(c.ins) + '» · ' : ''}номинал ${fmt(c.value)}, остаток <b>${fmt(c.rest)}</b>.
+      ${c.from ? 'От кого: ' + esc(c.from) + '. ' : ''}${c.wish ? '<br>' + esc(c.wish) : ''}
+      <br>Выбирайте вещь в каталоге и при оформлении отметьте «Оплачу сертификатом» — номер уже закреплён за вами.`;
+    cta.innerHTML = `<a class="btn red" href="#/catalog">Выбрать вещь</a><a class="btn ghost" href="#/cert">Подарить такой же</a>`;
+  });
+}
+
+/* ---------- расчёт по ссылке: сразу с готовым сообщением ---------- */
+function calcSend(){
+  const y = +($('c-yen') || {}).value || 0, link = (($('c-link') || {}).value || '').trim(), size = (($('c-size') || {}).value || '').trim();
+  const kind = (document.querySelector('.calc .chip.on') || {}).textContent || '';
+  const msg = ['Здравствуйте! Хочу посчитать вещь с Poizon:',
+    link ? 'Ссылка: ' + link : null, kind ? 'Что это: ' + kind : null, size ? 'Размер: ' + size : null,
+    y ? 'Цена на Poizon: ' + y + ' ¥ (по вашему расчёту ' + fmt(priceFrom(y, calcKg)) + ')' : null,
+    '', 'Подтвердите, пожалуйста, наличие и цену'].filter(v => v !== null).join('\n');
+  try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(() => {}) }catch(e){}
+  window.open(`${BOT}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+}
+
+badge(); renderAuth();
 route();
+// избранное и заказы подтягиваются, если человек уже входил
+if(authed()) api('open').then(r => { if(r && r.ok){ ME = r; save('site_me', r); if(Array.isArray(r.favs) && r.favs.length){ FAVS = r.favs; save('site_favs', FAVS) } renderAuth(); refresh() } });
 fetch('prices.json?' + Date.now()).then(r => r.json()).then(d => { PRICES = d;
   if(d.rate && d.rate.small > 5) CFG.rate = { small: d.rate.small, big: d.rate.big || d.rate.small };
   refresh() }).catch(() => {});
 fetch('retail.json?' + Date.now()).then(r => r.json()).then(d => { RETAIL = d.items || {}; refresh() }).catch(() => {});
+
 </script>
 </body>
 </html>

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-22g';
+const BUILD = '2026-09-23a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -139,6 +139,9 @@ a{color:inherit;text-decoration:none}
 .vid b{position:absolute;left:8px;right:8px;bottom:8px;color:#fff;font-size:12px;font-weight:800;line-height:1.2;text-align:left;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .vid .play{position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(255,255,255,.9)}
 .vid .play::after{content:"";position:absolute;left:16px;top:12px;border:8px solid transparent;border-left:13px solid var(--red)}
+.payqr{display:grid;justify-items:center;gap:8px;margin-top:14px;padding:14px;border-radius:20px;background:var(--bg)}
+.payqr img{width:min(220px,62%);border-radius:16px;background:#fff;padding:10px}
+.payqr span{font-size:12px;font-weight:700;color:var(--mute);text-align:center;line-height:1.35;max-width:260px}
 .vid-full{display:block;width:100%;max-height:70vh;margin-top:10px;border-radius:14px;background:#000}
 .home-vid{display:block;width:100%;margin-top:12px;border-radius:var(--r);background:var(--bg)}
 .rv-feed{display:grid;gap:14px}
@@ -1084,7 +1087,7 @@ const CFG = {
   channel: 'buypoizonekb',
   appLink: 'https://t.me/poizonekbb_bot',   // ссылки друзьям ведут в бота (?start=…): он встречает, начисляет подарок и открывает магазин
   hours: 'с 10 до 22',                       // когда отвечаю; то же число в bot/Code.gs, CFG.hours
-  pay: { bank: 'Сбербанк', link: 'https://www.sberbank.com/sms/pbpn?requisiteNumber=79226662904' },   // номер не показываем; link — ссылка на перевод по СБП (то же в bot/Code.gs). Пусто — реквизиты Крис пишет в личке
+  pay: { bank: 'Т-Банк', link: 'https://www.tbank.ru/rm/r_RGLXmKfWCa.nrMkJlZsBB/zP0S581765', qr: 'img/pay-qr.png' },   // номер не показываем; link — ссылка на перевод по СБП (то же в bot/Code.gs). Пусто — реквизиты Крис пишет в личке
   rateChannel: 'amblixObmen',
   rateFallback: { small: 13.75, big: 13.7, date: '13 сентября' },   // запасной курс; свежий приходит из канала, из prices.json (GitHub, 3 раза в день) или из таблицы
   /* Доставка = max(minParcelKg, объёмный вес посылки) × kgRate + shipRisk × цена товаров (защита от рисков Ракеты).
@@ -1167,7 +1170,7 @@ function writeKris(from){
 }
 /* msg: готовый текст. Если браузер не дал открыть Telegram, показываем его с кнопками «Открыть» и «Скопировать» */
 /* оплата без номера телефона: ссылка СБП из банка или реквизиты в личке */
-const payHow = () => CFG.pay.link ? 'По СБП: кнопка «Оплатить» откроет перевод в вашем банке. Потом пришлите скриншот — отмечу оплату' : 'Реквизиты пришлю в личные сообщения. После перевода пришлите скриншот — отмечу оплату';
+const payHow = () => CFG.pay.link ? 'По QR или кнопке «Оплатить» — перевод в вашем банке, без комиссии. Потом пришлите скриншот, отмечу оплату' : 'Реквизиты пришлю в личные сообщения. После перевода пришлите скриншот — отмечу оплату';
 function payLink(){ if(inTg && tg.openLink) tg.openLink(CFG.pay.link); else window.open(CFG.pay.link, '_blank') }
 function askPay(num, sum){ const t = `Привет! Хочу оплатить заказ ${num}${sum ? ' на ' + fmt(sum) : ''}, пришлите реквизиты`; openTg(`https://t.me/${CFG.admin}`, t) }
 function openTg(u, msg){
@@ -1582,6 +1585,26 @@ const VIDS = [['v1','Как я начала'],['v2','adidas Samba'],['v3','New B
 function aboutToggle(b){ const open = $('about').classList.toggle('open'); b.textContent = open ? 'Свернуть' : 'Читать полностью'; b.setAttribute('aria-expanded', open) }
 const vidTile = ([k, t]) => `<button class="vid" type="button" onclick="openVid('${k}','${t}')"><img src="vid/${k}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><b>${t}</b></button>`;
 function renderVids(){}   // видео идут в одной ленте с отзывами (renderRevs)
+/* фото в карточке листаются сами, как видео: останавливаются, как только человек листает сам */
+var galTimer = 0;
+function galAuto(){
+  clearInterval(galTimer); const g = document.querySelector('#sheet .gal'); if(!g || g.children.length < 2) return;
+  const stop = () => { clearInterval(galTimer); galTimer = 0; g.removeEventListener('pointerdown', stop); g.removeEventListener('wheel', stop) };
+  g.addEventListener('pointerdown', stop, { passive:true }); g.addEventListener('wheel', stop, { passive:true });
+  galTimer = setInterval(() => {
+    if(!document.body.contains(g)) return stop();
+    const w = g.children[0].offsetWidth + 8, last = g.scrollWidth - g.clientWidth - 4;
+    g.scrollTo({ left: g.scrollLeft >= last ? 0 : g.scrollLeft + w, behavior:'smooth' });
+  }, 3000);
+}
+/* распаковки в карточке: сначала видео про этот бренд, иначе — как приходит любой заказ */
+function vidsFor(p){
+  const b = String(p.brand||'').toLowerCase();
+  const mine = VIDS.filter(([, t]) => b && t.toLowerCase().split(/\s+/).some(w => w.length > 3 && b.includes(w)));
+  const list = mine.slice(0, 2);
+  if(!list.length) return '';
+  return `<div class="cap" style="margin-top:18px"><span>Распаковка этого бренда</span></div><div class="vrow">${list.map(vidTile).join('')}</div>`;
+}
 function openVid(k, t){ openSheet(`<span class="hand">${esc(t)}</span><video class="vid-full" src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`) }
 /* главная: «Дешевле, чем в России» — вещи с проверенной ценой в российском магазине, самая большая выгода первой */
 function renderRusRail(){
@@ -1947,7 +1970,7 @@ function openProduct(id){
     <div class="price num" id="p-price" style="font-size:26px">${mp ? (p.stock || p.post ? (p.stock ? '' : '<small>от </small>')+fmt(mp) : (() => { const mx = Math.max(...S.filter(x=>x.ok).map(x=>x.price)); return mx > mp ? fmt(mp)+' – '+fmt(mx) : fmt(mp) })()) : '<small>цена по запросу</small>'}</div>
     ${rusLine(p, mp)}${p.stock ? '' : `<div class="small buyl">Уедет в закупку ${buyDate()} · приедет примерно ${arrivalText()}</div>`}
     ${variantsHTML(p)}${trustLine(p, mp)}${sizesHTML}${finder}${chart}
-    ${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ''}
+    ${p.desc ? `<p class="pdesc">${esc(p.desc)}</p>` : ''}${vidsFor(p)}
     <div class="attrs"><div class="h2" style="font-size:13px;margin-bottom:4px">Характеристики</div>
       ${(p.attrs||[]).map(a=>`<div class="ar"><span>${esc(a[0])}</span><b>${esc(a[1])}</b></div>`).join('')}
       ${!(p.attrs||[]).length && p.specs && p.specs.length ? `<div class="ar"><span>Особенности</span><b>${esc(p.specs.join(', '))}</b></div>` : ''}
@@ -1957,6 +1980,7 @@ function openProduct(id){
     <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost sm" onclick="askProduct('${p.id}')">Задать вопрос</button><button class="btn ghost sm" onclick="shareProduct('${p.id}')">Поделиться</button>${mp ? `<button class="btn ghost sm" onclick="giftItem('${p.id}')">Подарить</button>` : ''}</div>
     ${similarHTML(p)}
     <div class="sticky"><button class="btn block" onclick="addToCart()">${mp||!S.length?'В заказ':'Спросить Кристину'}</button></div>`);
+  galAuto();   // фото листаются сами, пока человек не начал листать сам
   // размер из прошлого заказа этой категории выбирается сам и подписан «ваш»
   // размер из фильтра каталога важнее запомненного: выбираем самый дешёвый из отмеченных
   if(FLT.sizes.length && !p.stock && !p.post){
@@ -2459,7 +2483,7 @@ setPvz('cdek');
 setCity('ekb');
 if(user) $('f-name').value = [user.first_name,user.last_name].filter(Boolean).join(' ');
 $('hours-note').textContent = `На связи ${CFG.hours} по Екатеринбургу`;
-$('faq-pay').textContent = `Переводом по СБП из любого банка. ${CFG.pay.link ? 'Кнопка оплаты появится сразу после оформления заказа.' : 'Реквизиты пришлю в личные сообщения после оформления заказа.'} После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
+$('faq-pay').textContent = `Переводом по QR или ссылке ${CFG.pay.bank}: открывается ваш банк, комиссии нет. ${CFG.pay.link ? 'Кнопка оплаты появится сразу после оформления заказа.' : 'Реквизиты пришлю в личные сообщения после оформления заказа.'} После перевода пришлите скриншот: отмечу оплату, бот пришлёт подтверждение.`;   // номер здесь не показываем, только после заказа
 /* повторный заказ без повторного ввода: имя, телефон, город и адрес помнит телефон клиента */
 const CONTACT = load('contact', null);
 if(CONTACT){ if(CONTACT.name) $('f-name').value = CONTACT.name; if(CONTACT.phone) $('f-phone').value = CONTACT.phone; if(CONTACT.pvz) setPvz(CONTACT.pvz); if(CONTACT.town) $('f-town').value = CONTACT.town; if(CONTACT.near) $('f-pvz-near').checked = true; if(CONTACT.city && CITY[CONTACT.city]) setCity(CONTACT.city); if(CONTACT.addr) $('f-addr').value = CONTACT.addr; if(CONTACT.pvzId && CONTACT.addr) PVZ_ID = CONTACT.pvzId }
@@ -2822,8 +2846,9 @@ function openPay(num, sum){
   const shot = `Оплатил(а) заказ ${num}${sum ? ` на ${fmt(sum)}` : ''}, скриншот прикладываю`;
   openSheet(`<span class="hand">оплата заказа</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${sum ? ' · '+fmt(sum) : ''}</div>
+    ${CFG.pay.qr ? `<div class="payqr"><img src="${CFG.pay.qr}" alt="QR-код для оплаты в ${esc(CFG.pay.bank)}"><span>Наведите камеру телефона — откроется перевод в ${esc(CFG.pay.bank)}</span></div>` : ''}
     <div class="howmore"><div class="slip"><dl>
-      <div class="row"><dt>Оплата</dt><dd>${CFG.pay.link ? `<button class="btn sm" onclick="payLink()">Оплатить по СБП</button>` : `Реквизиты пришлю в личку — <button class="btn sm ghost" onclick="askPay('${esc(num)}',${sum || 0})">получить</button>`}</dd></div>
+      <div class="row"><dt>Оплата</dt><dd>${CFG.pay.link ? `<button class="btn sm" onclick="payLink()">Оплатить</button>` : `Реквизиты пришлю в личку — <button class="btn sm ghost" onclick="askPay('${esc(num)}',${sum || 0})">получить</button>`}</dd></div>
       ${sum ? `<div class="row"><dt>Сумма</dt><dd class="num">${fmt(sum)}</dd></div>` : ''}
       <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, бот сразу пришлёт подтверждение, а вещь уйдёт в закупку</dd></div>
     </dl></div></div>
@@ -3282,7 +3307,7 @@ function certDone(num, sum, img){
       <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, и сертификат сразу придёт вам в Telegram с кнопкой «Подарить»</dd></div>
     </dl></div></div>
     <div class="list" style="margin-top:16px">
-      ${CFG.pay.link ? `<button class="btn block" onclick="payLink()">Оплатить по СБП</button>` : `<button class="btn block" onclick="askPay('${esc(num)}',${sum || 0})">Получить реквизиты</button>`}
+      ${CFG.pay.link ? `<button class="btn block" onclick="payLink()">Оплатить ${fmt(sum)}</button>` : `<button class="btn block" onclick="askPay('${esc(num)}',${sum || 0})">Получить реквизиты</button>`}
       <button class="btn ghost block" onclick="certShot('${esc(num)}',${sum})">Отправить скриншот оплаты</button></div>`);
 }
 function certShot(num, sum){ const t = `Оплатил(а) сертификат ${num} на ${fmt(sum)}, скриншот прикладываю`; openTg(`https://t.me/${CFG.admin}?text=${encodeURIComponent(t)}`, t) }

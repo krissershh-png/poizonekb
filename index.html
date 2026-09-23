@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-23c';
+const BUILD = '2026-09-23d';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -2846,13 +2846,16 @@ function openPay(num, sum){
   const shot = `Оплатил(а) заказ ${num}${sum ? ` на ${fmt(sum)}` : ''}, скриншот прикладываю`;
   openSheet(`<span class="hand">оплата заказа</span>
     <div class="h2" style="margin-top:4px">${esc(num)}${sum ? ' · '+fmt(sum) : ''}</div>
-    ${CFG.pay.qr ? `<div class="payqr"><img src="${CFG.pay.qr}" alt="QR-код для оплаты в ${esc(CFG.pay.bank)}"><span>Наведите камеру телефона — откроется перевод в ${esc(CFG.pay.bank)}</span></div>` : ''}
+    ${CFG.pay.qr ? `<div class="payqr"><img src="${CFG.pay.qr}" alt="QR-код для оплаты в ${esc(CFG.pay.bank)}"><span>Задержите палец на коде и сохраните его в фото. Дальше в приложении вашего банка: «Оплата по QR» → выбрать из галереи. Так перевод пройдёт даже без VPN</span></div>` : ''}
     <div class="howmore"><div class="slip"><dl>
       <div class="row"><dt>Оплата</dt><dd>${CFG.pay.link ? `<button class="btn sm" onclick="payLink()">Оплатить</button>` : `Реквизиты пришлю в личку — <button class="btn sm ghost" onclick="askPay('${esc(num)}',${sum || 0})">получить</button>`}</dd></div>
       ${sum ? `<div class="row"><dt>Сумма</dt><dd class="num">${fmt(sum)}</dd></div>` : ''}
       <div class="row"><dt>Дальше</dt><dd>Пришлите скриншот перевода — отмечу оплату, бот сразу пришлёт подтверждение, а вещь уйдёт в закупку</dd></div>
     </dl></div></div>
-    <div class="list" style="margin-top:16px"><button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(shot)}')">Отправить скриншот</button></div>`);
+    <div class="list" style="margin-top:16px">
+      ${CFG.pay.link ? `<button class="btn ghost block" onclick="copyText('${CFG.pay.link}','Ссылка скопирована. Откройте её в обычном браузере — без VPN')">Скопировать ссылку на оплату</button>` : ''}
+      <button class="btn ghost block" onclick="askPay('${esc(num)}',${sum || 0})">Оплатить по номеру телефона</button>
+      <button class="btn block" onclick="closeSheet();openTg('https://t.me/${CFG.admin}?text=${encodeURIComponent(shot)}')">Отправить скриншот</button></div>`);
 }
 /* отменённый заказ: вернуть вещи в корзину выбора (открываем карточку первой вещи) или убрать строку насовсем */
 function orderAgain(num){

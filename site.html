@@ -19,7 +19,7 @@
   --ink:#121212; --ink-2:#3d3535; --mute:#7a6f6f; --hair:#efe6e6; --hair-2:#f5eeee;
   --bg:#f8f5f5; --paper:#fff; --aqua:#f3f1f1; --aqua-2:#f8f7f7; --red:#c81717; --red-2:#a81212; --glow:rgba(200,23,23,.12); --green:#2fb36b;
   --dela:'Unbounded',system-ui,sans-serif; --body:'Golos Text',system-ui,sans-serif; --hand:'Caveat',cursive;
-  --wrap:1320px; --head:76px; --ease:cubic-bezier(.22,.7,.2,1);
+  --wrap:1320px; --head:76px; --top:38px; --ease:cubic-bezier(.22,.7,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -61,7 +61,7 @@ h3{font-size:clamp(16px,1.3vw,19px);font-weight:800}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 
-header{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid transparent;transition:border-color .25s}
+header{position:sticky;top:var(--top);z-index:60;background:#fff;border-bottom:1px solid transparent;transition:border-color .25s}
 header.stuck{border-color:var(--hair)}
 .hrow{display:flex;align-items:center;gap:20px;height:var(--head)}
 .logo{display:flex;align-items:center;gap:11px;font-family:var(--dela);font-weight:800;font-size:17px;letter-spacing:-.03em;white-space:nowrap}
@@ -72,12 +72,12 @@ nav.main a{position:relative;padding:4px 0;white-space:nowrap}
 nav.main a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--red);transition:right .3s var(--ease)}
 nav.main a:hover::after,nav.main a.on::after{right:0}
 nav.main a.on{color:var(--ink)}
-.util{background:var(--ink);color:#fff}
+.util{position:sticky;top:0;z-index:61;background:var(--ink);color:#fff}
 .util .wrap{display:flex;align-items:center;flex-wrap:wrap;gap:6px 20px;min-height:38px;padding-top:8px;padding-bottom:8px}
 .util a{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.72);white-space:nowrap;transition:color .18s}
 .util a:hover{color:#fff}
 .usep{display:none}
-@media (max-width:920px){ .util{display:none} }
+@media (max-width:920px){ .util{display:none} :root{--top:0px} }
 .ndrop{position:relative}
 .nmore{display:inline-flex;align-items:center;gap:6px;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer;background:none;border:0}
 .nmore svg{transition:transform .25s var(--ease)}
@@ -100,7 +100,7 @@ nav.main a.on{color:var(--ink)}
 .burger{display:none;flex:0 0 auto;width:42px;height:42px;border-radius:999px;background:var(--ink);color:#fff;place-items:center;transition:background .18s,transform .12s}
 .burger:hover{background:#000}
 .burger:active{transform:scale(.94)}
-.mob{display:none;position:fixed;inset:var(--head) 0 auto;z-index:55;background:#fff;border-bottom:1px solid var(--hair);padding:14px 0 20px;animation:fade .25s var(--ease)}
+.mob{display:none;position:fixed;inset:calc(var(--head) + var(--top)) 0 auto;z-index:55;background:#fff;border-bottom:1px solid var(--hair);padding:14px 0 20px;animation:fade .25s var(--ease)}
 .mob.open{display:block}
 .mob a{display:block;padding:12px 18px;font-size:16px;font-weight:600}
 
@@ -217,7 +217,7 @@ section{padding:clamp(44px,5vw,86px) 0}
 .saleitem .gain{font-family:var(--dela);font-weight:800;font-size:19px;color:var(--red);white-space:nowrap}
 
 .catalog{display:grid;grid-template-columns:276px minmax(0,1fr);gap:clamp(20px,2.4vw,40px);align-items:start;padding-bottom:70px}
-.side{position:sticky;top:calc(var(--head) + 20px);display:grid;gap:14px;max-height:calc(100vh - var(--head) - 40px);overflow:auto;padding-right:4px}
+.side{position:sticky;top:calc(var(--head) + var(--top) + 20px);display:grid;gap:14px;max-height:calc(100vh - var(--head) - 40px);overflow:auto;padding-right:4px}
 .fbox{border-radius:20px;background:var(--bg);padding:20px}
 .fbox h4{font-family:var(--dela);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin-bottom:14px}
 .fbox label{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;font-weight:500;cursor:pointer;transition:color .2s}
@@ -245,7 +245,7 @@ section{padding:clamp(44px,5vw,86px) 0}
 .empty{padding:48px;border-radius:22px;background:var(--bg);text-align:center;font-weight:600;color:var(--mute)}
 
 .prod{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,3vw,56px);padding:8px 0 24px;align-items:start}
-.pgal{position:sticky;top:calc(var(--head) + 20px);display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px}
+.pgal{position:sticky;top:calc(var(--head) + var(--top) + 20px);display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px}
 .pgal .thumbs{display:grid;gap:10px;align-content:start;max-height:560px;overflow:auto}
 .pgal .thumbs button{width:88px;height:88px;border-radius:16px;background:#fff;overflow:hidden;box-shadow:inset 0 0 0 1px var(--hair);transition:box-shadow .25s}
 .pgal .thumbs button.on{box-shadow:inset 0 0 0 2px var(--ink)}
@@ -291,7 +291,7 @@ section{padding:clamp(44px,5vw,86px) 0}
 .citem .pr{font-family:var(--dela);font-weight:800;font-size:17px;white-space:nowrap}
 .citem .rm{margin-top:8px;font-size:13px;font-weight:600;color:var(--mute);cursor:pointer}
 .citem .rm:hover{color:var(--red)}
-.sum{position:sticky;top:calc(var(--head) + 20px);border-radius:22px;background:var(--bg);padding:26px}
+.sum{position:sticky;top:calc(var(--head) + var(--top) + 20px);border-radius:22px;background:var(--bg);padding:26px}
 .sum .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:14px;font-weight:600}
 .sum .row.total{margin-top:10px;padding-top:16px;border-top:1px solid var(--hair);font-family:var(--dela);font-weight:800;font-size:21px}
 .field{display:grid;gap:7px;margin-top:16px}
@@ -510,7 +510,7 @@ footer a:hover{color:#fff}
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---------- полоска прокрутки страницы ---------- */
-.sprog{position:fixed;left:0;right:0;top:0;height:2px;z-index:70;pointer-events:none}
+.sprog{position:fixed;left:0;right:0;top:calc(var(--head) + var(--top));height:2px;z-index:70;pointer-events:none}
 .sprog i{display:block;height:100%;width:0;background:var(--red);transition:width .12s linear}
 
 /* ---------- доставка: путь заказа, города, оплата ---------- */
@@ -578,7 +578,7 @@ footer a:hover{color:#fff}
 .cins{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .cins-g{margin-bottom:14px}
 .cins-g>span{display:block;margin-bottom:2px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.certside{position:sticky;top:calc(var(--head) + 20px);display:grid;gap:12px}
+.certside{position:sticky;top:calc(var(--head) + var(--top) + 20px);display:grid;gap:12px}
 
 /* ---------- вайб ---------- */
 .vq-bar{height:5px;border-radius:999px;background:var(--line);overflow:hidden;margin:12px 0 18px}
@@ -1593,7 +1593,7 @@ function viewDelivery(){
           <div class="r"><span>Доставка по Екатеринбургу и Пышме</span><b>0 ₽</b></div>
           <div class="r"><span>Доплаты при получении</span><b>нет</b></div>
         </div>
-        <aside class="tcard reveal d1" style="position:sticky;top:calc(var(--head) + 20px)"><div class="dots"></div><b>Почему цена меняется</b>
+        <aside class="tcard reveal d1" style="position:sticky;top:calc(var(--head) + var(--top) + 20px)"><div class="dots"></div><b>Почему цена меняется</b>
           <span>Курс юаня пересчитывается три раза в день, поэтому цена в каталоге может немного гулять. Та сумма, которую я подтвердила перед оплатой, уже не меняется.</span>
           <a class="btn ghost sm block" style="margin-top:14px" href="#/calc">Посчитать свою вещь</a></aside>
       </div>

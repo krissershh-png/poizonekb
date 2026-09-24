@@ -359,6 +359,22 @@ footer a:hover{color:#fff}
 }
 
 
+/* ---------- фотоблоки ---------- */
+.cover{position:relative;border-radius:24px;overflow:hidden;background:var(--bg);aspect-ratio:16/9;max-height:440px;box-shadow:inset 0 0 0 1.5px var(--hair)}
+.cover img{width:100%;height:100%;object-fit:cover;object-position:center 28%}
+.band{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:stretch;border-radius:24px;background:var(--bg);overflow:hidden}
+.band .pic{position:relative;min-height:280px;background:#fff}
+.band .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.band .in{padding:clamp(26px,3vw,44px);display:flex;flex-direction:column;justify-content:center}
+.band h3{font-size:clamp(20px,2.2vw,30px);line-height:1.1}
+.band p{margin-top:14px;font-size:15px;font-weight:500;color:var(--ink-2);line-height:1.6;max-width:48ch}
+@media (max-width:820px){ .band{grid-template-columns:1fr} .band .pic{min-height:240px} }
+.abnums{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.4vw,20px);margin-top:clamp(20px,2.4vw,32px)}
+.abnum{border-radius:20px;background:var(--bg);padding:22px}
+.abnum b{display:block;font-family:var(--dela);font-weight:900;font-size:clamp(20px,2vw,28px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.abnum span{display:block;margin-top:7px;font-size:13.5px;font-weight:600;color:var(--mute);line-height:1.5}
+@media (max-width:640px){ .abnums{grid-template-columns:1fr} }
+
 /* ---------- дорожка «три шага» ---------- */
 .flow{position:relative}
 .flow-line{position:relative;height:2px;background:var(--hair);border-radius:999px;margin-bottom:26px;overflow:hidden;opacity:1;transform:none}
@@ -710,9 +726,10 @@ function route(scroll){
   else if(parts[0] === 'cart') viewCart();
   else if(parts[0] === 'reviews') viewReviews();
   else if(parts[0] === 'delivery') viewDelivery();
+  else if(parts[0] === 'about') viewAbout();
   else if(parts[0] === 'cert') viewCert(params);
   else if(parts[0] === 'c' && parts[1]) viewCertLink(parts[1]);
-  else if(parts[0] === 'vibe') viewVibe(parts[1]);
+  else if(parts[0] === 'vibe') viewVibe(parts[1], params);
   else if(PAGES[parts[0]]) viewText(parts[0]);
   else viewHome();
   watch();
@@ -959,22 +976,24 @@ function renderList(params){
   }
   watch();
 }
+/* фильтры работают и в каталоге, и в подборке вайба — остаёмся на своей странице */
+function basePath(){ const p = parseHash().path.split('/'); return p[0] === 'vibe' && p[1] ? '/vibe/' + p[1] : '/catalog' }
 function setParam(k, v){
   const { params } = parseHash(); params[k] = v;
   if(k !== 'sort') more = 24;
   if(!v) delete params[k];
   if(k === 'cat') delete params.sub;
   const qs = new URLSearchParams(params).toString();
-  go('/catalog' + (qs ? '?' + qs : ''));
+  go(basePath() + (qs ? '?' + qs : ''));
 }
-function clearPrice(k){ const { params } = parseHash(); delete params[k]; const qs = new URLSearchParams(params).toString(); go('/catalog' + (qs ? '?' + qs : '')) }
+function clearPrice(k){ const { params } = parseHash(); delete params[k]; const qs = new URLSearchParams(params).toString(); go(basePath() + (qs ? '?' + qs : '')) }
 function toggleSize(s){ const a = load('site_sizes', []), i = a.indexOf(s); i < 0 ? a.push(s) : a.splice(i, 1); save('site_sizes', a); more = 24; route(false) }
 function toggleBrand(b){ const a = load('site_brands', []), i = a.indexOf(b); i < 0 ? a.push(b) : a.splice(i, 1); save('site_brands', a); more = 24; route(false) }
 function toggleOnly(){ save('site_only', !load('site_only', false)); more = 24; route(false) }
 function applyPrice(){ const { params } = parseHash(); params.min = $('pmin').value || ''; params.max = $('pmax').value || '';
   Object.keys(params).forEach(k => { if(!params[k]) delete params[k] }); more = 24;
-  go('/catalog' + (Object.keys(params).length ? '?' + new URLSearchParams(params).toString() : '')) }
-function resetFilters(){ save('site_sizes', []); save('site_brands', []); save('site_only', false); go('/catalog') }
+  go(basePath() + (Object.keys(params).length ? '?' + new URLSearchParams(params).toString() : '')) }
+function resetFilters(){ save('site_sizes', []); save('site_brands', []); save('site_only', false); go(basePath()) }
 
 /* ---------- товар ---------- */
 function viewProduct(id){
@@ -1338,6 +1357,43 @@ const PAGES = {
       <details><summary>Есть ли возврат?</summary><p>Нет: вещь выкупается лично под вас. Поэтому помогаю с размером заранее и подбираю замену, если размер закончился.</p></details>
     </div>` },
 };
+function viewAbout(){
+  document.title = 'О магазине — POIZON.EKB';
+  const shown = CAT.filter(visible).length;
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>О магазине</span></div>
+    <div class="pagehead"><span class="kicker">Кто за этим стоит</span><h1 style="margin-top:12px">Привет, я Кристина</h1>
+      <p class="lead">Жила в Китае и увидела, что бренды там в 2–3 раза дешевле, чем у нас. Сначала заказывала на Poizon себе, разобралась в доставке и поняла: привозить вещи из Китая проще, чем кажется. С лета 2024 года вожу оригиналы в Екатеринбург и по всей России.</p></div>
+    <div class="cover reveal"><img src="img/kris-box.jpg" alt="Кристина с посылкой «Крис про Китай»"></div>
+    <div class="abnums">
+      <div class="abnum reveal"><b>с лета 2024</b><span>вожу вещи с Poizon и собираю закупку каждый месяц</span></div>
+      <div class="abnum reveal d1"><b>${shown.toLocaleString('ru-RU')}</b><span>вещей в каталоге с ценой под каждый размер</span></div>
+      <div class="abnum reveal d2"><b>${CFG.journey}</b><span>дорога от выкупа до вручения, всё видно в Telegram</span></div>
+    </div>
+
+    <section>
+      <div class="sechead reveal"><div><span class="kicker">Как я работаю</span><h2>Четыре правила</h2></div></div>
+      <ul class="plist">
+        <li class="reveal"><span>01</span><div><b>Только с проверкой Poizon</b><p>Площадка вскрывает каждую посылку и сверяет материалы, швы и бирки. Пломба и бирка приезжают вместе с вещью.</p></div></li>
+        <li class="reveal d1"><span>02</span><div><b>Конечная цена</b><p>Товар, доставка до Екатеринбурга и моя работа — всё внутри. Скрытых доплат при получении нет.</p></div></li>
+        <li class="reveal d2"><span>03</span><div><b>Видно каждый этап</b><p>Выкуп, фото коробки, дорога, прибытие — статусы приходят в Telegram сами.</p></div></li>
+        <li class="reveal d3"><span>04</span><div><b>Отвечаю сама</b><p>С 10:00 до 22:00 по Екатеринбургу: помогу с размером, подберу замену, найду вещь по фото или ссылке.</p></div></li>
+      </ul>
+    </section>
+
+    <section style="padding-top:0">
+      <div class="band reveal">
+        <div class="pic"><img src="img/kris-portrait.jpg" alt="Кристина с посылкой"></div>
+        <div class="in">
+          <span class="hand">что ещё есть</span>
+          <h3 style="margin-top:10px">Магазин живёт и в Telegram</h3>
+          <p>В мини-приложении то же самое, что здесь: каталог с ценой под размер, расчёт любой вещи по ссылке с Poizon, поиск по фото, подарочные сертификаты и путь посылки. Аккаунт общий — заказы и избранное не потеряются.</p>
+          <div class="cta"><a class="btn red" href="${BOT}" target="_blank" rel="noopener">Открыть в Telegram</a><a class="btn ghost" href="#/catalog">Смотреть каталог</a></div>
+        </div>
+      </div>
+    </section>
+  </div>`;
+}
 function viewDelivery(){
   document.title = 'Доставка и оплата — POIZON.EKB';
   $('view').innerHTML = `<div class="wrap">
@@ -1414,6 +1470,18 @@ function viewDelivery(){
         <div class="dnum reveal"><b>${CFG.journey}</b><span>дорога после выкупа</span></div>
         <div class="dnum reveal d1"><b>${ruDate(CFG.purchase)}</b><span>ближайшая закупка</span></div>
         <div class="dnum reveal d2"><b>0 ₽</b><span>доплат при получении в Екатеринбурге</span></div>
+      </div>
+    </section>
+
+    <section style="padding-top:0">
+      <div class="band reveal">
+        <div class="pic"><img src="img/kris-box.jpg" alt="Кристина с посылкой «Крис про Китай»"></div>
+        <div class="in">
+          <span class="hand">если остались вопросы</span>
+          <h3 style="margin-top:10px">Спросите меня до заказа</h3>
+          <p>Помогу с размером, посчитаю вещь по ссылке с Poizon и скажу честно, если что-то невыгодно везти. Отвечаю сама с 10:00 до 22:00.</p>
+          <div class="cta"><a class="btn red" href="${KRIS}" target="_blank" rel="noopener">Написать Крис</a><a class="btn ghost" href="#/calc">Посчитать вещь</a></div>
+        </div>
       </div>
     </section>
 
@@ -1643,7 +1711,7 @@ function vibePicks(k, n){
   pool.forEach(p => { if(out.length < n && !out.includes(p)) out.push(p) });
   return out;
 }
-function viewVibe(key){
+function viewVibe(key, params){
   const k = VIBES[key] ? key : (VIBE && VIBE.key);
   if(!k){
     document.title = 'Мой вайб — POIZON.EKB';
@@ -1654,19 +1722,24 @@ function viewVibe(key){
       <div class="grid wide" style="padding-bottom:60px">${CAT.filter(visible).slice(0, 8).map(cardHTML).join('')}</div></div>`;
     return;
   }
-  const V = VIBES[k], items = vibePicks(k, 20);
-  const looks = CAT.filter(p => p.look && inVibe(p, k) && minPrice(p)).sort((a, b) => (a.lk ?? 999) - (b.lk ?? 999)).slice(0, 8);
-  document.title = `Вайб «${V.t}» — POIZON.EKB`;
-  $('view').innerHTML = `<div class="wrap">
-    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Мой вайб</span></div>
-    <div class="vr-head" style="background:${V.bg};color:${V.ink}"><div class="dots"></div>
+  // подборка вайба живёт по тем же правилам, что каталог: размер, бренд, цена, наличие и сортировка
+  const V = VIBES[k], p = Object.assign({}, params || {}, { vibe: k });
+  viewCatalog(p);
+  const found = ($('found') || {}).textContent || '';
+  const ph = document.querySelector('#view .pagehead');
+  if(ph) ph.innerHTML = `<div class="vr-head" style="background:${V.bg};color:${V.ink}"><div class="dots"></div>
       <div class="vr-k">${VIBE && VIBE.key === k ? 'ваш вайб' : 'подборка'}</div><div class="vr-t">${esc(V.t)}</div><div class="vr-l">${esc(V.line)}</div></div>
-    <div class="grid wide">${items.map(cardHTML).join('')}</div>
-    <div class="cta" style="margin-top:22px"><a class="btn ghost" href="#/catalog?vibe=${k}">Все вещи в этом вайбе</a>
-      <button class="btn ghost" onclick="startVibe()">Пройти заново</button>
-      <button class="btn ghost" onclick="copyText(location.origin + location.pathname + '#/vibe/${k}')">Поделиться подборкой</button></div>
-    ${looks.length ? `<section><div class="sechead reveal"><div><span class="kicker">Как носят</span><h2>Образы с этими вещами</h2></div></div>${looksHTML(looks)}</section>` : ''}
-  </div>`;
+    <p class="lead" id="found">${esc(found)}</p>
+    <div class="cta" style="margin-top:16px"><button class="btn ghost sm" onclick="startVibe()">Пройти заново</button>
+      <button class="btn ghost sm" onclick="copyText(location.origin + location.pathname + '#/vibe/${k}')">Поделиться подборкой</button>
+      <a class="btn ghost sm" href="#/catalog">Весь каталог</a></div>`;
+  const cr = document.querySelector('#view .crumbs');
+  if(cr) cr.innerHTML = `<a href="#/">Главная</a><span>·</span><a href="#/catalog">Каталог</a><span>·</span><span>Вайб «${esc(V.t)}»</span>`;
+  const looks = CAT.filter(x => x.look && inVibe(x, k) && minPrice(x)).sort((a, b) => (a.lk ?? 999) - (b.lk ?? 999)).slice(0, 8);
+  const wrap = document.querySelector('#view .wrap');
+  if(looks.length && wrap) wrap.insertAdjacentHTML('beforeend', `<section><div class="sechead reveal"><div><span class="kicker">Как носят</span><h2>Образы с этими вещами</h2></div></div>${looksHTML(looks)}</section>`);
+  document.title = `Вайб «${V.t}» — POIZON.EKB`;
+  watch();
 }
 
 /* ---------- колесо скидок ---------- */

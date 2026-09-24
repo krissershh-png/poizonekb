@@ -91,7 +91,29 @@ main{min-height:64vh}
 section{padding:clamp(44px,5vw,86px) 0}
 .sechead{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:clamp(22px,2.4vw,34px)}
 .sechead>div{min-width:0}
-.sechead h2{margin-top:12px}
+.sechead h2{position:relative;margin-top:12px}
+.sechead h2::after{content:"";position:absolute;left:0;bottom:-10px;height:3px;width:0;border-radius:999px;background:var(--red);transition:width .8s var(--ease) .1s}
+.sechead.in h2::after{width:54px}
+.pagehead h1{position:relative}
+.card .ph img{transition:transform .5s var(--ease)}
+.card:hover .ph img{transform:scale(1.045)}
+.tile .pics img{transition:transform .5s var(--ease)}
+.tile:hover .pics img{transform:scale(1.05)}
+.fstep{transition:background .25s,transform .25s var(--ease)}
+.fstep:hover{transform:translateY(-3px)}
+.dnum{transition:transform .25s var(--ease)}
+.dnum:hover{transform:translateY(-3px)}
+.abnum{transition:background .25s}
+.abnum:hover{background:#f2ecec}
+.link::after{transition:transform .25s var(--ease)}
+.icobtn:active{transform:scale(.94)}
+.hero .hand{display:inline-block;animation:handin .8s var(--ease) both}
+@keyframes handin{from{opacity:0;transform:translateY(8px) rotate(-3deg)}to{opacity:1;transform:none}}
+.hero h1{animation:heroin .8s var(--ease) .08s both}
+.hero .lead{animation:heroin .8s var(--ease) .16s both}
+.hero .cta{animation:heroin .8s var(--ease) .24s both}
+.hero .facts{animation:heroin .8s var(--ease) .32s both}
+@keyframes heroin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .sechead p{margin-top:12px;max-width:58ch}
 .crumbs{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mute);padding:22px 0 4px}
 .crumbs a:hover{color:var(--ink)}
@@ -425,7 +447,13 @@ footer a:hover{color:#fff}
 
 /* ---------- разворот «что вы получаете» ---------- */
 .promise{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(16px,2vw,30px);align-items:stretch}
-.pmain{position:relative;overflow:hidden;border-radius:22px;background:var(--ink);color:#fff;padding:clamp(26px,2.6vw,38px)}
+.pmain{position:relative;overflow:hidden;border-radius:22px;background:var(--ink);color:#fff;padding:clamp(26px,2.6vw,38px);display:flex;flex-direction:column;justify-content:flex-start;min-height:420px}
+.pm-txt{position:relative;z-index:2;max-width:30ch}
+.pm-pic{position:absolute;right:-4%;bottom:0;width:58%;max-width:340px;max-height:76%;height:auto;object-fit:contain;object-position:right bottom;z-index:1;filter:drop-shadow(0 26px 40px rgba(0,0,0,.45));animation:pmfloat 7s ease-in-out infinite;pointer-events:none}
+@keyframes pmfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@media (max-width:1180px){ .pm-pic{width:50%;right:-3%} }
+@media (max-width:900px){ .pmain{min-height:0} .pm-txt{max-width:60%} .pm-pic{width:44%;max-width:250px;max-height:58%;right:-2%} }
+@media (max-width:560px){ .pmain{padding-bottom:180px} .pm-txt{max-width:none} .pm-pic{width:62%;max-width:230px;max-height:none;right:-4%} }
 .pmain .dots{position:absolute;right:-40px;top:-40px;width:230px;height:230px;background-image:radial-gradient(circle,rgba(255,255,255,.18) 1.2px,transparent 1.6px);background-size:7px 7px;pointer-events:none}
 .pmain b{position:relative;display:block;margin:12px 0 14px;font-family:var(--dela);font-weight:900;font-size:clamp(22px,2.3vw,32px);line-height:1.1;text-transform:uppercase;letter-spacing:-.02em}
 .pmain p{position:relative;font-size:14.5px;font-weight:500;line-height:1.6;color:rgba(255,255,255,.76);max-width:44ch}
@@ -459,8 +487,8 @@ footer a:hover{color:#fff}
 .brands{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:20px 0;margin-top:clamp(28px,4vw,56px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .brands .row{display:flex;gap:40px;width:max-content;animation:slide 52s linear infinite}
 .brands:hover .row{animation-play-state:paused}
-.brands span{font-family:var(--dela);font-weight:700;font-size:14px;letter-spacing:.05em;color:#b6abab;white-space:nowrap;transition:color .2s}
-.brands span:hover{color:var(--ink)}
+.brands a{font-family:var(--dela);font-weight:700;font-size:14px;letter-spacing:.05em;color:#b6abab;white-space:nowrap;transition:color .2s,transform .2s}
+.brands a:hover{color:var(--red);transform:translateY(-1px)}
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---------- полоска прокрутки страницы ---------- */
@@ -723,7 +751,15 @@ const VIDS = [['v8','Большая распаковка'],['v6','Открыва
 const vidHTML = v => `<button class="vid reveal" onclick="playVid('${v[0]}','${esc(v[1])}')"><img src="vid/${v[0]}.jpg" alt="${esc(v[1])}" loading="lazy"><span class="play"></span><b>${esc(v[1])}</b></button>`;
 
 let io, watchTimer;
+// цифра набегает один раз, когда её видно
+function countUp(el){
+  if(el.dataset.done) return; el.dataset.done = '1';
+  const to = +el.dataset.n || 0; if(to < 10) return;
+  let cur = Math.max(0, Math.round(to * .55)), step = Math.max(1, Math.round((to - cur) / 28));
+  const t = setInterval(() => { cur += step; if(cur >= to){ cur = to; clearInterval(t) } el.textContent = cur.toLocaleString('ru-RU') }, 26);
+}
 function watch(){
+  document.querySelectorAll('.count').forEach(e => { if(e.getBoundingClientRect().top < innerHeight * .95) countUp(e) });
   const all = [...document.querySelectorAll('.reveal:not(.in)')];
   // то, что уже видно, показываем сразу: анимация только для блоков ниже экрана
   all.forEach(e => { const r = e.getBoundingClientRect(); if(r.top < innerHeight * .92) e.classList.add('in') });
@@ -845,7 +881,7 @@ function viewHome(){
           <p class="lead">Кроссовки, одежда, сумки и косметика из Китая — с проверкой подлинности. Цена видна под каждый размер и уже включает доставку до меня: доплат при получении нет.</p>
           <div class="cta"><a class="btn red" href="#/catalog">Смотреть каталог</a><a class="btn ghost" href="#/calc">Посчитать свою вещь</a></div>
           <div class="facts">
-            <div><b>${shown.length.toLocaleString('ru-RU')}</b><span>вещей в каталоге</span></div>
+            <div><b class="count" data-n="${shown.length}">${shown.length.toLocaleString('ru-RU')}</b><span>вещей в каталоге</span></div>
             <div><b>${CFG.journey}</b><span>дорога после выкупа</span></div>
             <div><b>${ruDate(CFG.purchase)}</b><span>ближайшая закупка</span></div>
           </div>
@@ -856,7 +892,7 @@ function viewHome(){
           <div class="pill two">Привожу лично</div>
         </div>
       </div>
-      <div class="brands"><div class="row">${[...brands, ...brands].map(b => `<span>${esc(b)}</span>`).join('')}</div></div>
+      <div class="brands"><div class="row">${[...brands, ...brands].map(b => `<a href="#/catalog?brand=${encodeURIComponent(b)}">${esc(b)}</a>`).join('')}</div></div>
     </section>
 
     <section>
@@ -894,10 +930,13 @@ function viewHome(){
       <div class="sechead reveal"><div><span class="kicker">Почему со мной спокойно</span><h2>Что вы получаете</h2></div></div>
       <div class="promise">
         <div class="pmain reveal"><div class="dots"></div>
-          <span class="hand" style="color:#fff">без сюрпризов</span>
-          <b>Оригинал<br>с проверкой Poizon</b>
-          <p>Площадка вскрывает каждую посылку и сверяет материалы, швы и бирки. Пломба и бирка приезжают к вам вместе с вещью — их видно на фото распаковки.</p>
-          <a class="btn ghost sm" style="background:#fff;margin-top:20px" href="#/reviews">Смотреть распаковки</a>
+          <div class="pm-txt">
+            <span class="hand" style="color:#fff">без сюрпризов</span>
+            <b>Оригинал<br>с проверкой Poizon</b>
+            <p>Площадка вскрывает каждую посылку и сверяет материалы, швы и бирки. Пломба и бирка приезжают к вам вместе с вещью — их видно на фото распаковки.</p>
+            <a class="btn ghost sm" style="background:#fff;margin-top:20px" href="#/reviews">Смотреть распаковки</a>
+          </div>
+          <img class="pm-pic" src="img/kris-cut.webp" alt="Кристина с посылкой">
         </div>
         <ul class="plist">
           <li class="reveal"><span>01</span><div><b>Честная цена</b><p>Стоимость видна под каждый размер и пересчитывается по курсу юаня три раза в день. Доплат при получении нет.</p></div></li>
@@ -948,7 +987,7 @@ function homeExtras(){
 /* ---------- каталог ---------- */
 function viewCatalog(params){
   const cat = params.cat || 'all', sub = params.sub || '';
-  document.title = (sub ? subTitle(cat, sub) : cat === 'all' ? 'Каталог' : catTitle(cat)) + ' — POIZON.EKB';
+  document.title = (params.brand ? params.brand : sub ? subTitle(cat, sub) : cat === 'all' ? 'Каталог' : catTitle(cat)) + ' — POIZON.EKB';
   const sizes = load('site_sizes', []), brands = load('site_brands', []), only = load('site_only', false);
   const c = CATS.find(x => x.id === cat);
   const base = CAT.filter(p => visible(p) && (cat === 'all' || catOf(p) === cat));
@@ -959,7 +998,7 @@ function viewCatalog(params){
   $('view').innerHTML = `
   <div class="wrap">
     <div class="crumbs"><a href="#/">Главная</a><span>·</span>${cat === 'all' ? '<span>Каталог</span>' : `<a href="#/catalog">Каталог</a><span>·</span><span>${esc(catTitle(cat))}</span>`}</div>
-    <div class="pagehead"><span class="kicker">Каталог</span><h1 style="margin-top:12px">${sub ? esc(subTitle(cat, sub)) : cat === 'all' ? 'Все вещи' : esc(catTitle(cat))}</h1><p class="lead" id="found"></p></div>
+    <div class="pagehead"><span class="kicker">Каталог</span><h1 style="margin-top:12px">${params.brand ? esc(params.brand) : sub ? esc(subTitle(cat, sub)) : cat === 'all' ? 'Все вещи' : esc(catTitle(cat))}</h1><p class="lead" id="found"></p></div>
     <div class="catalog">
       <aside class="side" id="side">
         <div class="fbox"><h4>Раздел</h4>
@@ -1011,6 +1050,7 @@ function renderList(params){
     && (!only || p.stock)
     && (!brands.length || brands.includes(p.brand))
     && (!sizes.length || okSizes(p).some(s => sizes.includes(s.eu)))
+    && (!params.brand || p.brand === params.brand)
     && (!params.vibe || inVibe(p, params.vibe))
     && (!q || (p.brand + ' ' + p.name).toLowerCase().includes(q))
     && (!min || minPrice(p) >= min) && (!max || minPrice(p) <= max));
@@ -1028,6 +1068,7 @@ function renderList(params){
   const act = $('active');
   if(act){
     const tags = [];
+    if(params.brand) tags.push([params.brand, `setParam('brand','')`]);
     if(params.vibe && VIBES[params.vibe]) tags.push(['Вайб «' + VIBES[params.vibe].t + '»', `setParam('vibe','')`]);
     if(sub) tags.push([subTitle(cat, sub), `setParam('sub','')`]);
     if(only) tags.push(['Только в наличии', 'toggleOnly()']);
@@ -1430,7 +1471,7 @@ function viewAbout(){
     <div class="cover reveal"><img src="img/kris-box.jpg" alt="Кристина с посылкой «Крис про Китай»"></div>
     <div class="abnums">
       <div class="abnum reveal"><b>с лета 2024</b><span>вожу вещи с Poizon и собираю закупку каждый месяц</span></div>
-      <div class="abnum reveal d1"><b>${shown.toLocaleString('ru-RU')}</b><span>вещей в каталоге с ценой под каждый размер</span></div>
+      <div class="abnum reveal d1"><b class="count" data-n="${shown}">${shown.toLocaleString('ru-RU')}</b><span>вещей в каталоге с ценой под каждый размер</span></div>
       <div class="abnum reveal d2"><b>${CFG.journey}</b><span>дорога от выкупа до вручения, всё видно в Telegram</span></div>
     </div>
 
@@ -1502,11 +1543,13 @@ function viewDelivery(){
     <section>
       <div class="sechead reveal"><div><span class="kicker">Оплата</span><h2>Переводом, без комиссии</h2>
         <p class="lead">Оплата — после того, как я подтвердила наличие вашего размера. Наличными не беру: так остаётся след платежа и вам спокойнее.</p></div></div>
-      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-        <div class="tcard reveal"><div class="dots"></div><b>QR-код</b><span>Открываете камеру банка и переводите. Если из-за VPN банк не открывается — сохраните QR картинкой и выберите его в приложении банка через «Оплату по QR».</span></div>
-        <div class="tcard reveal d1"><div class="dots"></div><b>Ссылка или телефон</b><span>Пришлю ссылку на перевод в Т-Банк или номер телефона — как вам удобнее. Комиссии нет ни там, ни там.</span></div>
-        <div class="tcard reveal d2"><div class="dots"></div><b>Сертификатом</b><span>Если вам подарили сертификат POIZON.EKB — отметьте это при оформлении и введите номер, сумма спишется сама.</span>
-          <a class="btn ghost sm block" style="margin-top:14px" href="#/cert">Подарочный сертификат</a></div>
+      <div class="flow">
+        <div class="flow-line reveal"><i></i></div>
+        <div class="flow-row">
+          <div class="fstep reveal"><span class="fnum">01</span><b>QR-код</b><p>Открываете камеру банка и переводите. Если из-за VPN банк не открывается — сохраните QR картинкой и выберите его в приложении банка через «Оплату по QR».</p><div class="tags"><i>камера банка</i><i>без комиссии</i></div></div>
+          <div class="fstep reveal d1"><span class="fnum">02</span><b>Ссылка или телефон</b><p>Пришлю ссылку на перевод в Т-Банк или номер телефона — как вам удобнее. Открывается ваше банковское приложение.</p><div class="tags"><i>Т-Банк</i><i>по номеру</i></div></div>
+          <div class="fstep reveal d2"><span class="fnum">03</span><b>Сертификатом</b><p>Если вам подарили сертификат POIZON.EKB — отметьте это при оформлении и введите номер, сумма спишется сама.</p><a class="btn ghost sm" style="margin-top:14px" href="#/cert">Подарочный сертификат</a></div>
+        </div>
       </div>
       <p class="mute" style="font-size:13.5px;margin-top:16px;max-width:70ch">После перевода пришлите скриншот — отмечу оплату, и вещь уйдёт в закупку. Статус всегда виден в личном кабинете и в Telegram.</p>
     </section>
@@ -1516,9 +1559,9 @@ function viewDelivery(){
       <div class="cart" style="padding-bottom:0">
         <div class="slip reveal">
           <div class="r"><span>Сама вещь на Poizon</span><b>по курсу юаня</b></div>
-          <div class="r"><span>Доставка Китай — Екатеринбург</span><b>${fmt(CFG.kgRate)} за кг</b></div>
-          <div class="r"><span>Моя работа: выкуп, проверка, хранение</span><b>${fmt(CFG.fee)}</b></div>
-          <div class="r"><span>Вторая и следующие вещи в заказе</span><b>${fmt(CFG.feeNext)}</b></div>
+          <div class="r"><span>Доставка Китай — Екатеринбург</span><b>уже в цене</b></div>
+          <div class="r"><span>Моя работа: выкуп, проверка, хранение</span><b>уже в цене</b></div>
+          <div class="r"><span>Вторая и следующие вещи в заказе</span><b>дешевле</b></div>
           <div class="r"><span>Доставка по Екатеринбургу и Пышме</span><b>0 ₽</b></div>
           <div class="r"><span>Доплаты при получении</span><b>нет</b></div>
         </div>

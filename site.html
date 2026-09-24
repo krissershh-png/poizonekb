@@ -228,6 +228,10 @@ section{padding:clamp(44px,5vw,86px) 0}
 .sizewrap button{padding:8px 12px;border-radius:11px;background:#fff;font-size:13px;font-weight:600;box-shadow:inset 0 0 0 1px var(--hair);transition:all .2s}
 .sizewrap button:hover{box-shadow:inset 0 0 0 1.5px var(--ink)}
 .sizewrap button.on{background:var(--ink);color:#fff;box-shadow:none}
+.pquick{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.pquick button{padding:8px 12px;border-radius:999px;background:#fff;font-size:13px;font-weight:700;box-shadow:inset 0 0 0 1px var(--hair);transition:background .18s,box-shadow .18s}
+.pquick button:hover{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.pquick button.on{background:var(--ink);color:#fff;box-shadow:none}
 .prices{display:flex;gap:8px}
 .prices input{width:100%;height:42px;border-radius:12px;border:0;background:#fff;padding:0 12px;font-weight:600;outline:none;box-shadow:inset 0 0 0 1px var(--hair)}
 .prices input:focus{box-shadow:inset 0 0 0 1.5px var(--ink)}
@@ -328,7 +332,9 @@ section{padding:clamp(44px,5vw,86px) 0}
 
 .modal{position:fixed;inset:0;z-index:80;display:none;background:rgba(17,16,16,.62);backdrop-filter:blur(4px)}
 .modal.open{display:grid;place-items:center;padding:24px;animation:fade .25s var(--ease)}
-.modal .box{width:min(580px,100%);background:var(--paper);border-radius:26px;padding:22px;position:relative}
+.modal .box{width:min(580px,100%);max-height:calc(100vh - 48px);overflow:auto;background:var(--paper);border-radius:26px;padding:22px;position:relative}
+.modal.vid .box{width:min(460px,100%);padding:18px}
+.modal.vid video{display:block;width:100%;max-height:calc(100vh - 190px);border-radius:16px;background:#000;object-fit:contain}
 .modal .close{position:absolute;right:16px;top:16px;width:38px;height:38px;border-radius:50%;background:var(--bg);display:grid;place-items:center;z-index:2}
 
 footer{background:var(--ink);color:#fff;padding:clamp(40px,4vw,70px) 0 38px;margin-top:40px}
@@ -691,7 +697,8 @@ footer a:hover{color:#fff}
    Формула цены повторяет приложение: товар (юани × курс) + доставка + комиссия, округление вверх до …90. */
 const BOT_NAME = 'poizonekbb_bot', BOT = 'https://t.me/' + BOT_NAME, KRIS = 'https://t.me/kristinaershhova';
 const API = 'https://script.google.com/macros/s/AKfycbzzE0kwM4nW-RLMEY0Jw4dfeT6pCyE0EoGYgIG3jATVMcgQgGMfIGNZwv8NR7VUFpZq/exec';
-const CFG = { kgRate: 650, minParcelKg: 1, shipRisk: 0.008, fee: 2500, feeNext: 1000, rate: { small: 13.75, big: 13.7 }, purchase: '2026-09-30', journey: '3–4 недели' };
+const CFG = { kgRate: 650, minParcelKg: 1, shipRisk: 0.008, fee: 2500, feeNext: 1000, rate: { small: 13.75, big: 13.7 }, purchase: '2026-09-30', journey: '3–4 недели',
+  pay: { bank: 'Т-Банк', link: 'https://www.tbank.ru/rm/r_RGLXmKfWCa.nrMkJlZsBB/zP0S581765', qr: 'img/pay-qr.png' } };
 const CAT = (window.CATALOG || []).filter(p => p && p.img && p.img.length);
 let PRICES = window.PRICES || { items: {} }, RETAIL = {};
 let cart = load('site_cart', []), more = 24, chosen = null;
@@ -719,8 +726,9 @@ function loginModal(){
   $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button>
     <div style="text-align:center;padding:10px 6px 4px">
       <div class="hand" style="font-size:24px">вход за секунду</div>
-      <h3 style="margin:10px 0 12px">Войдите через Telegram</h3>
-      <p class="mute" style="font-size:14px;line-height:1.6;max-width:42ch;margin:0 auto 18px">Пароли не нужны: Telegram подтвердит, что это вы. После входа на сайте появятся ваши заказы, путь посылки и избранное — те же, что в приложении.</p>
+      <h3 style="margin:10px 0 12px">Войти через Telegram</h3>
+      <p class="mute" style="font-size:14px;line-height:1.6;max-width:44ch;margin:0 auto 14px">Окно входа открывает сам Telegram. Пароль и номер телефона он нам не показывает — магазин видит только имя и ник, как в любом чате.</p>
+      <p class="mute" style="font-size:13px;line-height:1.6;max-width:44ch;margin:0 auto 18px">Вход нужен только чтобы видеть свои заказы и путь посылки. Заказать можно и без него. Отключить доступ — в Telegram: Настройки → Конфиденциальность → Сайты.</p>
       <div id="tg-login" style="display:flex;justify-content:center;min-height:48px"></div>
       <p class="mute" style="font-size:12.5px;margin-top:16px">Мы видим только имя и ник в Telegram. Телефон и адрес вы указываете сами при заказе.</p>
     </div>`;
@@ -728,7 +736,7 @@ function loginModal(){
   s.async = true; s.src = 'https://telegram.org/js/telegram-widget.js?22';
   s.setAttribute('data-telegram-login', BOT_NAME);
   s.setAttribute('data-size', 'large'); s.setAttribute('data-userpic', 'false'); s.setAttribute('data-radius', '14');
-  s.setAttribute('data-request-access', 'write'); s.setAttribute('data-onauth', 'onTgAuth(user)');
+  s.setAttribute('data-onauth', 'onTgAuth(user)');
   $('tg-login').appendChild(s);
   $('modal').classList.add('open'); document.body.style.overflow = 'hidden';
 }
@@ -1038,7 +1046,10 @@ function viewCatalog(params){
           ${subs.map(([id, t]) => `<label><input type="radio" name="sub" ${sub === id ? 'checked' : ''} onchange="setParam('sub','${id}')"> ${t}</label>`).join('')}</div>` : ''}
         <div class="fbox"><h4>Наличие</h4><label><input type="checkbox" ${only ? 'checked' : ''} onchange="toggleOnly()"> Только то, что уже у меня</label></div>
         ${sizeList.length ? `<div class="fbox"><h4>Размер</h4><div class="sizewrap">${sizeList.map(s => `<button class="${sizes.includes(s) ? 'on' : ''}" onclick="toggleSize('${esc(s)}')">${esc(s)}</button>`).join('')}</div></div>` : ''}
-        <div class="fbox"><h4>Цена, ₽</h4><div class="prices"><input id="pmin" type="number" inputmode="numeric" placeholder="от" value="${esc(params.min || '')}"><input id="pmax" type="number" inputmode="numeric" placeholder="до" value="${esc(params.max || '')}"></div>
+        <div class="fbox"><h4>Цена, ₽</h4>
+          <div class="pquick">${[[0,5000,'до 5 000'],[5000,10000,'5–10 000'],[10000,20000,'10–20 000'],[20000,0,'от 20 000']].map(([a, b, t]) =>
+            `<button class="${(+params.min || 0) === a && (+params.max || 0) === b ? 'on' : ''}" onclick="setPrice(${a},${b})">${t}</button>`).join('')}</div>
+          <div class="prices"><input id="pmin" type="number" inputmode="numeric" placeholder="от" value="${esc(params.min || '')}"><input id="pmax" type="number" inputmode="numeric" placeholder="до" value="${esc(params.max || '')}"></div>
           <button class="btn ghost sm block" style="margin-top:12px" onclick="applyPrice()">Применить</button></div>
         <div class="fbox"><h4>Бренд</h4><div class="scroll">${brandList.map(b => `<label><input type="checkbox" ${brands.includes(b) ? 'checked' : ''} onchange="toggleBrand(this.dataset.b)" data-b="${esc(b)}"> ${esc(b)}</label>`).join('')}</div></div>
       </aside>
@@ -1122,6 +1133,14 @@ function clearPrice(k){ const { params } = parseHash(); delete params[k]; const 
 function toggleSize(s){ const a = load('site_sizes', []), i = a.indexOf(s); i < 0 ? a.push(s) : a.splice(i, 1); save('site_sizes', a); more = 24; route(false) }
 function toggleBrand(b){ const a = load('site_brands', []), i = a.indexOf(b); i < 0 ? a.push(b) : a.splice(i, 1); save('site_brands', a); more = 24; route(false) }
 function toggleOnly(){ save('site_only', !load('site_only', false)); more = 24; route(false) }
+function setPrice(a, b){
+  const { params } = parseHash();
+  const same = (+params.min || 0) === a && (+params.max || 0) === b;
+  if(same || (!a && !b)){ delete params.min; delete params.max } else { if(a) params.min = a; else delete params.min; if(b) params.max = b; else delete params.max }
+  more = 24;
+  const qs = new URLSearchParams(params).toString();
+  go(basePath() + (qs ? '?' + qs : ''));
+}
 function applyPrice(){ const { params } = parseHash(); params.min = $('pmin').value || ''; params.max = $('pmax').value || '';
   Object.keys(params).forEach(k => { if(!params[k]) delete params[k] }); more = 24;
   go(basePath() + (Object.keys(params).length ? '?' + new URLSearchParams(params).toString() : '')) }
@@ -1316,11 +1335,17 @@ function viewSale(){
 }
 
 function playVid(k, t){
-  $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button><h3 style="margin:0 0 14px">${esc(t)}</h3>
-    <video src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline style="width:100%;max-height:70vh;border-radius:18px;background:#000"></video>`;
+  $('modal').classList.add('vid');
+  $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button><h3 style="margin:0 0 12px;padding-right:44px">${esc(t)}</h3>
+    <video src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`;
   $('modal').classList.add('open'); document.body.style.overflow = 'hidden';
 }
-function closeModal(){ $('modal').classList.remove('open'); document.body.style.overflow = '' }
+function closeModal(){
+  // звук не должен продолжаться после закрытия
+  $('modal-box').querySelectorAll('video,audio').forEach(v => { try{ v.pause(); v.removeAttribute('src'); v.load() }catch(e){} });
+  $('modal').classList.remove('open', 'vid'); document.body.style.overflow = '';
+  setTimeout(() => { if(!$('modal').classList.contains('open')) $('modal-box').innerHTML = '' }, 250);
+}
 $('modal').onclick = e => { if(e.target.id === 'modal') closeModal() };
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal() });
 
@@ -1347,6 +1372,8 @@ function viewAccount(){
       <div>
         <div class="cap"><span>Мои заказы</span></div>
         <div id="acc-orders"><div class="empty">Загружаю заказы…</div></div>
+        <div class="cap" style="margin-top:28px"><span>Избранное</span>${FAVS.length ? `<a class="link" href="#/favs">Все ${FAVS.length}</a>` : ''}</div>
+        <div id="acc-favs"></div>
       </div>
       <aside class="acct-side">
         ${ME && ME.link ? `<div class="tcard dark"><div class="dots"></div><b>Приведи друга</b><span>Другу −500 ₽ на первый заказ от 10 000 ₽, вам −500 ₽ на следующий, когда друг оплатит.</span>
@@ -1358,19 +1385,43 @@ function viewAccount(){
           <a class="btn ghost sm block" style="margin-top:14px" href="#/cert">Оформить сертификат</a></div>
         <div class="tcard"><div class="dots"></div><b>Мой вайб</b><span>${VIBE ? 'Подборка «' + VIBES[VIBE.key].t + '» собрана под ваш стиль.' : 'Четыре вопроса — и соберу подборку под ваш стиль.'}</span>
           <button class="btn ghost sm block" style="margin-top:14px" onclick="${VIBE ? `go('/vibe/${VIBE.key}')` : 'startVibe()'}">${VIBE ? 'Открыть подборку' : 'Пройти за минуту'}</button></div>
-        <div class="tcard"><div class="dots"></div><b>Избранное</b><span>${FAVS.length ? FAVS.length + ' ' + plural(FAVS.length, ['вещь','вещи','вещей']) + ' под присмотром: напишу, если подешевеет.' : 'Пока пусто. Нажимайте на сердечко в каталоге — буду следить за ценой.'}</span>
-          <a class="btn ghost sm block" style="margin-top:14px" href="#/favs">Открыть избранное</a></div>
+        <div class="tcard"><div class="dots"></div><b>Ближайшая закупка</b><span>${ruDate(CFG.purchase)} — вещи из заказов, оплаченных до этой даты, уедут вместе. Дорога после выкупа ${CFG.journey}.</span>
+          <a class="btn ghost sm block" style="margin-top:14px" href="#/catalog">Добавить вещь в заказ</a></div>
       </aside>
     </div></div>`;
   loadOrders();
+  const favs = CAT.filter(p => FAVS.includes(p.id) && visible(p)).slice(0, 4);
+  const fb = $('acc-favs');
+  if(fb) fb.innerHTML = favs.length ? `<div class="grid wide">${favs.map(cardHTML).join('')}</div>`
+    : `<div class="empty">Пока пусто. Нажимайте на сердечко у вещи — буду следить за её ценой и напишу, если подешевеет.</div>`;
 }
 function loadOrders(){
+  const box = $('acc-orders'); if(!box) return;
+  // сначала показываем то, что уже знаем: страница не выглядит пустой, пока идёт запрос
+  const saved = load('site_orders', null);
+  if(Array.isArray(saved) && saved.length){ ORDERS = saved; box.innerHTML = saved.map(orderHTML).join('') }
   api('orders').then(r => {
-    const box = $('acc-orders'); if(!box) return;
-    ORDERS = (r && r.orders) || [];
-    if(!ORDERS.length){ box.innerHTML = `<div class="empty">Заказов пока нет. <a href="#/catalog" style="color:var(--red)">Выбрать вещь</a></div>`; return }
-    box.innerHTML = ORDERS.map(orderHTML).join('');
+    const b = $('acc-orders'); if(!b) return;
+    if(!(r && r.orders)){ if(!(Array.isArray(saved) && saved.length)) b.innerHTML = `<div class="empty">Не получилось загрузить заказы. Обновите страницу или напишите мне.</div>`; return }
+    ORDERS = r.orders; save('site_orders', ORDERS);
+    b.innerHTML = ORDERS.length ? ORDERS.map(orderHTML).join('')
+      : `<div class="empty">Заказов пока нет. <a href="#/catalog" style="color:var(--red)">Выбрать вещь</a></div>`;
   });
+}
+/* оплата прямо на сайте: QR, ссылка и перевод по номеру — как в приложении */
+function openPaySheet(num, sum){
+  openModal(`<h3 style="margin:0 0 6px;padding-right:44px">Оплата заказа ${esc(num)}</h3>
+    <p class="mute" style="font-size:14px;margin:0 0 4px">К переводу <b style="color:var(--ink)">${fmt(sum)}</b> · ${esc(CFG.pay.bank)}, комиссии нет.</p>
+    <img src="${CFG.pay.qr}" alt="QR для оплаты" style="display:block;width:min(260px,70%);margin:16px auto;border-radius:18px;background:var(--bg)">
+    <div class="cta" style="justify-content:center">
+      <a class="btn red" href="${CFG.pay.link}" target="_blank" rel="noopener">Оплатить по ссылке</a>
+      <button class="btn ghost" onclick="copyText('${CFG.pay.link}')">Скопировать ссылку</button>
+    </div>
+    <div class="cta" style="justify-content:center;margin-top:10px">
+      <a class="btn ghost sm" href="${KRIS}?text=${encodeURIComponent('Заказ ' + num + ': пришлите, пожалуйста, номер телефона для перевода')}" target="_blank" rel="noopener">Перевод по номеру</a>
+      <a class="btn ghost sm" href="${BOT}?text=${encodeURIComponent('Оплатил(а) заказ ' + num + ', скриншот прикладываю')}" target="_blank" rel="noopener">Отправить скриншот</a>
+    </div>
+    <p class="mute" style="font-size:12.5px;margin-top:14px;text-align:center">Если банк не открывается из-за VPN — сохраните QR картинкой и выберите его в приложении банка через «Оплату по QR».</p>`);
 }
 function orderHTML(o){
   const st = String(o.st || 'новый'), i = ST_ORDER.indexOf(st), done = st === 'выдан', dead = st === 'отменён';
@@ -1386,7 +1437,7 @@ function orderHTML(o){
     <div class="ofoot">
       <b>${fmt(o.pay || 0)}</b>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${st === 'новый' ? `<a class="btn red sm" href="${BOT}" target="_blank" rel="noopener">Оплатить</a>
+        ${st === 'новый' ? `<button class="btn red sm" onclick="openPaySheet('${esc(o.num)}',${o.pay || 0})">Оплатить</button>
           <button class="btn ghost sm" onclick="cancelOrder('${esc(o.num)}')">Отменить</button>` : ''}
         ${st !== 'новый' ? `<button class="btn ghost sm" onclick="openOrderTrack('${esc(o.num)}')">Где посылка</button>` : ''}
       </div>
@@ -1486,7 +1537,7 @@ const PAGES = {
       <details><summary>Сколько ждать?</summary><p>Вещь уходит в ближайшую закупку, дальше дорога ${CFG.journey}. Трек и этапы приходят в Telegram.</p></details>
       <details><summary>Можно заказать вещь, которой нет в каталоге?</summary><p>Да. Пришлите ссылку с Poizon или просто фото — посчитаю стоимость и найду.</p></details>
       <details><summary>Как оплатить?</summary><p>Переводом по QR или ссылке, без комиссии. Наличными не беру.</p></details>
-      <details><summary>Есть ли возврат?</summary><p>Нет: вещь выкупается лично под вас. Поэтому помогаю с размером заранее и подбираю замену, если размер закончился.</p></details>
+      <details><summary>Безопасно ли входить через Telegram?</summary><p>Да. Окно входа открывает сам Telegram на своём сайте — мы туда не вмешиваемся. Пароль, код и номер телефона Telegram нам не передаёт: магазин получает только имя, ник и подпись Telegram, которой мы проверяем, что это действительно вы. Вход нужен только для того, чтобы показать ваши заказы и путь посылки, и его можно отключить в Telegram: Настройки → Конфиденциальность → Сайты. Заказать можно и без входа.</p></details><details><summary>Где хранятся мои данные?</summary><p>Сам сайт — это набор файлов без базы: каталог, фотографии и цены. Имя, телефон и адрес из формы заказа уходят напрямую в мою таблицу заказов и в Telegram-бот, по защищённому соединению. Данные карты я не вижу никогда: оплата идёт переводом в вашем банке.</p></details><details><summary>Есть ли возврат?</summary><p>Нет: вещь выкупается лично под вас. Поэтому помогаю с размером заранее и подбираю замену, если размер закончился.</p></details>
     </div>` },
 };
 function viewAbout(){
@@ -1515,7 +1566,7 @@ function viewAbout(){
 
     <section style="padding-top:0">
       <div class="band reveal">
-        <div class="pic"><img src="img/kris-portrait.jpg" alt="Кристина с посылкой"></div>
+        <div class="pic"><img src="img/kris-app.jpg" alt="Мини-приложение POIZON.EKB"></div>
         <div class="in">
           <span class="hand">что ещё есть</span>
           <h3 style="margin-top:10px">Магазин живёт и в Telegram</h3>

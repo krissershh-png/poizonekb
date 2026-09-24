@@ -35,18 +35,15 @@ h1{font-size:clamp(30px,4vw,54px)}
 h2{font-size:clamp(20px,2.1vw,30px)}
 h3{font-size:clamp(16px,1.3vw,19px);font-weight:800}
 .kicker{display:inline-flex;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
-.grad{background:linear-gradient(90deg,#b3121a,#e0342a 55%,#ff6f5e);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hand{font-family:var(--hand);font-weight:700;color:var(--red);font-size:28px;line-height:1}
 .lead{font-size:clamp(15px,1.15vw,18px);line-height:1.62;color:var(--ink-2)}
 .mute{color:var(--mute)}
 
-.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 24px;border-radius:999px;background:var(--ink);color:#fff;font-weight:900;font-size:15px;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .25s}
-.btn::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 120% at 50% 120%,rgba(255,255,255,.25),transparent 70%);opacity:0;transition:opacity .35s}
-.btn:hover{transform:translateY(-2px);box-shadow:0 18px 32px -20px rgba(17,16,16,.85)}
-.btn:hover::after{opacity:1}
-.btn:active{transform:translateY(0)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 24px;border-radius:999px;background:var(--ink);color:#fff;font-weight:900;font-size:15px;white-space:nowrap;transition:background .18s,transform .12s}
+.btn:hover{background:#000}
+.btn:active{transform:scale(.97)}
 .btn.red{background:var(--red)}
-.btn.red:hover{background:var(--red-2);box-shadow:0 18px 34px -18px rgba(200,23,23,.75)}
+.btn.red:hover{background:var(--red-2)}
 .btn.ghost{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .btn.ghost:hover{background:var(--bg)}
 .btn.sm{height:42px;padding:0 18px;font-size:14px}
@@ -57,25 +54,25 @@ h3{font-size:clamp(16px,1.3vw,19px);font-weight:800}
 .link:hover{color:var(--red)}
 .link:hover::after{transform:translateX(3px)}
 
-.reveal{opacity:0;transform:translateY(18px)}
-.reveal.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal{opacity:0;transform:translateY(10px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .reveal.d1.in{transition-delay:.06s}.reveal.d2.in{transition-delay:.12s}.reveal.d3.in{transition-delay:.18s}.reveal.d4.in{transition-delay:.24s}
 #view{animation:fade .4s var(--ease)}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 
-header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.86);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
-header.stuck{border-color:var(--hair);box-shadow:0 10px 30px -26px rgba(17,16,16,.6)}
-.hrow{display:flex;align-items:center;gap:26px;height:var(--head)}
+header{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid transparent;transition:border-color .25s}
+header.stuck{border-color:var(--hair)}
+.hrow{display:flex;align-items:center;gap:20px;height:var(--head)}
 .logo{display:flex;align-items:center;gap:11px;font-family:var(--dela);font-weight:800;font-size:17px;letter-spacing:-.03em;white-space:nowrap}
 .logo i{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:var(--red);color:#fff;font-size:12px;font-style:normal;font-weight:800;transition:transform .4s var(--ease)}
 .logo:hover i{transform:rotate(-8deg) scale(1.06)}
-nav.main{display:flex;gap:26px;font-size:14px;font-weight:600;color:var(--ink-2)}
-nav.main a{position:relative;padding:4px 0}
+nav.main{display:flex;align-items:center;gap:22px;font-size:14px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+nav.main a{position:relative;padding:4px 0;white-space:nowrap}
 nav.main a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--red);transition:right .3s var(--ease)}
 nav.main a:hover::after,nav.main a.on::after{right:0}
 nav.main a.on{color:var(--ink)}
-.hsearch{margin-left:auto;display:flex;align-items:center;gap:10px;height:42px;padding:0 16px;border-radius:999px;background:var(--bg);width:min(280px,24vw);transition:box-shadow .25s,background .25s}
+.hsearch{margin-left:auto;display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:999px;background:var(--bg);width:clamp(180px,20vw,260px);flex:0 0 auto;transition:box-shadow .25s,background .25s}
 .hsearch:focus-within{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink)}
 .hsearch input{border:0;background:none;outline:none;font-weight:500;width:100%}
 .hicons{display:flex;align-items:center;gap:8px}
@@ -90,7 +87,8 @@ nav.main a.on{color:var(--ink)}
 
 main{min-height:64vh}
 section{padding:clamp(44px,5vw,86px) 0}
-.sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(22px,2.4vw,34px)}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:clamp(22px,2.4vw,34px)}
+.sechead>div{min-width:0}
 .sechead h2{margin-top:12px}
 .sechead p{margin-top:12px;max-width:58ch}
 .crumbs{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mute);padding:22px 0 4px}
@@ -105,54 +103,52 @@ section{padding:clamp(44px,5vw,86px) 0}
 .cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
 .facts{display:grid;grid-template-columns:repeat(3,auto);gap:clamp(20px,3vw,44px);margin-top:36px;justify-content:start}
 .facts b{display:block;font-family:var(--dela);font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.sum .row b,.sum .row.total b,.citem .pr,.pricerow .price,.saleitem .gain,.calcsum,.ofoot b{font-variant-numeric:tabular-nums}
 .facts span{font-size:13px;font-weight:600;color:var(--mute)}
-.hero-art{position:relative;border-radius:32px;aspect-ratio:1/1;overflow:hidden;background:radial-gradient(110% 85% at 68% 12%,#fff,#fbf1f1 48%,#f6e6e6);box-shadow:inset 0 0 0 1px var(--hair)}
-.hero-art::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(200,23,23,.13) 1.3px,transparent 1.5px);background-size:24px 24px}
+.hero-art{position:relative;border-radius:26px;aspect-ratio:1/1;overflow:hidden;background:var(--aqua);box-shadow:inset 0 0 0 2px var(--hair)}
+.hero-art::before{content:"";position:absolute;right:-40px;top:-40px;width:260px;height:260px;background-image:radial-gradient(circle,rgba(18,18,18,.13) 1.2px,transparent 1.6px);background-size:7px 7px;-webkit-mask-image:radial-gradient(ellipse at center,#000,transparent 70%);mask-image:radial-gradient(ellipse at center,#000,transparent 70%)}
 .hero-art img{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:94%;max-height:96%;object-fit:contain;animation:rise 1s var(--ease) both}
 @keyframes rise{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translateX(-50%)}}
 .pill{position:absolute;display:flex;align-items:center;gap:9px;padding:11px 16px;border-radius:999px;background:rgba(255,255,255,.96);font-size:13px;font-weight:700;box-shadow:0 16px 34px -20px rgba(17,16,16,.5);animation:rise .9s var(--ease) both}
-.pill.one{left:18px;bottom:20px;animation-delay:.25s}
-.pill.two{right:18px;top:22px;animation-delay:.4s}
+.pill{max-width:calc(100% - 32px)}
+.pill.one{left:16px;bottom:18px;animation-delay:.25s}
+.pill.two{right:16px;top:20px;animation-delay:.4s}
 .pill i{width:8px;height:8px;border-radius:50%;background:var(--green);font-style:normal}
 
-.marq{overflow:hidden;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:18px 0;margin-top:clamp(28px,4vw,56px);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.marq div{display:flex;gap:44px;width:max-content;animation:slide 40s linear infinite}
-.marq:hover div{animation-play-state:paused}
-.marq span{font-family:var(--dela);font-weight:700;font-size:15px;letter-spacing:.06em;color:#c9bfbf;white-space:nowrap;transition:color .3s}
-.marq span:hover{color:var(--ink)}
-@keyframes slide{to{transform:translateX(-50%)}}
+.brands{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:20px 0;margin-top:clamp(28px,4vw,56px)}
+.brands span{font-family:var(--dela);font-weight:700;font-size:14px;letter-spacing:.05em;color:#b6abab;white-space:nowrap;transition:color .2s}
+.brands span:hover{color:var(--ink)}
 
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,1.4vw,24px)}
 .grid.wide{grid-template-columns:repeat(3,minmax(0,1fr))}
-.card{position:relative;display:block;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 0 0 1.5px var(--hair),0 8px 20px rgba(18,18,18,.05);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.card:hover{transform:translateY(-4px);box-shadow:0 28px 50px -34px rgba(17,16,16,.55),inset 0 0 0 1px var(--hair)}
-.card .ph{position:relative;aspect-ratio:1/1;background:linear-gradient(155deg,#fbfdfd 0%,#eef5f6 100%);overflow:hidden}
-.card .ph img{width:100%;height:100%;object-fit:contain;padding:9% 7%;mix-blend-mode:multiply;transition:transform .6s var(--ease)}
-.card:hover .ph img{transform:scale(1.05)}
+.card{position:relative;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 0 0 1.5px var(--hair),0 8px 20px rgba(18,18,18,.05);transition:box-shadow .2s,transform .12s}
+.card:hover{box-shadow:0 0 0 2px var(--ink),0 8px 20px rgba(18,18,18,.05)}
+.card:active{transform:scale(.99)}
+.card .ph{position:relative;aspect-ratio:1/1;background:linear-gradient(155deg,#fbfdfd 0%,#eef5f6 100%);overflow:hidden;flex:0 0 auto}
+.card .ph img{width:100%;height:100%;object-fit:contain;padding:9% 7%;mix-blend-mode:multiply}
 .tag{position:absolute;left:10px;top:10px;padding:6px 11px;border-radius:999px;background:var(--ink);color:#fff;font-size:11px;font-weight:800}
 .tag.stock{background:var(--green)}
 .tag.sale{background:var(--red)}
-.card .bd{padding:12px 14px 16px}
+.card .bd{padding:12px 14px 16px;display:flex;flex-direction:column;flex:1 1 auto}
 .card .brand{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
 .card .name{margin-top:5px;font-weight:700;font-size:14.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
-.card .row{display:flex;align-items:baseline;gap:9px;margin-top:11px;flex-wrap:wrap}
-.card .price{font-family:var(--dela);font-weight:800;font-size:18px;letter-spacing:-.03em}
+.card .row{display:flex;align-items:baseline;gap:9px;margin-top:auto;padding-top:11px;flex-wrap:wrap}
+.card .price{font-family:var(--dela);font-weight:800;font-size:18px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .card .price small{font-family:var(--body);font-size:12px;font-weight:600;color:var(--mute);letter-spacing:0}
 .card .old{font-size:13px;font-weight:600;color:var(--mute);text-decoration:line-through}
 .card .sub{margin-top:6px;font-size:12.5px;font-weight:600;color:var(--mute)}
 
 .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(12px,1.2vw,20px)}
-.tile{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:3/3.4;background:var(--bg);box-shadow:inset 0 0 0 1px var(--hair);display:grid;align-content:end;padding:18px;transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
-.tile:hover{transform:translateY(-4px);box-shadow:0 26px 46px -32px rgba(17,16,16,.5),inset 0 0 0 1px var(--hair)}
-.tile .pics{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;padding:14px 14px 70px;gap:6px}
-.tile .pics img{width:100%;height:100%;object-fit:contain;transition:transform .5s var(--ease)}
-.tile:hover .pics img{transform:scale(1.06)}
+.tile{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/3.4;background:var(--bg);box-shadow:inset 0 0 0 2px var(--hair);display:grid;align-content:end;padding:18px;transition:box-shadow .2s}
+.tile:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+.tile .pics{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;padding:14px 14px 78px;gap:6px}
+.tile::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(180deg,rgba(248,245,245,0),var(--bg) 58%);pointer-events:none}
+.tile .pics img{width:100%;height:100%;object-fit:contain}
 .tile b{position:relative;font-family:var(--dela);font-weight:700;font-size:15px}
 .tile span{position:relative;font-size:12px;font-weight:600;color:var(--mute)}
 
 .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.4vw,22px)}
-.tcard{position:relative;overflow:hidden;padding:24px;border-radius:22px;background:#fff;box-shadow:0 0 0 1.5px var(--hair);transition:transform .35s var(--ease)}
-.tcard:hover{transform:translateY(-3px)}
+.tcard{position:relative;overflow:hidden;padding:24px;border-radius:20px;background:#fff;box-shadow:0 0 0 1.5px var(--hair)}
 .tcard.dark{background:var(--ink);color:#fff;box-shadow:none}
 .tcard.dark span{color:#aab4b6}
 .tcard b{display:block;font-family:var(--dela);font-weight:900;font-size:15px;margin-bottom:8px;text-transform:uppercase;letter-spacing:-.01em}
@@ -166,8 +162,8 @@ section{padding:clamp(44px,5vw,86px) 0}
 .step b{position:relative;display:block;font-family:var(--dela);font-weight:900;font-size:15px;margin-bottom:9px;text-transform:uppercase}
 .step p{position:relative;font-size:14px;font-weight:600;color:var(--ink-2);line-height:1.55}
 
-.saleitem{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:18px;align-items:center;padding:16px;border-radius:20px;box-shadow:inset 0 0 0 1px var(--hair);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.saleitem:hover{transform:translateY(-2px);box-shadow:0 20px 40px -32px rgba(17,16,16,.5),inset 0 0 0 1px var(--hair)}
+.saleitem{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:18px;align-items:center;padding:16px;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--hair);transition:box-shadow .2s}
+.saleitem:hover{box-shadow:inset 0 0 0 2px var(--ink)}
 .saleitem .th{width:96px;height:96px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px var(--hair-2);overflow:hidden}
 .saleitem .th img{width:100%;height:100%;object-fit:contain;padding:8%}
 .saleitem .bars{margin-top:9px;display:grid;gap:6px;max-width:440px}
@@ -218,14 +214,14 @@ section{padding:clamp(44px,5vw,86px) 0}
 .pricerow{display:flex;align-items:baseline;gap:14px;margin-top:18px;flex-wrap:wrap}
 .pricerow .price{font-family:var(--dela);font-weight:800;font-size:clamp(26px,2.6vw,34px);letter-spacing:-.03em}
 .pricerow .old{font-size:16px;color:var(--mute);text-decoration:line-through}
-.pricerow .badge{padding:6px 12px;border-radius:999px;background:var(--glow);color:var(--red);font-size:13px;font-weight:700}
+.pricerow .badge{padding:7px 13px;border-radius:999px;background:var(--red);color:#fff;font-size:12.5px;font-weight:800}
 .stockline{margin-top:10px;font-size:13.5px;font-weight:600;color:var(--green)}
 .szhead{display:flex;justify-content:space-between;align-items:baseline;margin-top:24px}
 .szhead b{font-size:14px;font-weight:700}
 .szs{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:8px;margin-top:12px}
-.szs button{padding:11px 6px;border-radius:15px;background:var(--bg);font-weight:700;font-size:14px;text-align:center;transition:all .22s var(--ease)}
-.szs button span{display:block;font-size:11px;font-weight:600;color:var(--mute);margin-top:3px}
-.szs button:hover{background:#efe9e9;transform:translateY(-1px)}
+.szs button{min-height:62px;padding:10px 6px;border-radius:14px;background:var(--bg);font-weight:800;font-size:14px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-variant-numeric:tabular-nums;transition:background .18s,box-shadow .18s}
+.szs button span{display:block;font-size:11px;font-weight:600;color:var(--mute)}
+.szs button:hover{background:#efe9e9}
 .szs button.on{background:var(--ink);color:#fff}
 .szs button.on span{color:rgba(255,255,255,.72)}
 .szs button.no{opacity:.32;cursor:default;text-decoration:line-through}
@@ -264,10 +260,9 @@ section{padding:clamp(44px,5vw,86px) 0}
 .agree input{width:18px;height:18px;margin-top:2px;accent-color:var(--red)}
 
 .vids{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.2vw,20px)}
-.vid{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:3/4;background:var(--bg);width:100%;transition:transform .4s var(--ease)}
-.vid:hover{transform:translateY(-4px)}
-.vid img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
-.vid:hover img{transform:scale(1.06)}
+.vid{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;background:var(--bg);width:100%;transition:transform .12s}
+.vid:active{transform:scale(.99)}
+.vid img{width:100%;height:100%;object-fit:cover}
 .vid::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
 .vid b{position:absolute;left:16px;right:16px;bottom:16px;z-index:2;color:#fff;font-size:13.5px;font-weight:700;text-align:left}
 .vid .play{position:absolute;inset:0;margin:auto;z-index:2;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.94);display:grid;place-items:center;transition:transform .35s var(--ease)}
@@ -329,7 +324,8 @@ footer a:hover{color:#fff}
 .calcbox{border-radius:22px;background:var(--bg);padding:26px}
 .calcout{margin-top:20px;padding:20px;border-radius:18px;background:#fff;min-height:96px;display:flex;align-items:center}
 .calcsum{font-family:var(--dela);font-weight:900;font-size:34px;letter-spacing:-.03em;margin-top:4px}
-@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1180px){
+@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1240px){ nav.main{display:none} .burger{display:grid} .hsearch{margin-left:auto} }
+@media (max-width:1180px){
   .wrap{padding:0 28px}
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .grid.wide{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -361,6 +357,29 @@ footer a:hover{color:#fff}
   .card .bd{padding:12px 13px 15px}
 }
 
+
+/* ---------- доставка: путь заказа, города, оплата ---------- */
+.steps.four{grid-template-columns:repeat(4,1fr)}
+.dpath{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:6px}
+.dpath div{position:relative;padding:0 14px 0 0}
+.dpath div::before{content:"";display:block;height:8px;border-radius:999px;background:var(--red);margin-bottom:14px;opacity:.18}
+.dpath div:first-child::before{opacity:1}
+.dpath b{display:block;font-family:var(--dela);font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:-.01em}
+.dpath span{display:block;margin-top:6px;font-size:13.5px;font-weight:600;color:var(--mute);line-height:1.5}
+.dpath em{display:block;margin-top:2px;font-style:normal;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+.slip{border-radius:20px;background:var(--bg);padding:22px 24px}
+.slip .r{display:flex;justify-content:space-between;gap:18px;padding:11px 0;font-size:14.5px;font-weight:600;border-bottom:1px dashed var(--hair)}
+.slip .r:last-child{border:0}
+.slip .r b{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.slip .r span{color:var(--ink-2)}
+.dnums{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.4vw,22px)}
+.dnum{border-radius:20px;padding:24px;background:var(--ink);color:#fff;position:relative;overflow:hidden}
+.dnum:nth-child(2){background:var(--red)}
+.dnum:nth-child(3){background:var(--bg);color:var(--ink)}
+.dnum b{display:block;font-family:var(--dela);font-weight:900;font-size:clamp(24px,2.4vw,34px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.dnum span{display:block;margin-top:8px;font-size:13.5px;font-weight:600;opacity:.8;line-height:1.5}
+@media (max-width:900px){ .dpath,.dnums,.steps.four{grid-template-columns:repeat(2,1fr);gap:18px} }
+@media (max-width:560px){ .dpath,.dnums,.steps.four{grid-template-columns:1fr} }
 
 /* ---------- поиск по фото ---------- */
 .qphoto{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:50%;background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer}
@@ -395,14 +414,16 @@ footer a:hover{color:#fff}
 .cdz button{padding:0;border:2px solid transparent;background:none;border-radius:14px;cursor:pointer;display:block}
 .cdz button.on{border-color:var(--red)}
 .cdz canvas{display:block;width:100%;height:auto;aspect-ratio:1280/800;border-radius:11px;background:var(--bg)}
-.cdz span{display:block;font-size:12px;color:var(--mute);margin-top:4px;font-weight:700}
+.cdz span{display:block;font-size:12px;color:var(--mute);margin-top:5px;font-weight:600;text-align:center}
 .denoms{display:flex;flex-wrap:wrap;gap:8px}
-.denoms button,.cins button{border:1.6px solid var(--line);background:#fff;border-radius:999px;padding:9px 15px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
-.denoms button.on,.cins button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.cins{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
-.cins-g{margin-bottom:10px}
-.cins-g>span{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.certside{position:sticky;top:96px;display:grid;gap:12px}
+.denoms button,.cins button{display:inline-flex;align-items:center;height:38px;padding:0 16px;border:0;border-radius:999px;background:var(--bg);font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transition:background .18s}
+.denoms button{font-weight:800;font-variant-numeric:tabular-nums}
+.denoms button:hover,.cins button:hover{background:#efe9e9}
+.denoms button.on,.cins button.on{background:var(--ink);color:#fff}
+.cins{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.cins-g{margin-bottom:14px}
+.cins-g>span{display:block;margin-bottom:2px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.certside{position:sticky;top:calc(var(--head) + 20px);display:grid;gap:12px}
 
 /* ---------- вайб ---------- */
 .vq-bar{height:5px;border-radius:999px;background:var(--line);overflow:hidden;margin:12px 0 18px}
@@ -438,10 +459,10 @@ footer a:hover{color:#fff}
     <a class="logo" href="#/"><i>PZ</i>POIZON.EKB</a>
     <nav class="main" id="nav">
       <a href="#/catalog">Каталог</a>
-      <a href="#/sale">Выгода к России</a>
-      <a href="#/calc">Расчёт по ссылке</a>
+      <a href="#/sale">Выгода</a>
+      <a href="#/calc">Расчёт</a>
       <a href="#/cert">Сертификат</a>
-      <a href="#/delivery">Доставка и оплата</a>
+      <a href="#/delivery">Доставка</a>
       <a href="#/reviews">Отзывы</a>
       <a href="#/about">О магазине</a>
     </nav>
@@ -451,7 +472,7 @@ footer a:hover{color:#fff}
       <button class="burger" id="burger" aria-label="Меню"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <a class="icobtn" href="#/cart" aria-label="Заказ"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><b id="cart-n" hidden>0</b></a>
       <a class="btn ghost sm" id="auth-btn" href="#">Войти</a>
-      <a class="btn red sm" href="https://t.me/poizonekbb_bot" target="_blank" rel="noopener">В Telegram</a>
+      <a class="btn red sm" href="https://t.me/poizonekbb_bot" target="_blank" rel="noopener">Telegram</a>
     </div>
   </div>
 </header>
@@ -629,6 +650,7 @@ function route(scroll){
   else if(parts[0] === 'sale') viewSale();
   else if(parts[0] === 'cart') viewCart();
   else if(parts[0] === 'reviews') viewReviews();
+  else if(parts[0] === 'delivery') viewDelivery();
   else if(parts[0] === 'cert') viewCert(params);
   else if(parts[0] === 'c' && parts[1]) viewCertLink(parts[1]);
   else if(parts[0] === 'vibe') viewVibe(parts[1]);
@@ -640,6 +662,15 @@ window.addEventListener('hashchange', () => route(true));
 function refresh(){ const { path } = parseHash(); if(path.split('/')[0] === 'cart') return; route(false) }
 addEventListener('scroll', () => $('head').classList.toggle('stuck', scrollY > 10), { passive: true });
 
+/* «Сначала популярные»: сначала то, что чаще берут и что лучше выглядит в карточке.
+   Кроссовки и обувь впереди, косметика и мелочь — в конце: это витрина магазина, а не склад. */
+const SUB_RANK = { sneakers:60, boots:52, keds:46, maryjane:44, pumps:42, loafers:42, ballet:40, sandals:36, mules:36, ankle:38, heels:40, outer:34, hoodies:30, knit:28, tees:24, pants:24, bags:30, watch:20, hats:18, scarf:16, wallet:14, glasses:14, toys:18, beauty:0, other:8 };
+const CAT_RANK = { shoes:40, clothes:26, bags:26, acc:12, beauty:0 };
+function popScore(p){
+  return (CAT_RANK[catOf(p)] || 0) + (SUB_RANK[p.sub] ?? 10)
+    + (p.hit || 0) * 6 + (p.stock ? 40 : 0) + (p.look ? 6 : 0)
+    + Math.min((p.img || []).length, 4) * 2 + (RETAIL[p.id] ? 6 : 0) + (p.fresh ? 2 : 0);
+}
 function cardHTML(p, i){
   const mn = minPrice(p), mx = maxPrice(p), r = RETAIL[p.id], s = okSizes(p);
   const tag = p.stock ? '<span class="tag stock">В наличии</span>' : rusOk(p, mn) ? '<span class="tag sale">−' + fmt(r.p - mn) + ' к РФ</span>' : p.fresh ? '<span class="tag">Новинка</span>' : '';
@@ -670,7 +701,7 @@ function saleItemHTML(p){
 function viewHome(){
   document.title = 'POIZON.EKB — оригиналы с Poizon в Екатеринбурге и по всей России';
   const shown = CAT.filter(visible);
-  const fresh = shown.filter(p => p.fresh).slice(0, 8);
+  const fresh = shown.filter(p => p.fresh).sort((a, b) => popScore(b) - popScore(a)).slice(0, 8);
   const sale = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a)));
   const brands = [...new Set(shown.map(p => p.brand))].filter(Boolean).slice(0, 26);
   const tiles = CATS.map(c => {
@@ -686,7 +717,7 @@ function viewHome(){
           <p class="lead">Кроссовки, одежда, сумки и косметика из Китая — с проверкой подлинности. Цена видна под каждый размер и уже включает доставку до меня: доплат при получении нет.</p>
           <div class="cta"><a class="btn red" href="#/catalog">Смотреть каталог</a><a class="btn ghost" href="#/calc">Посчитать свою вещь</a></div>
           <div class="facts">
-            <div><b class="count" data-n="${shown.length}">0</b><span>вещей в каталоге</span></div>
+            <div><b>${shown.length.toLocaleString('ru-RU')}</b><span>вещей в каталоге</span></div>
             <div><b>${CFG.journey}</b><span>дорога после выкупа</span></div>
             <div><b>${ruDate(CFG.purchase)}</b><span>ближайшая закупка</span></div>
           </div>
@@ -697,7 +728,7 @@ function viewHome(){
           <div class="pill two">Привожу лично в Екатеринбург</div>
         </div>
       </div>
-      <div class="marq"><div>${[...brands, ...brands].map(b => `<span>${esc(b)}</span>`).join('')}</div></div>
+      <div class="brands">${brands.map(b => `<span>${esc(b)}</span>`).join('')}</div>
     </section>
 
     <section>
@@ -754,13 +785,6 @@ function viewHome(){
       <div class="vids">${VIDS.slice(0, 4).map(vidHTML).join('')}</div>
     </section>
   </div>`;
-  counters();
-}
-function counters(){
-  document.querySelectorAll('.count').forEach(el => {
-    const n = +el.dataset.n || 0, step = Math.max(1, Math.round(n / 46)); let cur = 0;
-    const t = setInterval(() => { cur += step; if(cur >= n){ cur = n; clearInterval(t) } el.textContent = cur.toLocaleString('ru-RU') }, 22);
-  });
 }
 
 /* ---------- каталог ---------- */
@@ -771,7 +795,8 @@ function viewCatalog(params){
   const c = CATS.find(x => x.id === cat);
   const base = CAT.filter(p => visible(p) && (cat === 'all' || catOf(p) === cat));
   const brandList = [...new Set(base.map(p => p.brand))].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), 'ru'));
-  const sizeList = [...new Set(base.flatMap(p => okSizes(p).map(s => s.eu)))].filter(s => s !== 'Один').sort((a, b) => sizeKey(a) - sizeKey(b)).slice(0, 46);
+  const realSize = s => CLOTH.includes(String(s).toUpperCase()) || (/^\d{2}([.,]5|⅓|⅔)?$/.test(String(s)) && parseFloat(s) >= 33 && parseFloat(s) <= 48);
+  const sizeList = [...new Set(base.flatMap(p => okSizes(p).map(s => s.eu)))].filter(realSize).sort((a, b) => sizeKey(a) - sizeKey(b)).slice(0, 46);
   const subs = c ? c.subs.filter(([id]) => base.some(p => p.sub === id)) : [];
   $('view').innerHTML = `
   <div class="wrap">
@@ -801,7 +826,8 @@ function viewCatalog(params){
           </div>
           <button class="btn ghost sm" id="fbtn" style="display:none" onclick="document.getElementById('side').classList.toggle('open')">Фильтры</button>
           <select class="sort" onchange="setParam('sort',this.value)">
-            <option value="new" ${!params.sort || params.sort === 'new' ? 'selected' : ''}>Сначала новинки</option>
+            <option value="pop" ${!params.sort || params.sort === 'pop' ? 'selected' : ''}>Сначала популярные</option>
+            <option value="new" ${params.sort === 'new' ? 'selected' : ''}>Сначала новинки</option>
             <option value="cheap" ${params.sort === 'cheap' ? 'selected' : ''}>Сначала дешёвые</option>
             <option value="rich" ${params.sort === 'rich' ? 'selected' : ''}>Сначала дорогие</option>
             <option value="sale" ${params.sort === 'sale' ? 'selected' : ''}>Где выгода к РФ больше</option>
@@ -831,11 +857,12 @@ function renderList(params){
     && (!q || (p.brand + ' ' + p.name).toLowerCase().includes(q))
     && (!min || minPrice(p) >= min) && (!max || minPrice(p) <= max));
   const gain = p => { const r = RETAIL[p.id]; return r ? r.p - minPrice(p) : -1 };
-  const s = params.sort || 'new';
+  const s = params.sort || 'pop';
   list = list.sort(s === 'cheap' ? (a, b) => minPrice(a) - minPrice(b)
     : s === 'rich' ? (a, b) => minPrice(b) - minPrice(a)
     : s === 'sale' ? (a, b) => gain(b) - gain(a)
-    : (a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0) || minPrice(a) - minPrice(b));
+    : s === 'new' ? (a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0) || popScore(b) - popScore(a)
+    : (a, b) => popScore(b) - popScore(a));
   const g = $('grid'); if(!g) return;
   g.innerHTML = list.slice(0, more).map(cardHTML).join('') || `<div class="empty" style="grid-column:1/-1">Ничего не нашлось. Попробуйте убрать часть фильтров или <a href="${KRIS}" target="_blank" rel="noopener" style="color:var(--red)">напишите мне</a> — найду вещь по фото или ссылке.</div>`;
   $('more').style.display = list.length > more ? '' : 'none';
@@ -1233,6 +1260,84 @@ const PAGES = {
       <details><summary>Есть ли возврат?</summary><p>Нет: вещь выкупается лично под вас. Поэтому помогаю с размером заранее и подбираю замену, если размер закончился.</p></details>
     </div>` },
 };
+function viewDelivery(){
+  document.title = 'Доставка и оплата — POIZON.EKB';
+  $('view').innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Доставка и оплата</span></div>
+    <div class="pagehead"><span class="kicker">Как всё происходит</span><h1 style="margin-top:12px">Доставка и оплата</h1>
+      <p class="lead">Ничего сложного: вы выбираете вещь, я выкупаю её лично в ближайшую закупку и везу. Цена в каталоге — конечная: доставка до Екатеринбурга уже внутри, доплат при получении нет.</p>
+      <div class="cta"><a class="btn red" href="#/catalog">Выбрать вещь</a><a class="btn ghost" href="#/calc">Посчитать свою</a></div></div>
+
+    <section style="padding-top:clamp(26px,3vw,44px)">
+      <div class="sechead reveal"><div><span class="kicker">Путь заказа</span><h2>Четыре шага</h2></div></div>
+      <div class="dpath">
+        <div class="reveal"><b>Заказ</b><em>сегодня</em><span>Выбираете размер и оставляете заказ. Я проверяю, что он есть на Poizon прямо сейчас, и присылаю сумму.</span></div>
+        <div class="reveal d1"><b>Выкуп</b><em>${ruDate(CFG.purchase)}</em><span>После оплаты вещь уходит в ближайшую закупку. Присылаю фото коробки, когда она приедет ко мне на склад в Китае.</span></div>
+        <div class="reveal d2"><b>Дорога</b><em>${CFG.journey}</em><span>Китай — Москва — Екатеринбург. Трек и этапы приходят в Telegram сами, спрашивать «где заказ» не нужно.</span></div>
+        <div class="reveal d3"><b>Вручение</b><em>в руки</em><span>По Екатеринбургу и Пышме привожу лично. В другие города отправляю в пункт выдачи и скидываю трек.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sechead reveal"><div><span class="kicker">Куда привожу</span><h2>Города и пункты выдачи</h2></div></div>
+      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+        <div class="tcard dark reveal"><div class="dots"></div><b>Екатеринбург и Верхняя Пышма</b>
+          <span>Привожу лично до двери или встречаемся, где удобно. Это уже в цене — платить за доставку по городу не нужно.</span></div>
+        <div class="tcard reveal d1"><div class="dots"></div><b>Вся Россия</b>
+          <span>СДЭК или Яндекс Доставка до пункта выдачи. Дорогу от Екатеринбурга до вас оплачиваете при получении — обычно 300–700 ₽.</span></div>
+        <div class="tcard reveal d2"><div class="dots"></div><b>Если вещь уже у меня</b>
+          <span>Вещи «в наличии» отдаю в день заказа: ждать закупку не нужно. Такие карточки помечены зелёным.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sechead reveal"><div><span class="kicker">Оплата</span><h2>Переводом, без комиссии</h2>
+        <p class="lead">Оплата — после того, как я подтвердила наличие вашего размера. Наличными не беру: так остаётся след платежа и вам спокойнее.</p></div></div>
+      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+        <div class="tcard reveal"><div class="dots"></div><b>QR-код</b><span>Открываете камеру банка и переводите. Если из-за VPN банк не открывается — сохраните QR картинкой и выберите его в приложении банка через «Оплату по QR».</span></div>
+        <div class="tcard reveal d1"><div class="dots"></div><b>Ссылка или телефон</b><span>Пришлю ссылку на перевод в Т-Банк или номер телефона — как вам удобнее. Комиссии нет ни там, ни там.</span></div>
+        <div class="tcard reveal d2"><div class="dots"></div><b>Сертификатом</b><span>Если вам подарили сертификат POIZON.EKB — отметьте это при оформлении и введите номер, сумма спишется сама.</span>
+          <a class="btn ghost sm block" style="margin-top:14px" href="#/cert">Подарочный сертификат</a></div>
+      </div>
+      <p class="mute" style="font-size:13.5px;margin-top:16px;max-width:70ch">После перевода пришлите скриншот — отмечу оплату, и вещь уйдёт в закупку. Статус всегда виден в личном кабинете и в Telegram.</p>
+    </section>
+
+    <section>
+      <div class="sechead reveal"><div><span class="kicker">Из чего складывается цена</span><h2>Что вы оплачиваете</h2></div></div>
+      <div class="cart" style="padding-bottom:0">
+        <div class="slip reveal">
+          <div class="r"><span>Сама вещь на Poizon</span><b>по курсу юаня</b></div>
+          <div class="r"><span>Доставка Китай — Екатеринбург</span><b>${fmt(CFG.kgRate)} за кг</b></div>
+          <div class="r"><span>Моя работа: выкуп, проверка, хранение</span><b>${fmt(CFG.fee)}</b></div>
+          <div class="r"><span>Вторая и следующие вещи в заказе</span><b>${fmt(CFG.feeNext)}</b></div>
+          <div class="r"><span>Доставка по Екатеринбургу и Пышме</span><b>0 ₽</b></div>
+          <div class="r"><span>Доплаты при получении</span><b>нет</b></div>
+        </div>
+        <aside class="tcard reveal d1" style="position:sticky;top:calc(var(--head) + 20px)"><div class="dots"></div><b>Почему цена меняется</b>
+          <span>Курс юаня пересчитывается три раза в день, поэтому цена в каталоге может немного гулять. Та сумма, которую я подтвердила перед оплатой, уже не меняется.</span>
+          <a class="btn ghost sm block" style="margin-top:14px" href="#/calc">Посчитать свою вещь</a></aside>
+      </div>
+    </section>
+
+    <section>
+      <div class="dnums">
+        <div class="dnum reveal"><b>${CFG.journey}</b><span>дорога после выкупа</span></div>
+        <div class="dnum reveal d1"><b>${ruDate(CFG.purchase)}</b><span>ближайшая закупка</span></div>
+        <div class="dnum reveal d2"><b>0 ₽</b><span>доплат при получении в Екатеринбурге</span></div>
+      </div>
+    </section>
+
+    <section style="padding-top:0">
+      <div class="sechead reveal"><div><span class="kicker">Мелкий шрифт</span><h2>Что важно знать заранее</h2></div><a class="link" href="#/faq">Все вопросы</a></div>
+      <div class="faq">
+        <details open><summary>Можно ли вернуть вещь?</summary><p>Нет: вещь выкупается на Poizon лично под вас, поэтому возврата нет. Зато с размером помогу заранее — напишите свою обычную пару, подскажу, как сидит конкретная модель, и предложу замену, если размер закончился.</p></details>
+        <details><summary>А если размер не подойдёт?</summary><p>Помогу перепродать или подобрать замену в следующей закупке. По опыту чаще всего выручает таблица размеров конкретной модели — спросите меня до оплаты.</p></details>
+        <details><summary>Что если вещь закончится после оплаты?</summary><p>Наличие проверяется в момент заказа и ещё раз перед выкупом. Если размер всё-таки ушёл — верну деньги полностью или подберу замену, как вам удобнее.</p></details>
+        <details><summary>Сколько идёт посылка в другой город?</summary><p>Дорога до Екатеринбурга — ${CFG.journey}, дальше СДЭК или Яндекс: обычно 2–6 дней в зависимости от города.</p></details>
+      </div>
+    </section>
+  </div>`;
+}
 function viewText(key){
   const p = PAGES[key]; document.title = p.t + ' — POIZON.EKB';
   $('view').innerHTML = `<div class="wrap">

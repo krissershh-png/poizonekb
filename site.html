@@ -297,6 +297,8 @@ section{padding:clamp(44px,5vw,86px) 0}
 .citem .rm:hover{color:var(--red)}
 .sum{position:sticky;top:calc(var(--head) + var(--top) + 20px);border-radius:22px;background:var(--bg);padding:26px}
 .sum .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:14px;font-weight:600}
+.clearcart{display:block;width:100%;margin-top:14px;padding:6px;font-size:13.5px;font-weight:700;color:var(--mute);text-align:center;transition:color .18s}
+.clearcart:hover{color:var(--red)}
 .sum .row.total{margin-top:10px;padding-top:16px;border-top:1px solid var(--hair);font-family:var(--dela);font-weight:800;font-size:21px}
 .field{display:grid;gap:7px;margin-top:16px}
 .field span{font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
@@ -1210,6 +1212,11 @@ function addToCart(id){
   save('site_cart', cart); badge(); toast('Добавила в заказ');
 }
 function badge(){ const n = cart.length, b = $('cart-n'); b.hidden = !n; b.textContent = n }
+function clearCart(){
+  if(!cart.length) return;
+  if(!confirm('Убрать из заказа все вещи?')) return;
+  cart = []; save('site_cart', cart); badge(); route(false); toast('Заказ очищен');
+}
 function rmFromCart(i){ cart.splice(i, 1); save('site_cart', cart); badge(); route(false) }
 const cartSum = () => cart.reduce((a, c) => a + (c.price || 0), 0);
 const cartCut = () => 0;   // скидки за вторую вещь нет: работа с каждой вещью одинаковая
@@ -1255,6 +1262,7 @@ function viewCart(){
         ${authed() ? '' : `<p class="mute" style="font-size:12.5px;margin-top:10px">Войдите через Telegram — подставлю ваши скидки и сертификаты из приложения.</p>`}
         <button class="btn red block" style="margin-top:18px" onclick="sendOrder()">Оформить заказ</button>
         <button class="btn ghost block" style="margin-top:10px" onclick="copyOrder()">Скопировать заказ</button>
+        <button class="clearcart" onclick="clearCart()">Очистить заказ</button>
         <p class="mute" style="font-size:12.5px;margin-top:14px;line-height:1.55">Оплата после подтверждения наличия: пришлю QR или ссылку, комиссии нет.</p>
       </aside>
     </div>

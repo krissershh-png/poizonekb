@@ -72,6 +72,15 @@ nav.main a{position:relative;padding:4px 0;white-space:nowrap}
 nav.main a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--red);transition:right .3s var(--ease)}
 nav.main a:hover::after,nav.main a.on::after{right:0}
 nav.main a.on{color:var(--ink)}
+.util{background:var(--ink);color:#fff}
+.util .wrap{display:flex;align-items:center;gap:22px;height:38px;overflow:hidden}
+.util a{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.72);white-space:nowrap;transition:color .18s}
+.util a:hover{color:#fff}
+.usep{flex:1 1 auto}
+@media (max-width:1260px){ .util .wrap a:last-child{display:none} }
+@media (max-width:1100px){ .util .wrap a:nth-child(4){display:none} }
+@media (max-width:1000px){ .util .wrap a:nth-child(5){display:none} }
+@media (max-width:920px){ .util{display:none} }
 .ndrop{position:relative}
 .nmore{display:inline-flex;align-items:center;gap:6px;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer;background:none;border:0}
 .nmore svg{transition:transform .25s var(--ease)}
@@ -603,6 +612,19 @@ footer a:hover{color:#fff}
 </head>
 <body>
 
+<div class="util">
+  <div class="wrap">
+    <a href="#/sale">Дешевле, чем в России</a>
+    <a href="#/cert">Подарочный сертификат</a>
+    <a href="#/calc">Посчитать вещь по ссылке</a>
+    <a href="#/vibe">Подборка под мой стиль</a>
+    <a href="#/faq">Вопросы и ответы</a>
+    <span class="usep"></span>
+    <a href="#/favs">Избранное</a>
+    <a href="#/account">Личный кабинет</a>
+    <a href="https://t.me/buypoizonekb" target="_blank" rel="noopener">Канал с новинками</a>
+  </div>
+</div>
 <header id="head">
   <div class="wrap hrow">
     <a class="logo" href="#/"><i>PZ</i>POIZON.EKB</a>
@@ -610,21 +632,8 @@ footer a:hover{color:#fff}
     <nav class="main" id="nav">
       <a href="#/catalog">Каталог</a>
       <a href="#/delivery">Доставка и оплата</a>
-      <a class="nx" href="#/reviews">Отзывы</a>
-      <a class="nx" href="#/about">О магазине</a>
-      <div class="ndrop" id="ndrop">
-        <button class="nmore" onclick="toggleMore(event)">Ещё<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></button>
-        <div class="ndrop-menu">
-          <a href="#/sale">Дешевле, чем в России</a>
-          <a href="#/cert">Подарочный сертификат</a>
-          <a href="#/calc">Посчитать вещь по ссылке</a>
-          <a href="#/vibe">Подборка под мой стиль</a>
-          <a href="#/favs">Избранное</a>
-          <a href="#/account">Личный кабинет</a>
-          <a href="#/faq">Вопросы и ответы</a>
-          <a href="https://t.me/buypoizonekb" target="_blank" rel="noopener">Канал с новинками</a>
-        </div>
-      </div>
+      <a href="#/reviews">Отзывы</a>
+      <a href="#/about">О магазине</a>
     </nav>
     <label class="hsearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8080" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Samba, Dunk, угги…" autocomplete="off"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото" title="Найти по фото"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></label>
     <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">

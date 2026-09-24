@@ -80,7 +80,9 @@ nav.main a.on{color:var(--ink)}
 .icobtn:hover{background:#efe9e9;transform:translateY(-1px)}
 .icobtn b{position:absolute;top:-2px;right:-2px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;animation:pop .3s var(--ease)}
 @keyframes pop{from{transform:scale(.4)}to{transform:none}}
-.burger{display:none;width:42px;height:42px;border-radius:999px;background:var(--bg);place-items:center}
+.burger{display:none;flex:0 0 auto;width:42px;height:42px;border-radius:999px;background:var(--ink);color:#fff;place-items:center;transition:background .18s,transform .12s}
+.burger:hover{background:#000}
+.burger:active{transform:scale(.94)}
 .mob{display:none;position:fixed;inset:var(--head) 0 auto;z-index:55;background:#fff;border-bottom:1px solid var(--hair);padding:14px 0 20px;animation:fade .25s var(--ease)}
 .mob.open{display:block}
 .mob a{display:block;padding:12px 18px;font-size:16px;font-weight:600}
@@ -109,7 +111,8 @@ section{padding:clamp(44px,5vw,86px) 0}
 .hero-art::before{content:"";position:absolute;right:-40px;top:-40px;width:260px;height:260px;background-image:radial-gradient(circle,rgba(18,18,18,.13) 1.2px,transparent 1.6px);background-size:7px 7px;-webkit-mask-image:radial-gradient(ellipse at center,#000,transparent 70%);mask-image:radial-gradient(ellipse at center,#000,transparent 70%)}
 .hero-art img{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:94%;max-height:96%;object-fit:contain;animation:rise 1s var(--ease) both}
 @keyframes rise{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translateX(-50%)}}
-.pill{position:absolute;display:flex;align-items:center;gap:9px;padding:11px 16px;border-radius:999px;background:rgba(255,255,255,.96);font-size:13px;font-weight:700;box-shadow:0 16px 34px -20px rgba(17,16,16,.5);animation:rise .9s var(--ease) both}
+.pill{position:absolute;display:inline-flex;align-items:center;gap:9px;max-width:calc(100% - 32px);padding:10px 15px;border-radius:999px;background:rgba(255,255,255,.96);font-size:12.5px;font-weight:700;line-height:1.3;box-shadow:0 16px 34px -20px rgba(17,16,16,.5);animation:pillrise .8s var(--ease) both}
+@keyframes pillrise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .pill{max-width:calc(100% - 32px)}
 .pill.one{left:16px;bottom:18px;animation-delay:.25s}
 .pill.two{right:16px;top:20px;animation-delay:.4s}
@@ -359,6 +362,38 @@ footer a:hover{color:#fff}
 }
 
 
+/* ---------- три способа не гадать ---------- */
+.ways{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.4vw,22px)}
+.way{display:flex;flex-direction:column;border-radius:20px;background:#fff;box-shadow:0 0 0 1.5px var(--hair);padding:16px 16px 18px;overflow:hidden}
+.way.dark{background:var(--ink);color:#fff;box-shadow:none}
+.way-top{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(155deg,#fbfdfd,#eef5f6);margin-bottom:16px}
+.way.dark .way-top{background:#1c1a1a}
+.way b{display:block;font-family:var(--dela);font-weight:900;font-size:15px;text-transform:uppercase;letter-spacing:-.01em;padding:0 4px}
+.way p{margin-top:9px;padding:0 4px;font-size:13.5px;font-weight:600;color:var(--mute);line-height:1.5}
+.way.dark p{color:rgba(255,255,255,.7)}
+.way p{flex:1 1 auto}
+.way .btn{margin-top:16px}
+/* три ровные плитки с вещами */
+.wgrid{position:absolute;inset:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.wgrid span{display:block;border-radius:11px;background:#fff;overflow:hidden;box-shadow:0 0 0 1px var(--hair)}
+.wgrid img{width:100%;height:100%;object-fit:contain;padding:8%;transition:transform .45s var(--ease)}
+.way:hover .wgrid img{transform:scale(1.06)}
+/* сертификат внутри плашки */
+.wcert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-3deg);width:86%;height:auto;border-radius:10px;box-shadow:0 18px 36px -22px rgba(0,0,0,.9);transition:transform .45s var(--ease)}
+.way:hover .wcert{transform:translate(-50%,-50%) rotate(0deg) scale(1.03)}
+/* сканер поиска по фото */
+.wscan{position:absolute;inset:0;display:grid;place-items:center}
+.wscan img{width:64%;aspect-ratio:1;object-fit:contain;mix-blend-mode:multiply}
+.wscan .c{position:absolute;width:18px;height:18px;border:2.5px solid var(--red);border-radius:3px}
+.wscan .tl{left:14px;top:14px;border-right:0;border-bottom:0}
+.wscan .tr{right:14px;top:14px;border-left:0;border-bottom:0}
+.wscan .bl{left:14px;bottom:14px;border-right:0;border-top:0}
+.wscan .br{right:14px;bottom:14px;border-left:0;border-top:0}
+.wscan .line{position:absolute;left:14px;right:14px;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);animation:scan 2.6s var(--ease) infinite}
+@keyframes scan{0%{top:16px;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:calc(100% - 18px);opacity:0}}
+@media (max-width:980px){ .ways{grid-template-columns:1fr 1fr} }
+@media (max-width:640px){ .ways{grid-template-columns:1fr} }
+
 /* ---------- фотоблоки ---------- */
 .cover{position:relative;border-radius:24px;overflow:hidden;background:var(--bg);aspect-ratio:16/9;max-height:440px;box-shadow:inset 0 0 0 1.5px var(--hair)}
 .cover img{width:100%;height:100%;object-fit:cover;object-position:center 28%}
@@ -530,6 +565,7 @@ footer a:hover{color:#fff}
 
 <header id="head">
   <div class="wrap hrow">
+    <button class="burger" id="burger" aria-label="Меню"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <a class="logo" href="#/"><i>PZ</i>POIZON.EKB</a>
     <nav class="main" id="nav">
       <a href="#/catalog">Каталог</a>
@@ -543,7 +579,6 @@ footer a:hover{color:#fff}
     <label class="hsearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8080" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Samba, Dunk, угги…" autocomplete="off"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото" title="Найти по фото"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></label>
     <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">
     <div class="hicons">
-      <button class="burger" id="burger" aria-label="Меню"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <a class="icobtn" href="#/cart" aria-label="Заказ"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><b id="cart-n" hidden>0</b></a>
       <a class="btn ghost sm" id="auth-btn" href="#">Войти</a>
       <a class="btn red sm" href="https://t.me/poizonekbb_bot" target="_blank" rel="noopener">Telegram</a>
@@ -787,6 +822,16 @@ function viewHome(){
   const fresh = shown.filter(p => p.fresh).sort((a, b) => popScore(b) - popScore(a)).slice(0, 8);
   const sale = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a)));
   const brands = [...new Set(shown.map(p => p.brand))].filter(Boolean).slice(0, 26);
+  // в стопку берём только студийные фото на белом: коллаж получается чистым
+  const STUDIO_RE = new RegExp("/(cv|sh)/");
+  const studio = p => STUDIO_RE.test((p.img || [])[0] || "");
+  const wayBase = (VIBE ? shown.filter(p => inVibe(p, VIBE.key)) : shown).filter(studio);
+  // по одной вещи из разных разделов: коллаж показывает, что подборка не только про кроссовки
+  const wayPool = (wayBase.length >= 3 ? wayBase : shown).slice().sort((a, b) => popScore(b) - popScore(a));
+  const wayPics = ['shoes', 'clothes', 'bags', 'acc', 'beauty'].map(c => wayPool.find(p => catOf(p) === c))
+    .filter(Boolean).slice(0, 3).map(p => p.img[0]);
+  while(wayPics.length < 3 && wayPool[wayPics.length]) wayPics.push(wayPool[wayPics.length].img[0]);
+  const wayShot = (shown.filter(p => p.sub === 'sneakers' && studio(p)).sort((a, b) => popScore(b) - popScore(a))[0] || shown[0] || {}).img?.[0] || '';
   const tiles = CATS.map(c => {
     const list = shown.filter(x => catOf(x) === c.id), pics = list.slice(0, 4).map(x => `<img src="${esc(x.img[0])}" alt="" loading="lazy">`).join('');
     return `<a class="tile reveal" href="#/catalog?cat=${c.id}"><div class="pics">${pics}</div><b>${c.t}</b><span>${list.length} ${plural(list.length, ['вещь','вещи','вещей'])}</span></a>` }).join('');
@@ -807,8 +852,8 @@ function viewHome(){
         </div>
         <div class="hero-art">
           <img src="vid/home.webp" alt="Кристина с посылкой с Poizon">
-          <div class="pill one"><i></i>Проверка подлинности на Poizon</div>
-          <div class="pill two">Привожу лично в Екатеринбург</div>
+          <div class="pill one"><i></i>Проверка на Poizon</div>
+          <div class="pill two">Привожу лично</div>
         </div>
       </div>
       <div class="brands"><div class="row">${[...brands, ...brands].map(b => `<span>${esc(b)}</span>`).join('')}</div></div>
@@ -865,13 +910,25 @@ function viewHome(){
 
     <section>
       <div class="sechead reveal"><div><span class="kicker">Если сложно выбрать</span><h2>Три способа не гадать</h2></div></div>
-      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-        <div class="tcard reveal"><div class="dots"></div><b>Подборка под ваш стиль</b><span>Четыре вопроса с картинками — и я соберу вещи из каталога под то, что вы носите: обувь, верх, аксессуары.</span>
-          <button class="btn ghost sm block" style="margin-top:14px" onclick="startVibe()">${VIBE ? 'Пройти заново' : 'Пройти за минуту'}</button></div>
-        <div class="tcard dark reveal d1"><div class="dots"></div><b>Подарочный сертификат</b><span>Когда боязно не угадать с размером: дарите сумму, а вещь и размер человек выберет сам. Остаток не сгорает.</span>
-          <a class="btn ghost sm block" style="margin-top:14px;background:#fff" href="#/cert">Оформить сертификат</a></div>
-        <div class="tcard reveal d2"><div class="dots"></div><b>Поиск по фото</b><span>Есть картинка из TikTok или Pinterest? Нажмите на камеру в поиске — сравню с каталогом прямо в браузере, фото никуда не уходит.</span>
-          <button class="btn ghost sm block" style="margin-top:14px" onclick="photoPick()">Загрузить фото</button></div>
+      <div class="ways">
+        <div class="way reveal">
+          <div class="way-top"><div class="wgrid">${wayPics.map(s => `<span><img src="${esc(s)}" alt="" loading="lazy"></span>`).join('')}</div></div>
+          <b>Подборка под ваш стиль</b>
+          <p>Четыре вопроса с картинками — соберу из каталога обувь, верх и аксессуары под то, что вы носите.</p>
+          <button class="btn ghost sm block" onclick="startVibe()">${VIBE ? 'Пройти заново' : 'Пройти за минуту'}</button>
+        </div>
+        <div class="way dark reveal d1">
+          <div class="way-top"><canvas class="wcert" id="way-cert" width="760" height="475" aria-hidden="true"></canvas></div>
+          <b>Подарочный сертификат</b>
+          <p>Когда боязно не угадать с размером: дарите сумму, а вещь и размер человек выберет сам. Остаток не сгорает.</p>
+          <a class="btn ghost sm block" style="background:#fff" href="#/cert">Оформить сертификат</a>
+        </div>
+        <div class="way reveal d2">
+          <div class="way-top"><div class="wscan">${wayShot ? `<img src="${esc(wayShot)}" alt="" loading="lazy">` : ''}<i class="line"></i><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div></div>
+          <b>Поиск по фото</b>
+          <p>Есть картинка из TikTok или Pinterest? Нажмите на камеру в поиске — сравню с каталогом прямо в браузере, фото никуда не уходит.</p>
+          <button class="btn ghost sm block" onclick="photoPick()">Загрузить фото</button>
+        </div>
       </div>
     </section>
 
@@ -880,6 +937,12 @@ function viewHome(){
       <div class="vids">${VIDS.slice(0, 4).map(vidHTML).join('')}</div>
     </section>
   </div>`;
+  homeExtras();
+}
+// маленький сертификат на главной рисуется тем же кодом, что и настоящий
+function homeExtras(){
+  const c = $('way-cert'); if(!c) return;
+  certFonts().then(() => { if($('way-cert')) certDraw(c, 'red', { amount: fmt(15000), ins: 'Это тебе', to: '', from: 'Крис', num: 'SR-•••••-•••' }, 760) });
 }
 
 /* ---------- каталог ---------- */

@@ -72,6 +72,15 @@ nav.main a{position:relative;padding:4px 0;white-space:nowrap}
 nav.main a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--red);transition:right .3s var(--ease)}
 nav.main a:hover::after,nav.main a.on::after{right:0}
 nav.main a.on{color:var(--ink)}
+.ndrop{position:relative}
+.nmore{display:inline-flex;align-items:center;gap:6px;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer;background:none;border:0}
+.nmore svg{transition:transform .25s var(--ease)}
+.ndrop.open .nmore{color:var(--ink)}
+.ndrop.open .nmore svg{transform:rotate(180deg)}
+.ndrop-menu{position:absolute;right:0;top:calc(100% + 14px);min-width:212px;padding:8px;border-radius:18px;background:#fff;box-shadow:0 0 0 1.5px var(--hair),0 24px 46px -28px rgba(17,16,16,.7);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .22s var(--ease),transform .22s var(--ease),visibility .22s;z-index:70}
+.ndrop.open .ndrop-menu{opacity:1;visibility:visible;transform:none}
+.ndrop-menu a{display:block;padding:10px 12px;border-radius:12px;font-size:14px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:background .18s,color .18s}
+.ndrop-menu a:hover{background:var(--bg);color:var(--ink)}
 .hsearch{margin-left:auto;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:999px;background:var(--bg);width:clamp(140px,14vw,200px);flex:0 0 auto;transition:box-shadow .25s,background .25s,width .25s}
 .hsearch:focus-within{width:clamp(200px,22vw,280px)}
 .hsearch input{font-size:14px}
@@ -352,9 +361,9 @@ footer a:hover{color:#fff}
 .calcbox{border-radius:22px;background:var(--bg);padding:26px}
 .calcout{margin-top:20px;padding:20px;border-radius:18px;background:#fff;min-height:96px;display:flex;align-items:center}
 .calcsum{font-family:var(--dela);font-weight:900;font-size:34px;letter-spacing:-.03em;margin-top:4px}
-@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1320px){ nav.main .nx{display:none} .burger{display:grid} }
+@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1240px){ nav.main .nx{display:none} }
 @media (max-width:1040px){ nav.main a:nth-child(4){display:none} }
-@media (max-width:920px){ nav.main{display:none} }
+@media (max-width:920px){ nav.main{display:none} .burger{display:grid} }
 @media (max-width:1180px){
   .wrap{padding:0 28px}
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -605,7 +614,17 @@ footer a:hover{color:#fff}
       <a href="#/delivery">Доставка</a>
       <a class="nx" href="#/calc">Расчёт</a>
       <a class="nx" href="#/reviews">Отзывы</a>
-      <a class="nx" href="#/about">О магазине</a>
+      <div class="ndrop" id="ndrop">
+        <button class="nmore" onclick="toggleMore(event)">Ещё<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></button>
+        <div class="ndrop-menu">
+          <a href="#/about">О магазине</a>
+          <a href="#/vibe">Мой вайб</a>
+          <a href="#/favs">Избранное</a>
+          <a href="#/account">Личный кабинет</a>
+          <a href="#/faq">Вопросы и ответы</a>
+          <a href="https://t.me/buypoizonekb" target="_blank" rel="noopener">Канал с новинками</a>
+        </div>
+      </div>
     </nav>
     <label class="hsearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8080" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Samba, Dunk, угги…" autocomplete="off"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото" title="Найти по фото"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></label>
     <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">
@@ -790,6 +809,7 @@ function route(scroll){
   const { path, params } = parseHash(), parts = path.split('/');
   if(scroll !== false) window.scrollTo(0, 0);
   $('mob').classList.remove('open');
+  if($('ndrop')) $('ndrop').classList.remove('open');
   document.querySelectorAll('nav.main a').forEach(a => a.classList.toggle('on', a.getAttribute('href').slice(2) === parts[0]));
   if(parts[0] === 'account') viewAccount(params);
   else if(parts[0] === 'favs') viewFavs();
@@ -1622,6 +1642,8 @@ $('q').addEventListener('input', e => {
   }, 350);
 });
 $('burger').onclick = () => $('mob').classList.toggle('open');
+function toggleMore(e){ e.preventDefault(); e.stopPropagation(); $('ndrop').classList.toggle('open') }
+document.addEventListener('click', e => { const d = $('ndrop'); if(d && !d.contains(e.target)) d.classList.remove('open') });
 
 
 /* ================== всё, что есть в мини-приложении ================== */

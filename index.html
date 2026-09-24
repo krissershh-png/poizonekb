@@ -14,8 +14,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
 <script>
+/* Один адрес на всё: в Telegram открывается мини-приложение, в обычном браузере — сайт магазина.
+   Нужно приложение в браузере (проверить, показать) — добавьте к адресу ?app=1 */
+(function(){
+  try{
+    const u = new URL(location.href);
+    const inTg = /tgWebApp/i.test(location.hash) || /tgWebApp/i.test(location.search)
+      || !!window.TelegramWebviewProxy || !!(window.Telegram && window.Telegram.WebView)
+      || u.searchParams.has('startapp') || u.searchParams.has('tgWebAppStartParam');
+    if(inTg || u.searchParams.has('app')) return;
+    location.replace('site.html' + u.search + location.hash);
+  }catch(e){}
+})();
+</script>
+<script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-24a';
+const BUILD = '2026-09-24b';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';

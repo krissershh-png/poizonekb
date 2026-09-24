@@ -72,7 +72,9 @@ nav.main a{position:relative;padding:4px 0;white-space:nowrap}
 nav.main a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--red);transition:right .3s var(--ease)}
 nav.main a:hover::after,nav.main a.on::after{right:0}
 nav.main a.on{color:var(--ink)}
-.hsearch{margin-left:auto;display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:999px;background:var(--bg);width:clamp(180px,20vw,260px);flex:0 0 auto;transition:box-shadow .25s,background .25s}
+.hsearch{margin-left:auto;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:999px;background:var(--bg);width:clamp(140px,14vw,200px);flex:0 0 auto;transition:box-shadow .25s,background .25s,width .25s}
+.hsearch:focus-within{width:clamp(200px,22vw,280px)}
+.hsearch input{font-size:14px}
 .hsearch:focus-within{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink)}
 .hsearch input{border:0;background:none;outline:none;font-weight:500;width:100%}
 .hicons{display:flex;align-items:center;gap:8px}
@@ -350,7 +352,9 @@ footer a:hover{color:#fff}
 .calcbox{border-radius:22px;background:var(--bg);padding:26px}
 .calcout{margin-top:20px;padding:20px;border-radius:18px;background:#fff;min-height:96px;display:flex;align-items:center}
 .calcsum{font-family:var(--dela);font-weight:900;font-size:34px;letter-spacing:-.03em;margin-top:4px}
-@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1240px){ nav.main{display:none} .burger{display:grid} .hsearch{margin-left:auto} }
+@media (max-width:1100px){ .acct,.calc{grid-template-columns:minmax(0,1fr)} }@media (max-width:1320px){ nav.main .nx{display:none} .burger{display:grid} }
+@media (max-width:1040px){ nav.main a:nth-child(4){display:none} }
+@media (max-width:920px){ nav.main{display:none} }
 @media (max-width:1180px){
   .wrap{padding:0 28px}
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -447,13 +451,12 @@ footer a:hover{color:#fff}
 
 /* ---------- разворот «что вы получаете» ---------- */
 .promise{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(16px,2vw,30px);align-items:stretch}
-.pmain{position:relative;overflow:hidden;border-radius:22px;background:var(--ink);color:#fff;padding:clamp(26px,2.6vw,38px);display:flex;flex-direction:column;justify-content:flex-start;min-height:420px}
-.pm-txt{position:relative;z-index:2;max-width:30ch}
-.pm-pic{position:absolute;right:-4%;bottom:0;width:58%;max-width:340px;max-height:76%;height:auto;object-fit:contain;object-position:right bottom;z-index:1;filter:drop-shadow(0 26px 40px rgba(0,0,0,.45));animation:pmfloat 7s ease-in-out infinite;pointer-events:none}
-@keyframes pmfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@media (max-width:1180px){ .pm-pic{width:50%;right:-3%} }
-@media (max-width:900px){ .pmain{min-height:0} .pm-txt{max-width:60%} .pm-pic{width:44%;max-width:250px;max-height:58%;right:-2%} }
-@media (max-width:560px){ .pmain{padding-bottom:180px} .pm-txt{max-width:none} .pm-pic{width:62%;max-width:230px;max-height:none;right:-4%} }
+.pmain{position:relative;overflow:hidden;border-radius:22px;background:var(--ink);color:#fff;padding:clamp(26px,2.6vw,38px);display:flex;flex-direction:column;justify-content:flex-start}
+.pm-txt{position:relative;z-index:2}
+.pm-pic{position:relative;z-index:2;margin-top:auto;padding-top:26px;display:flex;align-items:center;gap:16px}
+.pm-pic img{width:104px;height:104px;border-radius:50%;object-fit:cover;object-position:center 18%;box-shadow:0 0 0 3px rgba(255,255,255,.14);animation:pmfloat 7s ease-in-out infinite}
+.pm-pic::after{content:"Крис · вожу с 2024 года";font-family:var(--body);font-size:13.5px;font-weight:700;color:rgba(255,255,255,.72);line-height:1.4;max-width:18ch}
+@keyframes pmfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .pmain .dots{position:absolute;right:-40px;top:-40px;width:230px;height:230px;background-image:radial-gradient(circle,rgba(255,255,255,.18) 1.2px,transparent 1.6px);background-size:7px 7px;pointer-events:none}
 .pmain b{position:relative;display:block;margin:12px 0 14px;font-family:var(--dela);font-weight:900;font-size:clamp(22px,2.3vw,32px);line-height:1.1;text-transform:uppercase;letter-spacing:-.02em}
 .pmain p{position:relative;font-size:14.5px;font-weight:500;line-height:1.6;color:rgba(255,255,255,.76);max-width:44ch}
@@ -598,11 +601,11 @@ footer a:hover{color:#fff}
     <nav class="main" id="nav">
       <a href="#/catalog">Каталог</a>
       <a href="#/sale">Выгода</a>
-      <a href="#/calc">Расчёт</a>
       <a href="#/cert">Сертификат</a>
       <a href="#/delivery">Доставка</a>
-      <a href="#/reviews">Отзывы</a>
-      <a href="#/about">О магазине</a>
+      <a class="nx" href="#/calc">Расчёт</a>
+      <a class="nx" href="#/reviews">Отзывы</a>
+      <a class="nx" href="#/about">О магазине</a>
     </nav>
     <label class="hsearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8080" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Samba, Dunk, угги…" autocomplete="off"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото" title="Найти по фото"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></label>
     <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">
@@ -936,7 +939,7 @@ function viewHome(){
             <p>Площадка вскрывает каждую посылку и сверяет материалы, швы и бирки. Пломба и бирка приезжают к вам вместе с вещью — их видно на фото распаковки.</p>
             <a class="btn ghost sm" style="background:#fff;margin-top:20px" href="#/reviews">Смотреть распаковки</a>
           </div>
-          <img class="pm-pic" src="img/kris-cut.webp" alt="Кристина с посылкой">
+          <div class="pm-pic"><img src="img/kris-portrait.jpg" alt="Кристина с посылкой"></div>
         </div>
         <ul class="plist">
           <li class="reveal"><span>01</span><div><b>Честная цена</b><p>Стоимость видна под каждый размер и пересчитывается по курсу юаня три раза в день. Доплат при получении нет.</p></div></li>

@@ -115,9 +115,6 @@ section{padding:clamp(44px,5vw,86px) 0}
 .pill.two{right:16px;top:20px;animation-delay:.4s}
 .pill i{width:8px;height:8px;border-radius:50%;background:var(--green);font-style:normal}
 
-.brands{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:20px 0;margin-top:clamp(28px,4vw,56px)}
-.brands span{font-family:var(--dela);font-weight:700;font-size:14px;letter-spacing:.05em;color:#b6abab;white-space:nowrap;transition:color .2s}
-.brands span:hover{color:var(--ink)}
 
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,1.4vw,24px)}
 .grid.wide{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -142,7 +139,11 @@ section{padding:clamp(44px,5vw,86px) 0}
 .tile{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/3.4;background:var(--bg);box-shadow:inset 0 0 0 2px var(--hair);display:grid;align-content:end;padding:18px;transition:box-shadow .2s}
 .tile:hover{box-shadow:inset 0 0 0 2px var(--ink)}
 .tile .pics{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;padding:14px 14px 78px;gap:6px}
-.tile::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(180deg,rgba(248,245,245,0),var(--bg) 58%);pointer-events:none}
+.tile::after{content:"";position:absolute;left:0;right:0;bottom:0;height:52%;z-index:1;background:linear-gradient(180deg,rgba(248,245,245,0),var(--bg) 54%);pointer-events:none}
+.tile b,.tile span{position:relative;z-index:2}
+.tile b{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em}
+.tile span{font-weight:700;color:var(--ink-2)}
+.tile .pics img{border-radius:10px;background:#fff}
 .tile .pics img{width:100%;height:100%;object-fit:contain}
 .tile b{position:relative;font-family:var(--dela);font-weight:700;font-size:15px}
 .tile span{position:relative;font-size:12px;font-weight:600;color:var(--mute)}
@@ -358,6 +359,63 @@ footer a:hover{color:#fff}
 }
 
 
+/* ---------- дорожка «три шага» ---------- */
+.flow{position:relative}
+.flow-line{position:relative;height:2px;background:var(--hair);border-radius:999px;margin-bottom:26px;overflow:hidden;opacity:1;transform:none}
+.flow-line i{display:block;height:100%;width:0;background:var(--red);transition:width 1.6s var(--ease)}
+.flow-line.in i{width:100%}
+.flow-row{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.6vw,26px)}
+.fstep{position:relative;padding:26px 26px 22px;border-radius:20px;background:var(--bg);overflow:hidden;transition:background .25s}
+.fstep:hover{background:#f2ecec}
+.fstep .fnum{display:block;font-family:var(--dela);font-weight:900;font-size:34px;line-height:1;letter-spacing:-.04em;color:var(--red);font-variant-numeric:tabular-nums}
+.fstep b{display:block;margin:14px 0 9px;font-family:var(--dela);font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:-.01em}
+.fstep p{font-size:14px;font-weight:600;color:var(--ink-2);line-height:1.55}
+.fstep em{display:inline-block;margin-top:16px;padding:6px 12px;border-radius:999px;background:#fff;font-style:normal;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+
+/* ---------- разворот «что вы получаете» ---------- */
+.promise{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(16px,2vw,30px);align-items:stretch}
+.pmain{position:relative;overflow:hidden;border-radius:22px;background:var(--ink);color:#fff;padding:clamp(26px,2.6vw,38px)}
+.pmain .dots{position:absolute;right:-40px;top:-40px;width:230px;height:230px;background-image:radial-gradient(circle,rgba(255,255,255,.18) 1.2px,transparent 1.6px);background-size:7px 7px;pointer-events:none}
+.pmain b{position:relative;display:block;margin:12px 0 14px;font-family:var(--dela);font-weight:900;font-size:clamp(22px,2.3vw,32px);line-height:1.1;text-transform:uppercase;letter-spacing:-.02em}
+.pmain p{position:relative;font-size:14.5px;font-weight:500;line-height:1.6;color:rgba(255,255,255,.76);max-width:44ch}
+.plist{list-style:none;display:grid;align-content:start}
+.plist li{display:flex;gap:18px;padding:20px 18px;border-radius:16px;border-bottom:1px solid var(--hair);transition:background .25s,transform .25s var(--ease)}
+.plist li:last-child{border-bottom:0}
+.plist li:hover{background:var(--bg);transform:translateX(4px)}
+.plist span{font-family:var(--dela);font-weight:900;font-size:14px;color:var(--red);padding-top:2px;font-variant-numeric:tabular-nums}
+.plist b{display:block;font-family:var(--dela);font-weight:900;font-size:15px;text-transform:uppercase;letter-spacing:-.01em}
+.plist p{margin-top:7px;font-size:14px;font-weight:600;color:var(--mute);line-height:1.55}
+@media (max-width:900px){ .promise{grid-template-columns:1fr} .flow-row{grid-template-columns:1fr} }
+
+/* ---------- маршрут посылки ---------- */
+.route{border-radius:22px;background:var(--bg);padding:clamp(22px,2.4vw,32px)}
+.rline{position:relative;height:3px;border-radius:999px;background:repeating-linear-gradient(90deg,var(--hair) 0 10px,transparent 10px 20px);margin-bottom:22px;overflow:hidden}
+.rline i{position:absolute;inset:0;width:0;background:repeating-linear-gradient(90deg,var(--red) 0 10px,transparent 10px 20px);animation:dashmove 1.4s linear infinite;transition:width 1.8s var(--ease)}
+.route.in .rline i{width:100%}
+@keyframes dashmove{to{background-position:20px 0}}
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.rgrid div{position:relative;padding-left:20px}
+.rgrid div::before{content:"";position:absolute;left:0;top:6px;width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2.5px var(--red)}
+.rgrid b{display:block;font-family:var(--dela);font-weight:900;font-size:15px;text-transform:uppercase;letter-spacing:-.01em}
+.rgrid span{display:block;margin-top:6px;font-size:13px;font-weight:600;color:var(--mute);line-height:1.5}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.tags i{font-style:normal;padding:6px 11px;border-radius:999px;background:var(--bg);font-size:12px;font-weight:800;color:var(--ink-2)}
+.tcard.dark .tags i{background:rgba(255,255,255,.12);color:#fff}
+@media (max-width:900px){ .rgrid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){ .rgrid{grid-template-columns:1fr} }
+
+/* ---------- бегущая строка брендов ---------- */
+.brands{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:20px 0;margin-top:clamp(28px,4vw,56px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.brands .row{display:flex;gap:40px;width:max-content;animation:slide 52s linear infinite}
+.brands:hover .row{animation-play-state:paused}
+.brands span{font-family:var(--dela);font-weight:700;font-size:14px;letter-spacing:.05em;color:#b6abab;white-space:nowrap;transition:color .2s}
+.brands span:hover{color:var(--ink)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* ---------- полоска прокрутки страницы ---------- */
+.sprog{position:fixed;left:0;right:0;top:0;height:2px;z-index:70;pointer-events:none}
+.sprog i{display:block;height:100%;width:0;background:var(--red);transition:width .12s linear}
+
 /* ---------- доставка: путь заказа, города, оплата ---------- */
 .steps.four{grid-template-columns:repeat(4,1fr)}
 .dpath{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:6px}
@@ -483,6 +541,7 @@ footer a:hover{color:#fff}
   <a href="#/account">Личный кабинет</a><a href="#/favs">Избранное</a>
 </div></div>
 
+<div class="sprog"><i id="sprog-i"></i></div>
 <main id="view"></main>
 
 <footer>
@@ -660,7 +719,14 @@ function route(scroll){
 }
 window.addEventListener('hashchange', () => route(true));
 function refresh(){ const { path } = parseHash(); if(path.split('/')[0] === 'cart') return; route(false) }
-addEventListener('scroll', () => $('head').classList.toggle('stuck', scrollY > 10), { passive: true });
+addEventListener('scroll', () => {
+  $('head').classList.toggle('stuck', scrollY > 10);
+  const d = document.documentElement, max = d.scrollHeight - innerHeight;
+  const bar = $('sprog-i'); if(bar) bar.style.width = (max > 40 ? Math.min(100, scrollY / max * 100) : 0) + '%';
+  // фото в шапке чуть отстаёт при прокрутке — страница оживает, но ничего не прыгает
+  const art = document.querySelector('.hero-art img');
+  if(art && scrollY < 700) art.style.transform = 'translateX(-50%) translateY(' + Math.round(scrollY * .06) + 'px)';
+}, { passive: true });
 
 /* «Сначала популярные»: сначала то, что чаще берут и что лучше выглядит в карточке.
    Кроссовки и обувь впереди, косметика и мелочь — в конце: это витрина магазина, а не склад. */
@@ -728,7 +794,7 @@ function viewHome(){
           <div class="pill two">Привожу лично в Екатеринбург</div>
         </div>
       </div>
-      <div class="brands">${brands.map(b => `<span>${esc(b)}</span>`).join('')}</div>
+      <div class="brands"><div class="row">${[...brands, ...brands].map(b => `<span>${esc(b)}</span>`).join('')}</div></div>
     </section>
 
     <section>
@@ -744,27 +810,39 @@ function viewHome(){
     </section>` : ''}
 
     ${fresh.length ? `<section>
-      <div class="sechead reveal"><div><span class="kicker">Новое в каталоге</span><h2>Только приехали</h2></div><a class="link" href="#/catalog">Смотреть все</a></div>
+      <div class="sechead reveal"><div><span class="kicker">Новое в каталоге</span><h2>Добавила недавно</h2>
+        <p class="lead">Свежие карточки: эти вещи можно заказать в ближайшую закупку ${ruDate(CFG.purchase)} — покажу цену под каждый размер.</p></div><a class="link" href="#/catalog">Смотреть все</a></div>
       <div class="grid">${fresh.map(cardHTML).join('')}</div>
     </section>` : ''}
 
     <section>
       <div class="sechead reveal"><div><span class="kicker">Как всё устроено</span><h2>Три шага до посылки</h2>
         <p class="lead">Вы видите конечную цену, я выкупаю вещь лично под вас и показываю каждый этап дороги.</p></div></div>
-      <div class="steps">
-        <div class="step reveal"><u>1</u><b>Выбираете вещь</b><p>В каталоге или по ссылке с Poizon. Если вещи здесь нет — пришлите ссылку или фото, посчитаю стоимость.</p></div>
-        <div class="step reveal d1"><u>2</u><b>Оплачиваете</b><p>Перевод по QR или ссылке, без комиссии. Вещь уходит в ближайшую закупку ${ruDate(CFG.purchase)}, присылаю фото коробки.</p></div>
-        <div class="step reveal d2"><u>3</u><b>Забираете</b><p>В Екатеринбурге и Пышме привожу до двери. В другие города — СДЭК или Яндекс до пункта выдачи.</p></div>
+      <div class="flow">
+        <div class="flow-line reveal"><i></i></div>
+        <div class="flow-row">
+          <div class="fstep reveal"><span class="fnum">01</span><b>Выбираете вещь</b><p>В каталоге или по ссылке с Poizon. Если вещи здесь нет — пришлите ссылку или фото, посчитаю стоимость.</p><em>сегодня</em></div>
+          <div class="fstep reveal d1"><span class="fnum">02</span><b>Оплачиваете</b><p>Перевод по QR или ссылке, без комиссии. Вещь уходит в ближайшую закупку, присылаю фото коробки со склада.</p><em>${ruDate(CFG.purchase)}</em></div>
+          <div class="fstep reveal d2"><span class="fnum">03</span><b>Забираете</b><p>В Екатеринбурге и Пышме привожу до двери. В другие города — СДЭК или Яндекс до пункта выдачи.</p><em>${CFG.journey} в пути</em></div>
+        </div>
       </div>
     </section>
 
     <section>
       <div class="sechead reveal"><div><span class="kicker">Почему со мной спокойно</span><h2>Что вы получаете</h2></div></div>
-      <div class="trust">
-        <div class="tcard dark reveal"><div class="dots"></div><b>Оригинал с проверкой</b><span>Poizon проверяет каждую вещь перед отправкой: бирка и пломба приходят вместе с товаром.</span></div>
-        <div class="tcard reveal d1"><div class="dots"></div><b>Честная цена</b><span>Стоимость под каждый размер, пересчёт по курсу юаня три раза в день. Доплат при получении нет.</span></div>
-        <div class="tcard reveal d2"><div class="dots"></div><b>Прозрачный путь</b><span>Трек и этапы посылки приходят в Telegram — спрашивать «где заказ» не нужно.</span></div>
-        <div class="tcard reveal d3"><div class="dots"></div><b>Живой человек</b><span>Отвечаю сама с 10:00 до 22:00, помогу с размером и подберу замену, если что-то закончилось.</span></div>
+      <div class="promise">
+        <div class="pmain reveal"><div class="dots"></div>
+          <span class="hand" style="color:#fff">без сюрпризов</span>
+          <b>Оригинал<br>с проверкой Poizon</b>
+          <p>Площадка вскрывает каждую посылку и сверяет материалы, швы и бирки. Пломба и бирка приезжают к вам вместе с вещью — их видно на фото распаковки.</p>
+          <a class="btn ghost sm" style="background:#fff;margin-top:20px" href="#/reviews">Смотреть распаковки</a>
+        </div>
+        <ul class="plist">
+          <li class="reveal"><span>01</span><div><b>Честная цена</b><p>Стоимость видна под каждый размер и пересчитывается по курсу юаня три раза в день. Доплат при получении нет.</p></div></li>
+          <li class="reveal d1"><span>02</span><div><b>Прозрачный путь</b><p>Трек и этапы посылки приходят в Telegram сами — спрашивать «где заказ» не нужно.</p></div></li>
+          <li class="reveal d2"><span>03</span><div><b>Живой человек</b><p>Отвечаю сама с 10:00 до 22:00, помогу с размером и подберу замену, если что-то закончилось.</p></div></li>
+          <li class="reveal d3"><span>04</span><div><b>Деньги под защитой</b><p>Если размер уходит до выкупа — возвращаю всю сумму или меняю на то, что вам подойдёт.</p></div></li>
+        </ul>
       </div>
     </section>
 
@@ -1280,13 +1358,25 @@ function viewDelivery(){
 
     <section>
       <div class="sechead reveal"><div><span class="kicker">Куда привожу</span><h2>Города и пункты выдачи</h2></div></div>
-      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="route reveal">
+        <div class="rline"><i></i></div>
+        <div class="rgrid">
+          <div><b>Гуанчжоу</b><span>склад Poizon, проверка и упаковка</span></div>
+          <div><b>Москва</b><span>таможня и сортировка</span></div>
+          <div><b>Екатеринбург</b><span>забираю посылку и разбираю заказы</span></div>
+          <div><b>Вы</b><span>до двери по городу или в пункт выдачи</span></div>
+        </div>
+      </div>
+      <div class="trust" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:clamp(22px,2.4vw,34px)">
         <div class="tcard dark reveal"><div class="dots"></div><b>Екатеринбург и Верхняя Пышма</b>
-          <span>Привожу лично до двери или встречаемся, где удобно. Это уже в цене — платить за доставку по городу не нужно.</span></div>
+          <span>Привожу лично до двери или встречаемся, где удобно. Это уже в цене — платить за доставку по городу не нужно.</span>
+          <div class="tags"><i>до двери</i><i>0 ₽</i><i>в день прибытия</i></div></div>
         <div class="tcard reveal d1"><div class="dots"></div><b>Вся Россия</b>
-          <span>СДЭК или Яндекс Доставка до пункта выдачи. Дорогу от Екатеринбурга до вас оплачиваете при получении — обычно 300–700 ₽.</span></div>
+          <span>СДЭК или Яндекс Доставка до пункта выдачи. Дорогу от Екатеринбурга до вас оплачиваете при получении.</span>
+          <div class="tags"><i>СДЭК</i><i>Яндекс</i><i>300–700 ₽</i></div></div>
         <div class="tcard reveal d2"><div class="dots"></div><b>Если вещь уже у меня</b>
-          <span>Вещи «в наличии» отдаю в день заказа: ждать закупку не нужно. Такие карточки помечены зелёным.</span></div>
+          <span>Вещи «в наличии» отдаю в день заказа: ждать закупку не нужно. Такие карточки помечены зелёным.</span>
+          <div class="tags"><i>сразу</i><i>без ожидания</i></div></div>
       </div>
     </section>
 

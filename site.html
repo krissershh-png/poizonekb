@@ -609,16 +609,16 @@ footer a:hover{color:#fff}
     <button class="burger" id="burger" aria-label="Меню"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <nav class="main" id="nav">
       <a href="#/catalog">Каталог</a>
-      <a href="#/sale">Выгода</a>
-      <a href="#/cert">Сертификат</a>
-      <a href="#/delivery">Доставка</a>
-      <a class="nx" href="#/calc">Расчёт</a>
+      <a href="#/delivery">Доставка и оплата</a>
       <a class="nx" href="#/reviews">Отзывы</a>
+      <a class="nx" href="#/about">О магазине</a>
       <div class="ndrop" id="ndrop">
         <button class="nmore" onclick="toggleMore(event)">Ещё<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></button>
         <div class="ndrop-menu">
-          <a href="#/about">О магазине</a>
-          <a href="#/vibe">Мой вайб</a>
+          <a href="#/sale">Дешевле, чем в России</a>
+          <a href="#/cert">Подарочный сертификат</a>
+          <a href="#/calc">Посчитать вещь по ссылке</a>
+          <a href="#/vibe">Подборка под мой стиль</a>
           <a href="#/favs">Избранное</a>
           <a href="#/account">Личный кабинет</a>
           <a href="#/faq">Вопросы и ответы</a>
@@ -636,10 +636,10 @@ footer a:hover{color:#fff}
   </div>
 </header>
 <div class="mob" id="mob"><div class="wrap">
-  <a href="#/catalog">Каталог</a><a href="#/sale">Выгода к России</a><a href="#/vibe">Мой вайб</a>
-  <a href="#/cert">Подарочный сертификат</a><a href="#/calc">Расчёт по ссылке</a><a href="#/delivery">Доставка и оплата</a>
-  <a href="#/reviews">Отзывы</a><a href="#/about">О магазине</a><a href="#/faq">Вопросы</a>
-  <a href="#/account">Личный кабинет</a><a href="#/favs">Избранное</a>
+  <a href="#/catalog">Каталог</a><a href="#/delivery">Доставка и оплата</a><a href="#/reviews">Отзывы</a>
+  <a href="#/about">О магазине</a><a href="#/sale">Дешевле, чем в России</a><a href="#/cert">Подарочный сертификат</a>
+  <a href="#/calc">Посчитать вещь по ссылке</a><a href="#/vibe">Подборка под мой стиль</a>
+  <a href="#/favs">Избранное</a><a href="#/account">Личный кабинет</a><a href="#/faq">Вопросы и ответы</a>
 </div></div>
 
 <div class="sprog"><i id="sprog-i"></i></div>
@@ -660,8 +660,8 @@ footer a:hover{color:#fff}
       </div>
       <div>
         <h4>Покупателю</h4>
-        <a href="#/delivery">Доставка и оплата</a><br><a href="#/sale">Выгода к России</a><br>
-        <a href="#/cert">Подарочный сертификат</a><br><a href="#/vibe">Мой вайб</a><br>
+        <a href="#/delivery">Доставка и оплата</a><br><a href="#/sale">Дешевле, чем в России</a><br>
+        <a href="#/cert">Подарочный сертификат</a><br><a href="#/vibe">Подборка под мой стиль</a><br>
         <a href="#/faq">Вопросы и ответы</a><br><a href="#/about">О магазине</a>
       </div>
       <div>
@@ -1304,7 +1304,7 @@ function viewSale(){
   document.title = 'Дешевле, чем в России — POIZON.EKB';
   const list = CAT.filter(p => !p.post && rusOk(p, minPrice(p))).sort((a, b) => (RETAIL[b.id].p - minPrice(b)) - (RETAIL[a.id].p - minPrice(a)));
   $('view').innerHTML = `<div class="wrap">
-    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Выгода к России</span></div>
+    <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Дешевле, чем в России</span></div>
     <div class="pagehead"><span class="kicker">Сравнение цен</span><h1 style="margin-top:12px">Дешевле, чем в России</h1>
       <p class="lead">Сравниваю с ценой в магазинах, где вещь лежит в наличии: ЦУМ, Rendez-Vous, Street Beat и другие. В список попадают только заметные разницы — от 2000 ₽ и от 20%. Цены проверяю вручную.</p></div>
     <div style="display:grid;gap:12px;padding-bottom:60px">${list.map(saleItemHTML).join('') || '<div class="empty">Пока пусто</div>'}</div></div>`;

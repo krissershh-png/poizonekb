@@ -697,7 +697,7 @@ footer a:hover{color:#fff}
    Формула цены повторяет приложение: товар (юани × курс) + доставка + комиссия, округление вверх до …90. */
 const BOT_NAME = 'poizonekbb_bot', BOT = 'https://t.me/' + BOT_NAME, KRIS = 'https://t.me/kristinaershhova';
 const API = 'https://script.google.com/macros/s/AKfycbzzE0kwM4nW-RLMEY0Jw4dfeT6pCyE0EoGYgIG3jATVMcgQgGMfIGNZwv8NR7VUFpZq/exec';
-const CFG = { kgRate: 650, minParcelKg: 1, shipRisk: 0.008, fee: 2500, feeNext: 1000, rate: { small: 13.75, big: 13.7 }, purchase: '2026-09-30', journey: '3–4 недели',
+const CFG = { kgRate: 650, minParcelKg: 1, shipRisk: 0.008, fee: 2500, feeNext: 2500, rate: { small: 13.75, big: 13.7 }, purchase: '2026-09-30', journey: '3–4 недели',
   pay: { bank: 'Т-Банк', link: 'https://www.tbank.ru/rm/r_RGLXmKfWCa.nrMkJlZsBB/zP0S581765', qr: 'img/pay-qr.png' } };
 const CAT = (window.CATALOG || []).filter(p => p && p.img && p.img.length);
 let PRICES = window.PRICES || { items: {} }, RETAIL = {};
@@ -1212,7 +1212,7 @@ function addToCart(id){
 function badge(){ const n = cart.length, b = $('cart-n'); b.hidden = !n; b.textContent = n }
 function rmFromCart(i){ cart.splice(i, 1); save('site_cart', cart); badge(); route(false) }
 const cartSum = () => cart.reduce((a, c) => a + (c.price || 0), 0);
-const cartCut = () => cart.length > 1 ? (cart.length - 1) * (CFG.fee - CFG.feeNext) : 0;
+const cartCut = () => 0;   // скидки за вторую вещь нет: работа с каждой вещью одинаковая
 
 function viewCart(){
   document.title = 'Заказ — POIZON.EKB';
@@ -1249,7 +1249,6 @@ function viewCart(){
       <aside class="sum">
         <div class="row"><span>Вещей</span><b>${cart.length}</b></div>
         <div class="row"><span>Стоимость</span><b>${fmt(sum)}</b></div>
-        ${cut ? `<div class="row"><span>Скидка за вторую вещь</span><b style="color:var(--red)">−${fmt(cut)}</b></div>` : ''}
         ${coup ? `<div class="row"><span>Ваша скидка · ${esc((best && best.why) || 'подарок')}</span><b style="color:var(--red)">−${fmt(coup)}</b></div>` : ''}
         ${CERT ? `<div class="row"><span>Сертификатом ${esc(CERT.num)}</span><b style="color:var(--red)">−${fmt(certUse)}</b></div>` : ''}
         <div class="row total"><span>${certUse ? 'К переводу' : 'Итого'}</span><b>${fmt(total - certUse)}</b></div>
@@ -1267,7 +1266,6 @@ function orderText(){
     return `• ${p.brand} ${p.name} — размер ${c.size} — ${fmt(c.price)}` });
   const cut = cartCut(), coup = couponCut(cartSum());
   return ['Здравствуйте! Заказ с сайта:', ...lines, '',
-    cut ? `Скидка за вторую вещь: −${fmt(cut)}` : null,
     coup ? `Моя скидка: −${fmt(coup)}` : null,
     CERT ? `Оплачу сертификатом ${CERT.num}` : null,
     `Итого: ${fmt(cartSum() - cut - coup)}`, '',
@@ -1640,7 +1638,6 @@ function viewDelivery(){
           <div class="r"><span>Сама вещь на Poizon</span><b>по курсу юаня</b></div>
           <div class="r"><span>Доставка Китай — Екатеринбург</span><b>уже в цене</b></div>
           <div class="r"><span>Моя работа: выкуп, проверка, хранение</span><b>уже в цене</b></div>
-          <div class="r"><span>Вторая и следующие вещи в заказе</span><b>дешевле</b></div>
           <div class="r"><span>Доставка по Екатеринбургу и Пышме</span><b>0 ₽</b></div>
           <div class="r"><span>Доплаты при получении</span><b>нет</b></div>
         </div>

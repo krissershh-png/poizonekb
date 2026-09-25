@@ -29,7 +29,7 @@
 </script>
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-24c';
+const BUILD = '2026-09-25a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -918,7 +918,7 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
 <!-- ================= КАТАЛОГ ================= -->
 <section class="screen" id="s-shop">
   <div class="top"><h1 class="h1" style="font-size:19px">Каталог</h1><button class="ava" onclick="go('me')"><img src="img/mascot-round.png" alt=""></button></div>
-  <div class="qwrap"><input id="q" placeholder="Поиск: Samba, Dunk, Labubu…" oninput="renderShop()" style="border-radius:999px;background:var(--bg);border-color:transparent"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div>
+  <div class="qwrap"><input id="q" placeholder="Поиск: Samba, Dunk, Labubu…" oninput="renderShop();trackSearch(this.value)" style="border-radius:999px;background:var(--bg);border-color:transparent"><button class="qphoto" type="button" onclick="photoPick()" aria-label="Найти по фото"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div>
   <input type="file" id="photo-in" accept="image/*" hidden onchange="photoChosen(this)">
   <div class="chips" id="shop-chips" style="margin-top:10px"></div>
   <div class="chips sub" id="shop-sub" style="margin-top:8px" hidden></div>
@@ -1366,6 +1366,7 @@ function go(s){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
   window.scrollTo(0,0); $('vibe-nudge').hidden = true;
   if(s==='shop') renderShop(); if(s==='cart') renderCart(); if(s==='me') renderMe();
+  track('screen', s);
   screenHint(s);
   if(tg){ s==='home' ? tg.BackButton.hide() : tg.BackButton.show() }
   haptic('light');
@@ -1499,7 +1500,9 @@ function surveyLater(){ save('survey', { later: Date.now() + 3 * 864e5 }); close
 })();
 /* «Найти по фото»: человек выбирает снимок вещи, бот присылает его Крис с контактом; Крис находит вещь на Poizon и пишет в личку */
 let PHOTO = null;
-function photoPick(){ const i = $('photo-in'); i.value = ''; i.click() }
+let searchTimer = null;
+function trackSearch(v){ clearTimeout(searchTimer); const s = String(v || '').trim(); if(s.length < 2) return; searchTimer = setTimeout(() => track('search', s), 900) }
+function photoPick(){ track('photo_search'); const i = $('photo-in'); i.value = ''; i.click() }
 function photoChosen(inp){
   const f = inp.files && inp.files[0]; if(!f) return;
   if(!/^image\//.test(f.type)) return toast('Выберите фото');
@@ -1958,6 +1961,7 @@ $('size-all').innerHTML = Object.keys(CHARTS).filter(b=>!['Jordan','Onitsuka Tig
 /* ---------- карточка товара ---------- */
 let pick = null;
 function openProduct(id){
+  { const pp = CAT.find(x => x.id === id); if(pp) track('product', pp.brand + ' ' + pp.name); }
   const p = CAT.find(x=>x.id===id); if(!p) return;
   openedThisVisit++; rememberViewed(id);
   if(favs.includes(id) && favPrice(p)){ FP[id] = favPrice(p); save('favp', FP) }   // посмотрели — метка «цена ниже» снимается
@@ -3660,6 +3664,27 @@ function cloudLoad(){
 }
 
 /* ---------- личные ссылки и таблица клиентов (Google Таблица, код в bot/Code.gs) ---------- */
+/* ---------- тихая статистика приложения ----------
+   Складываем действия пачками и отправляем боту: он кладёт их в лист «Клики» рядом с событиями сайта. */
+let EVQ = [], EVLAST = '';
+function track(name, detail){
+  try{
+    const key = name + '|' + (detail || '');
+    if(key === EVLAST) return; EVLAST = key;
+    setTimeout(() => { if(EVLAST === key) EVLAST = '' }, 1500);
+    EVQ.push({ n: String(name).slice(0, 40), d: detail == null ? '' : String(detail).slice(0, 180),
+      p: (document.querySelector('.screen.active') || {}).id || '', t: Date.now() });
+    if(EVQ.length >= 12) flushEvents();
+  }catch(e){}
+}
+function flushEvents(){
+  if(!EVQ.length || !CFG.api || !inTg) return;
+  const body = JSON.stringify({ t: 'ev', src: 'app', initData: tg.initData, events: EVQ.splice(0, 30) });
+  try{ fetch(CFG.api, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body, keepalive: true }).catch(() => {}) }catch(e){}
+}
+setInterval(() => flushEvents(), 12000);
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') flushEvents() });
+addEventListener('pagehide', () => flushEvents());
 function api(t, data){
   if(!CFG.api || !inTg) return Promise.resolve(null);
   return fetch(CFG.api, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },

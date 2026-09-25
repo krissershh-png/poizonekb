@@ -9,7 +9,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="POIZON.EKB — оригиналы с Poizon под заказ">
 <meta property="og:description" content="Каталог с ценой под каждый размер. Заказ, трек и статусы посылки — в Telegram.">
-<meta property="og:image" content="img/bot-welcome.jpg">
+<meta property="og:image" content="https://krissershh-png.github.io/poizonekb/img/kris-box.jpg">
+<meta property="og:url" content="https://krissershh-png.github.io/poizonekb/">
+<meta property="og:site_name" content="POIZON.EKB">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://krissershh-png.github.io/poizonekb/">
+<link rel="apple-touch-icon" href="img/mascot-round.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Store","name":"POIZON.EKB","description":"Оригиналы с Poizon под заказ: кроссовки, одежда, сумки, косметика. Цена под каждый размер, доставка до Екатеринбурга включена.","url":"https://krissershh-png.github.io/poizonekb/","image":"https://krissershh-png.github.io/poizonekb/img/kris-box.jpg","areaServed":"Россия","address":{"@type":"PostalAddress","addressLocality":"Екатеринбург","addressCountry":"RU"},"openingHours":"Mo-Su 10:00-22:00","priceRange":"₽₽","sameAs":["https://t.me/poizonekbb_bot","https://t.me/buypoizonekb","https://t.me/feedbackpoizonekb"]}</script>
 <link rel="icon" href="img/mascot-round.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +36,8 @@ a{color:inherit;text-decoration:none}
 button,select,input,textarea{font:inherit;color:inherit}
 button{border:0;background:none;cursor:pointer}
 ::selection{background:var(--glow)}
+:focus-visible{outline:2.5px solid var(--red);outline-offset:3px;border-radius:6px}
+.btn:focus-visible,.chip:focus-visible,.icobtn:focus-visible,.burger:focus-visible{outline-offset:4px}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 40px}
 h1,h2,h3{font-family:var(--dela);font-weight:900;line-height:1.08;letter-spacing:-.02em;text-transform:uppercase}
 h1{font-size:clamp(30px,4vw,54px)}
@@ -210,9 +219,9 @@ section{padding:clamp(44px,5vw,86px) 0}
 .saleitem .th{width:96px;height:96px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px var(--hair-2);overflow:hidden}
 .saleitem .th img{width:100%;height:100%;object-fit:contain;padding:8%}
 .saleitem .bars{margin-top:9px;display:grid;gap:6px;max-width:440px}
-.bar{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--mute);min-width:0}
-.bar em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar i{height:8px;border-radius:999px;background:var(--hair);font-style:normal;flex:0 0 auto}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--mute);min-width:0}
+.bar em{font-style:normal;white-space:nowrap;justify-self:start}
+.bar i{height:8px;border-radius:999px;background:var(--hair);font-style:normal;max-width:100%}
 .bar.our i{background:var(--red)}
 .saleitem .gain{font-family:var(--dela);font-weight:800;font-size:19px;color:var(--red);white-space:nowrap}
 
@@ -273,6 +282,11 @@ section{padding:clamp(44px,5vw,86px) 0}
 .szs button.on span{color:rgba(255,255,255,.72)}
 .szs button.no{opacity:.32;cursor:default;text-decoration:line-through}
 .acts{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.buybar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:58;align-items:center;justify-content:space-between;gap:14px;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.97);box-shadow:0 -10px 30px -22px rgba(17,16,16,.8);border-top:1px solid var(--hair);transform:translateY(120%);transition:transform .3s var(--ease)}
+.buybar.on{transform:none}
+.buybar span{display:block;font-family:var(--dela);font-weight:900;font-size:17px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.buybar b{display:block;margin-top:2px;font-size:12px;font-weight:600;color:var(--mute);max-width:48vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:760px){ .buybar{display:flex} }
 .pnote{margin-top:18px;padding:16px 18px;border-radius:18px;background:var(--bg);font-size:13.5px;font-weight:500;color:var(--ink-2);line-height:1.55}
 .acc{margin-top:22px;border-top:1px solid var(--hair)}
 .acc details{border-bottom:1px solid var(--hair)}
@@ -396,11 +410,24 @@ footer a:hover{color:#fff}
   .wrap{padding:0 18px}
   nav.main,.hsearch{display:none}
   .burger{display:grid}
+  /* в шапке на телефоне помещается только главное: логотип, меню, корзина и вход */
+  .hrow{gap:10px}
+  .hicons{gap:6px}
+  .hicons .btn.red{display:none}
+  .logo{font-size:15px;gap:9px}
+  .logo i{width:30px;height:30px;border-radius:10px;font-size:11px}
+  .btn.sm{height:38px;padding:0 14px;font-size:13.5px}
+  /* кнопки под текстом — одной ширины, в столбик */
+  .hero .cta .btn,.pagehead .cta .btn{flex:1 1 100%}
+  /* цифры на первом экране — аккуратной строкой, а не вразнобой */
+  .facts{grid-template-columns:1fr;gap:0;margin-top:26px;border-top:1px solid var(--hair)}
+  .facts>div{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--hair)}
+  .facts b{font-size:19px}
+  .facts span{font-size:13px;text-align:right}
   .hero-grid{grid-template-columns:minmax(0,1fr)}
   .grid,.grid.wide{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .tiles{grid-template-columns:repeat(2,1fr)}
   .steps,.fgrid,.side{grid-template-columns:minmax(0,1fr)}
-  .facts{grid-template-columns:repeat(2,auto);gap:20px}
   .pgal{grid-template-columns:minmax(0,1fr)}
   .pgal .thumbs{grid-auto-flow:column;grid-auto-columns:70px;overflow:auto;max-height:none}
   .pgal .thumbs button{width:70px;height:70px}
@@ -705,6 +732,41 @@ const CAT = (window.CATALOG || []).filter(p => p && p.img && p.img.length);
 let PRICES = window.PRICES || { items: {} }, RETAIL = {};
 let cart = load('site_cart', []), more = 24, chosen = null;
 let AUTH = load('site_auth', null), ME = load('site_me', null), FAVS = load('site_favs', []), ORDERS = null;
+
+/* ---------- тихая статистика: что людям интересно ----------
+   Пишем только действия (что открыли, что искали) — без телефонов, адресов и текста заказа.
+   Складываем пачками и отправляем боту, он кладёт их в лист «Клики». */
+const VID = (() => {
+  let v = load('site_vid', '');
+  if(!v){ v = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); save('site_vid', v); save('site_first', 1) }
+  return v;
+})();
+let EVQ = [], EVLAST = '';
+function track(name, detail){
+  try{
+    const key = name + '|' + (detail || '') + '|' + location.hash;
+    if(key === EVLAST) return; EVLAST = key;             // один и тот же клик дважды не пишем
+    setTimeout(() => { if(EVLAST === key) EVLAST = '' }, 1500);
+    EVQ.push({ n: String(name).slice(0, 40), d: detail == null ? '' : String(detail).slice(0, 180), p: (location.hash || '#/').slice(1), t: Date.now() });
+    if(EVQ.length >= 12) flushEvents();
+  }catch(e){}
+}
+function flushEvents(closing){
+  if(!EVQ.length) return;
+  const body = JSON.stringify({ t: 'ev', src: 'site', vid: VID, auth: AUTH || null, events: EVQ.splice(0, 30) });
+  try{
+    if(closing && navigator.sendBeacon) navigator.sendBeacon(API, new Blob([body], { type: 'text/plain;charset=UTF-8' }));
+    else fetch(API, { method: 'POST', body, keepalive: true }).catch(() => {});
+  }catch(e){}
+}
+setInterval(() => flushEvents(), 12000);
+addEventListener('pagehide', () => flushEvents(true));
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') flushEvents(true) });
+// клики по ссылкам в Telegram — видно, что людей уводит в чат
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href*="t.me"]');
+  if(a) track('telegram', (a.textContent || '').trim().slice(0, 40) || a.getAttribute('href'));
+}, true);
 const authed = () => !!(AUTH && AUTH.id);
 /* тот же сервер, что у мини-приложения: вход подписан Telegram, поэтому заказы и статусы общие */
 function api(t, data){
@@ -714,6 +776,7 @@ function api(t, data){
 }
 function onTgAuth(u){
   AUTH = u; save('site_auth', u); closeModal();
+  track('login', u.username ? '@' + u.username : (u.first_name || ''));
   api('open').then(r => { if(r && r.ok){ ME = r; save('site_me', r); if(Array.isArray(r.favs)) { FAVS = r.favs; save('site_favs', FAVS) } }
     toast('Вы вошли как ' + (u.username ? '@' + u.username : u.first_name)); renderAuth(); go('/account') });
 }
@@ -842,6 +905,7 @@ function route(scroll){
   else if(PAGES[parts[0]]) viewText(parts[0]);
   else viewHome();
   watch();
+  track('view', document.title.replace(' — POIZON.EKB', ''));
 }
 window.addEventListener('hashchange', () => route(true));
 function refresh(){ const { path } = parseHash(); if(path.split('/')[0] === 'cart') return; route(false) }
@@ -1124,6 +1188,7 @@ function renderList(params){
 /* фильтры работают и в каталоге, и в подборке вайба — остаёмся на своей странице */
 function basePath(){ const p = parseHash().path.split('/'); return p[0] === 'vibe' && p[1] ? '/vibe/' + p[1] : '/catalog' }
 function setParam(k, v){
+  if(v) track('filter', k + ': ' + v);
   const { params } = parseHash(); params[k] = v;
   if(k !== 'sort') more = 24;
   if(!v) delete params[k];
@@ -1153,6 +1218,7 @@ function viewProduct(id){
   const p = CAT.find(x => x.id === decodeURIComponent(id));
   if(!p){ $('view').innerHTML = `<div class="wrap"><div class="pagehead"><h1>Вещь не нашлась</h1><p class="lead">Возможно, её уже забрали. <a href="#/catalog" style="color:var(--red)">Открыть каталог</a></p></div></div>`; return }
   document.title = `${p.brand} ${p.name} — купить с Poizon | POIZON.EKB`;
+  track('product', p.brand + ' ' + p.name);
   chosen = null;
   const s = sizesOf(p), ok = s.filter(x => x.ok), mn = minPrice(p), mx = maxPrice(p), r = RETAIL[p.id];
   const similar = CAT.filter(x => x.id !== p.id && visible(x) && catOf(x) === catOf(p) && (!p.sub || x.sub === p.sub)).slice(0, 4);
@@ -1176,7 +1242,7 @@ function viewProduct(id){
           : ok.length ? `<div class="stockline">На Poizon сейчас ${ok.length} ${plural(ok.length, ['размер','размера','размеров'])} из ${s.length}</div>` : ''}
         ${!p.stock && s.length ? `<div class="szhead"><b>Размер</b><span class="mute" style="font-size:13px">у каждого своя цена</span></div>
           <div class="szs">${s.map(x => `<button class="${x.ok ? '' : 'no'}" ${x.ok ? `onclick="chooseSize(this,'${esc(x.eu)}',${x.price})"` : ''}>${esc(x.eu)}<span>${x.ok ? fmt(x.price) : 'нет'}</span></button>`).join('')}</div>` : ''}
-        <div class="acts">
+        <div class="acts" id="p-acts">
           <button class="btn red" onclick="addToCart('${esc(p.id)}')">Добавить в заказ</button>
           <a class="btn ghost" href="${KRIS}?text=${encodeURIComponent('Привет! Вопрос по ' + p.brand + ' ' + p.name)}" target="_blank" rel="noopener">Спросить о размере</a>
           <button class="btn ghost" onclick="giftItem('${esc(p.id)}')">Подарить сертификатом</button>
@@ -1189,14 +1255,25 @@ function viewProduct(id){
         </div>
       </div>
     </div>
+    <div class="buybar" id="buybar"><div><span id="bb-price">${mn ? fmt(mn) : 'по запросу'}</span><b>${esc(p.brand)} ${esc(p.name)}</b></div>
+      <button class="btn red sm" onclick="addToCart('${esc(p.id)}')">В заказ</button></div>
     ${looks.length ? `<section style="padding-top:20px"><div class="sechead reveal"><div><span class="kicker">Как носят</span><h2>Образы с этими вещами</h2></div></div>${looksHTML(looks)}</section>` : ''}
     ${similar.length ? `<section style="padding-top:20px"><div class="sechead reveal"><div><span class="kicker">Смотрите также</span><h2>Похожее в этом разделе</h2></div></div><div class="grid">${similar.map(cardHTML).join('')}</div></section>` : ''}
   </div>`;
 }
+function buybarWatch(){
+  const bar = $('buybar'), acts = $('p-acts');
+  if(!bar || !acts) return;
+  const r = acts.getBoundingClientRect();
+  bar.classList.toggle('on', r.bottom < 0);
+}
+addEventListener('scroll', buybarWatch, { passive: true });
 function pickPhoto(btn, src){ $('pbig').src = src; document.querySelectorAll('.thumbs button').forEach(b => b.classList.toggle('on', b === btn)) }
 function chooseSize(btn, eu, price){ chosen = { eu, price };
   document.querySelectorAll('.szs button').forEach(b => b.classList.toggle('on', b === btn));
-  $('pprice').textContent = fmt(price) }
+  $('pprice').textContent = fmt(price);
+  if($('bb-price')) $('bb-price').textContent = fmt(price);
+}
 
 /* ---------- заказ ---------- */
 function addToCart(id){
@@ -1210,6 +1287,7 @@ function addToCart(id){
   }
   cart.push({ id, size: pick.eu, price: pick.price });
   save('site_cart', cart); badge(); toast('Добавила в заказ');
+  track('add_to_cart', p.brand + ' ' + p.name + ' · ' + pick.eu);
 }
 function badge(){ const n = cart.length, b = $('cart-n'); b.hidden = !n; b.textContent = n }
 function clearCart(){
@@ -1287,6 +1365,7 @@ function sendOrder(){
   if(!$('f-addr').value.trim()) return toast('Укажите адрес или пункт выдачи');
   if(!$('f-agree').checked) return toast('Отметьте, что возврата нет');
   saveContact();
+  track('order_start', cart.length + ' ' + plural(cart.length, ['вещь','вещи','вещей']) + ' на ' + fmt(cartSum()));
   const t = orderText();
   if(!authed()){
     try{ navigator.clipboard && navigator.clipboard.writeText(t) }catch(e){}
@@ -1312,6 +1391,7 @@ function sendOrder(){
         window.open(`${BOT}?text=${encodeURIComponent(t)}`, '_blank', 'noopener');
         return toast('Сервер не ответил — открыла Telegram с готовым заказом');
       }
+      track('order_done', num + ' · ' + fmt(pay));
       cart = []; save('site_cart', cart); badge();
       orderDoneView(num, pay, !!r.hold);
     });
@@ -1341,6 +1421,7 @@ function viewSale(){
 }
 
 function playVid(k, t){
+  track('video', t);
   $('modal').classList.add('vid');
   $('modal-box').innerHTML = `<button class="close" onclick="closeModal()">✕</button><h3 style="margin:0 0 12px;padding-right:44px">${esc(t)}</h3>
     <video src="vid/${k}.mp4" poster="vid/${k}.jpg" controls autoplay playsinline></video>`;
@@ -1416,6 +1497,7 @@ function loadOrders(){
 }
 /* оплата прямо на сайте: QR, ссылка и перевод по номеру — как в приложении */
 function openPaySheet(num, sum){
+  track('pay_open', num);
   openModal(`<h3 style="margin:0 0 6px;padding-right:44px">Оплата заказа ${esc(num)}</h3>
     <p class="mute" style="font-size:14px;margin:0 0 4px">К переводу <b style="color:var(--ink)">${fmt(sum)}</b> · ${esc(CFG.pay.bank)}, комиссии нет.</p>
     <img src="${CFG.pay.qr}" alt="QR для оплаты" style="display:block;width:min(260px,70%);margin:16px auto;border-radius:18px;background:var(--bg)">
@@ -1460,6 +1542,8 @@ function toggleFav(e, id){
   const i = FAVS.indexOf(id);
   i < 0 ? FAVS.push(id) : FAVS.splice(i, 1);
   save('site_favs', FAVS);
+  const fp = CAT.find(x => x.id === id);
+  if(i < 0) track('favourite', fp ? fp.brand + ' ' + fp.name : id);
   document.querySelectorAll(`[data-fav="${id}"]`).forEach(b => b.classList.toggle('on', i < 0));
   if(authed()) api('favs', { list: FAVS });
   toast(i < 0 ? 'Добавила в избранное — напишу, если подешевеет' : 'Убрала из избранного');
@@ -1543,7 +1627,7 @@ const PAGES = {
       <details><summary>Сколько ждать?</summary><p>Вещь уходит в ближайшую закупку, дальше дорога ${CFG.journey}. Трек и этапы приходят в Telegram.</p></details>
       <details><summary>Можно заказать вещь, которой нет в каталоге?</summary><p>Да. Пришлите ссылку с Poizon или просто фото — посчитаю стоимость и найду.</p></details>
       <details><summary>Как оплатить?</summary><p>Переводом по QR или ссылке, без комиссии. Наличными не беру.</p></details>
-      <details><summary>Безопасно ли входить через Telegram?</summary><p>Да. Окно входа открывает сам Telegram на своём сайте — мы туда не вмешиваемся. Пароль, код и номер телефона Telegram нам не передаёт: магазин получает только имя, ник и подпись Telegram, которой мы проверяем, что это действительно вы. Вход нужен только для того, чтобы показать ваши заказы и путь посылки, и его можно отключить в Telegram: Настройки → Конфиденциальность → Сайты. Заказать можно и без входа.</p></details><details><summary>Где хранятся мои данные?</summary><p>Сам сайт — это набор файлов без базы: каталог, фотографии и цены. Имя, телефон и адрес из формы заказа уходят напрямую в мою таблицу заказов и в Telegram-бот, по защищённому соединению. Данные карты я не вижу никогда: оплата идёт переводом в вашем банке.</p></details><details><summary>Есть ли возврат?</summary><p>Нет: вещь выкупается лично под вас. Поэтому помогаю с размером заранее и подбираю замену, если размер закончился.</p></details>
+      <details><summary>Безопасно ли входить через Telegram?</summary><p>Да. Окно входа открывает сам Telegram на своём сайте — мы туда не вмешиваемся. Пароль, код и номер телефона Telegram нам не передаёт: магазин получает только имя, ник и подпись Telegram, которой мы проверяем, что это действительно вы. Вход нужен только для того, чтобы показать ваши заказы и путь посылки, и его можно отключить в Telegram: Настройки → Конфиденциальность → Сайты. Заказать можно и без входа.</p></details><details><summary>Где хранятся мои данные?</summary><p>Сам сайт — это набор файлов без базы: каталог, фотографии и цены. Имя, телефон и адрес из формы заказа уходят напрямую в мою таблицу заказов и в Telegram-бот, по защищённому соединению. Данные карты я не вижу никогда: оплата идёт переводом в вашем банке. Ещё сайт ведёт обычную статистику посещений — какие разделы и вещи открывают, что ищут: без имён, телефонов и содержимого заказов, чтобы понимать, что стоит привозить.</p></details><details><summary>Есть ли возврат?</summary><p>Нет: вещь выкупается лично под вас. Поэтому помогаю с размером заранее и подбираю замену, если размер закончился.</p></details>
     </div>` },
 };
 function viewAbout(){
@@ -1698,6 +1782,7 @@ $('q').addEventListener('input', e => {
   clearTimeout(window._qt);
   window._qt = setTimeout(() => {
     const v = e.target.value.trim(), { params } = parseHash();
+    if(v) track('search', v);
     params.q = v; if(!v) delete params.q; more = 24;
     go('/catalog' + (Object.keys(params).length ? '?' + new URLSearchParams(params).toString() : ''));
   }, 350);
@@ -1724,6 +1809,7 @@ function revsHTML(){
 }
 function openRev(i){
   const r = REVS[i]; if(!r) return;
+  track('review');
   const ph = (r.photos || []);
   openModal(`<div class="revbig">${ph.map(s => `<img src="${esc(s)}" alt="Отзыв покупателя" style="margin-bottom:10px">`).join('')}
     ${r.video ? `<video src="${esc(r.video)}" poster="${esc(r.poster || '')}" controls playsinline style="width:100%;border-radius:18px;background:#000"></video>` : ''}
@@ -1778,7 +1864,7 @@ async function visualSearch(src){
   }
   return Object.entries(best).map(([id, s]) => ({ p: CAT.find(z => z.id === id), s })).filter(z => z.p && visible(z.p)).sort((a, b) => b.s - a.s);
 }
-function photoPick(){ const i = $('photo-in'); i.value = ''; i.click() }
+function photoPick(){ track('photo_search'); const i = $('photo-in'); i.value = ''; i.click() }
 function photoChosen(inp){
   const f = inp.files && inp.files[0]; if(!f) return;
   if(!/^image\//.test(f.type)) return toast('Выберите фото');
@@ -1890,6 +1976,7 @@ function finishVibe(){
   VQS.picks.forEach(v => { sc[v[0]] += 2; sc[v[1]] += 1 });
   const key = Object.keys(sc).sort((a, b) => sc[b] - sc[a] || vibeCount(b, true) - vibeCount(a, true) || vibeCount(b) - vibeCount(a))[0];
   VIBE = { key, at: Date.now() }; save('site_vibe', VIBE);
+  track('vibe', VIBES[key].t);
   if(authed()) api('vibe', { key, scores: sc });
   closeModal(); go('/vibe/' + key);
 }
@@ -2136,6 +2223,7 @@ const certVal = id => (($(id) || {}).value || '').trim();
 const certData = num => ({ amount: fmt(certDenom), ins: certIns || 'Это тебе', to: certVal('cert-to'), from: certVal('cert-from'), num: num || 'SR-•••••-•••' });
 function viewCert(params){
   document.title = 'Подарочный сертификат — POIZON.EKB';
+  track('cert_open');
   if(params && params.sum) certDenom = Math.max(500, parseInt(params.sum, 10) || 15000);
   $('view').innerHTML = `<div class="wrap">
     <div class="crumbs"><a href="#/">Главная</a><span>·</span><span>Сертификат</span></div>
@@ -2202,7 +2290,7 @@ async function buyCert(){
   const img = c.toDataURL('image/jpeg', .86);
   const r = authed() ? await api('cert', { cert: { num, value: certDenom, to, from, wish, design: certDesign, ins: certIns }, img, write: true }) : null;
   btn.disabled = false; btn.textContent = 'Оформить сертификат';
-  if(r && r.ok) return certDone(num, certDenom, img);
+  if(r && r.ok){ track('cert_buy', num + ' · ' + fmt(certDenom)); return certDone(num, certDenom, img) }
   const msg = ['Здравствуйте! Хочу электронный подарочный сертификат POIZON.EKB, заявка ' + num, '',
     `Сумма: ${fmt(certDenom)}`, `Дизайн: ${(CERT_DESIGNS.find(z => z.id === certDesign) || {}).t}`, `Надпись: ${certIns}`,
     to ? `Кому: ${to}` : null, from ? `От кого: ${from}` : null, wish ? `Поздравление: ${wish}` : null,
@@ -2295,6 +2383,7 @@ function viewCertLink(num){
 
 /* ---------- расчёт по ссылке: сразу с готовым сообщением ---------- */
 function calcSend(){
+  track('calc_send');
   const y = +($('c-yen') || {}).value || 0, link = (($('c-link') || {}).value || '').trim(), size = (($('c-size') || {}).value || '').trim();
   const kind = (document.querySelector('.calc .chip.on') || {}).textContent || '';
   const msg = ['Здравствуйте! Хочу посчитать вещь с Poizon:',
@@ -2306,6 +2395,9 @@ function calcSend(){
 }
 
 badge(); renderAuth();
+if(load('site_first', 0)){ save('site_first', 0);
+  track('first_visit', (document.referrer ? 'пришёл с ' + (function(){ try{ return new URL(document.referrer).hostname }catch(e){ return 'сайта' } })() : 'напрямую') + ' · ' + (innerWidth < 760 ? 'телефон' : 'компьютер'));
+}
 route();
 // избранное и заказы подтягиваются, если человек уже входил
 if(authed()) api('open').then(r => { if(r && r.ok){ ME = r; save('site_me', r); if(Array.isArray(r.favs) && r.favs.length){ FAVS = r.favs; save('site_favs', FAVS) } renderAuth(); refresh() } });

@@ -751,6 +751,33 @@ function track(name, detail){
     if(EVQ.length >= 12) flushEvents();
   }catch(e){}
 }
+// чем человек смотрит сайт и откуда пришёл — одной строкой, без слежки за личным
+function deviceInfo(){
+  const ua = navigator.userAgent;
+  const br = /YaBrowser/.test(ua) ? 'Яндекс.Браузер' : /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera'
+    : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'браузер';
+  const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad|iPod/.test(ua) ? 'iPhone' : /Windows/.test(ua) ? 'Windows'
+    : /Mac OS/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : '';
+  return [br, os, innerWidth + '×' + innerHeight].filter(Boolean).join(', ');
+}
+function fromInfo(){
+  try{
+    const u = new URL(location.href), utm = u.searchParams.get('utm_source') || u.searchParams.get('from');
+    if(utm) return 'метка ' + utm;
+    if(!document.referrer) return 'напрямую';
+    const hn = new URL(document.referrer).hostname.replace(/^www\./, '');
+    if(hn === location.hostname) return 'внутри сайта';
+    return 'с ' + hn;
+  }catch(e){ return 'напрямую' }
+}
+let SESS_AT = Date.now();
+try{
+  if(!sessionStorage.getItem('pz_sess')){
+    sessionStorage.setItem('pz_sess', String(SESS_AT));
+    setTimeout(() => track('session', deviceInfo() + ' · ' + fromInfo()), 200);
+  }
+}catch(e){}
+addEventListener('pagehide', () => { const sec = Math.round((Date.now() - SESS_AT) / 1000); if(sec > 4) track('session_end', sec + ' сек') });
 function flushEvents(closing){
   if(!EVQ.length) return;
   const body = JSON.stringify({ t: 'ev', src: 'site', vid: VID, auth: AUTH || null, events: EVQ.splice(0, 30) });

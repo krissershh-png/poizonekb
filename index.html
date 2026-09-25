@@ -29,7 +29,7 @@
 </script>
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-25a';
+const BUILD = '2026-09-25b';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -3677,6 +3677,9 @@ function track(name, detail){
     if(EVQ.length >= 12) flushEvents();
   }catch(e){}
 }
+let SESS_AT = Date.now();
+setTimeout(() => { try{ track('session', [(tg && tg.platform) || 'telegram', 'версия ' + ((tg && tg.version) || ''), innerWidth + '×' + innerHeight].join(', ') + ' · из Telegram') }catch(e){} }, 400);
+addEventListener('pagehide', () => { const sec = Math.round((Date.now() - SESS_AT) / 1000); if(sec > 4) track('session_end', sec + ' сек') });
 function flushEvents(){
   if(!EVQ.length || !CFG.api || !inTg) return;
   const body = JSON.stringify({ t: 'ev', src: 'app', initData: tg.initData, events: EVQ.splice(0, 30) });

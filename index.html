@@ -29,7 +29,7 @@
 </script>
 <script>
 /* Telegram держит старую страницу в кэше. Сверяем номер сборки со свежей копией и один раз перезагружаемся с ?v= */
-const BUILD = '2026-09-25b';
+const BUILD = '2026-09-29a';
 (function(){
   try{
     const u = new URL(location.href), key = 'pz5_reloadFor';
@@ -948,6 +948,10 @@ nav .badge{position:absolute;top:1px;right:calc(50% - 21px);min-width:17px;heigh
   <div class="field"><span>Цена на Poizon, ¥</span><div class="yen"><span>¥</span><input id="yen" type="number" inputmode="decimal" min="50" value="499" oninput="calc()"></div></div>
   <div class="field"><span>Категория</span><div class="catlist" id="cats"></div></div>
   <div class="field"><span>Сколько вещей</span><input id="qty" type="number" inputmode="numeric" min="1" step="1" value="1" oninput="calc()"></div>
+  <div class="field"><span>Как везём</span><div class="chips" id="c-way">
+    <button class="chip on" onclick="pickWay(false,this)">Фурой, 3–4 недели</button>
+    <button class="chip" onclick="pickWay(true,this)">Самолётом, 7–10 дней</button>
+  </div></div>
   <div class="box" style="margin-top:14px">
     <div class="dots"></div>
     <span class="hand">итого</span>
@@ -1109,6 +1113,7 @@ const CFG = {
      Остальные веса — оценки по типовым коробкам, уточнятся по накладным. Клиент веса не видит */
   cats: [
     { k:'shoes_hi', t:'Кроссовки высокие, ботинки', w:2.9 },
+    { k:'puffer',   t:'Пуховик, зимняя куртка',     w:2.9 },
     { k:'shoes_lo', t:'Кроссовки низкие, кеды',     w:1.55 },
     { k:'bag',      t:'Сумка, рюкзак',              w:1.6 },
     { k:'hoodie',   t:'Худи, кофта, костюм',        w:1.05 },
@@ -1116,7 +1121,7 @@ const CFG = {
     { k:'tee',      t:'Футболка, шорты',            w:0.45 },
     { k:'small',    t:'Духи, очки, часы, кошелёк',  w:0.3 },
   ],
-  kgRate: 650, minParcelKg: 1, shipRisk: 0.008,
+  kgRate: 650, airRate: 3000, minParcelKg: 1, shipRisk: 0.008,
   /* комиссия: первая вещь 2 500 ₽, каждая следующая в том же заказе 1 000 ₽. В карточке цена как для первой вещи.
      minMargin: скидки и подарки никогда не опускают заработок с заказа ниже 2 000 ₽ — запас 500 ₽ уже в цене каждой вещи */
   fee: 2500, feeNext: 2500, minMargin: 2000,
@@ -1283,7 +1288,8 @@ async function loadRate(){
    доставка = max(1 кг, вес × n) × 650 + 0,8% от цены товара; комиссия = 2 500 + 1 000 × (n − 1).
    Цена вещи посчитана как отдельная посылка; в корзине вещи едут одной посылкой, разница вычитается (shipCut) */
 const parcelShip = kg => Math.max(CFG.minParcelKg, kg) * CFG.kgRate;
-const shipCost = (rub, kg, n = 1) => parcelShip(kg * n) + CFG.shipRisk * rub;
+let AIR = false;   // «быстро самолётом» в расчёте по ссылке: дороже за килограмм, но без ожидания фуры
+const shipCost = (rub, kg, n = 1) => (AIR ? Math.max(CFG.minParcelKg, kg * n) * CFG.airRate : parcelShip(kg * n)) + CFG.shipRisk * rub;
 const feeFor = (n = 1) => CFG.fee + CFG.feeNext * (n - 1);
 function priceFrom(cny, kg, n = 1){ const rub = cny*rateFor(cny)*n, x = rub + shipCost(rub, kg, n) + feeFor(n); return Math.ceil((x+10)/100)*100 - 10 }
 /* объёмный вес вещи из каталога проставлен при разметке (p.kg); запасной — как у низких кроссовок */
@@ -2181,6 +2187,7 @@ const qtyVal = v => Math.max(1, Math.round(+v || 1));
 const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 /* категории — строками во всю ширину: название слева, галочка справа у выбранной */
 const catRows = (sel, fn) => CFG.cats.map(c => `<button class="catrow ${c.k === sel ? 'on' : ''}" onclick="${fn}('${c.k}',this)"><span>${c.t}</span><i>${CHECK_SVG}</i></button>`).join('');
+function pickWay(air, el){ AIR = !!air; el.parentNode.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b === el)); haptic('tick'); calc() }
 function pickCalcCat(k, el){ calcCat = k; el.parentNode.querySelectorAll('.catrow').forEach(b => b.classList.toggle('on', b === el)); haptic('tick'); calc() }
 $('cats').innerHTML = catRows(calcCat, 'pickCalcCat');
 /* итог — одна сумма, без разложения на товар, доставку и комиссию: разложение показывает заработок и провоцирует торг */
@@ -2194,7 +2201,7 @@ function calc(){
   // курс загружен только что из канала обменника — это курс на сегодня (в тексте их поста дата бывает старая). Не подтянулся — ничего не пишем
   $('rate-txt').textContent = RATE.live && y && !msg ? 'курс на ' + new Date().toLocaleDateString('ru-RU', { day:'numeric', month:'long' }) : '';
 }
-function orderFromCalc(){ const y = parseFloat($('yen').value) || 0; if(!y){ toast('Введите цену в юанях'); return } openCustom({ yen:y, cat:calcCat, qty:qtyVal($('qty').value) }) }
+function orderFromCalc(){ const y = parseFloat($('yen').value) || 0; if(!y){ toast('Введите цену в юанях'); return } openCustom({ yen:y, cat:calcCat, qty:qtyVal($('qty').value), air:AIR }) }
 
 /* =====================================================================
    КОЛЕСО ПОДАРКОВ

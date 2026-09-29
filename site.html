@@ -1596,7 +1596,9 @@ function viewCalc(){
       <div class="calcbox">
         <div class="field"><span>Цена на Poizon, ¥</span><input id="c-yen" type="number" inputmode="numeric" placeholder="например, 520" oninput="calcNow()"></div>
         <div class="field"><span>Что это за вещь</span>
-          <div class="chips" style="margin-top:2px">${[['1.55','Кроссовки, кеды'],['2.9','Ботинки, высокие кроссовки'],['1.05','Одежда'],['1.6','Сумка'],['0.45','Футболка'],['0.3','Мелочь, косметика']].map(([w, t], i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-w="${w}" onclick="pickKg(this)">${t}</button>`).join('')}</div></div>
+          <div class="chips" style="margin-top:2px">${[['1.55','Кроссовки, кеды'],['2.9','Ботинки, высокие кроссовки'],['2.9','Пуховик, зимняя куртка'],['1.05','Одежда'],['1.6','Сумка'],['0.45','Футболка'],['0.3','Мелочь, косметика']].map(([w, t], i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-w="${w}" onclick="pickKg(this)">${t}</button>`).join('')}</div></div>
+        <div class="field"><span>Как везём</span>
+          <div class="chips" style="margin-top:2px"><button class="chip on" onclick="pickWay(false,this)">Фурой, 3–4 недели</button><button class="chip" onclick="pickWay(true,this)">Самолётом, 7–10 дней</button></div></div>
         <div class="calcout" id="c-out"><span class="mute">Введите цену — посчитаю</span></div>
         <div class="field" style="margin-top:14px"><span>Ссылка на вещь (необязательно)</span><input id="c-link" placeholder="dw4.co/t/… или ссылка из приложения Poizon"></div>
         <div class="field"><span>Размер</span><input id="c-size" placeholder="EU 38 или M"></div>
@@ -1608,14 +1610,17 @@ function viewCalc(){
         <span>Товар по курсу юаня, доставка Китай — Екатеринбург и моя работа. При получении ничего доплачивать не нужно: в другие города оплачивается только путь до пункта выдачи, 300–700 ₽.</span></div>
     </div></div>`;
 }
-let calcKg = 1.55;
-function pickKg(b){ document.querySelectorAll('.calc .chip').forEach(x => x.classList.toggle('on', x === b)); calcKg = +b.dataset.w || 1.55; calcNow() }
+let calcKg = 1.55, calcAir = false;
+function pickKg(b){ b.parentNode.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); calcKg = +b.dataset.w || 1.55; calcNow() }
+function pickWay(air, b){ b.parentNode.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); calcAir = !!air; calcNow() }
 function calcNow(){
   const y = +($('c-yen') || {}).value || 0, out = $('c-out');
   if(!y) return out.innerHTML = '<span class="mute">Введите цену — посчитаю</span>';
-  const p = priceFrom(y, calcKg);
+  const per = calcAir ? 3000 : CFG.kgRate;
+  const rub = y * rateFor(y), x = rub + Math.max(CFG.minParcelKg, calcKg) * per + CFG.shipRisk * rub + CFG.fee;
+  const p = Math.ceil((x + 10) / 100) * 100 - 10;
   out.innerHTML = `<div><div class="mute" style="font-size:13px;font-weight:700">Конечная цена</div><div class="calcsum">${fmt(p)}</div>
-    <div class="mute" style="font-size:12.5px;margin-top:6px">Курс ${CFG.rate.small} ₽ за ¥, доставка и моя работа уже внутри</div></div>`;
+    <div class="mute" style="font-size:12.5px;margin-top:6px">${calcAir ? 'Самолётом: 7–10 дней от выкупа' : 'Фурой: 3–4 недели от выкупа'} · курс ${CFG.rate.small} ₽ за ¥, доставка и моя работа уже внутри</div></div>`;
 }
 function copyText(s){ try{ navigator.clipboard.writeText(s).then(() => toast('Скопировано'), () => toast('Скопируйте вручную: ' + s)) }catch(e){ toast(s) } }
 /* ---------- текстовые страницы ---------- */
@@ -2415,7 +2420,7 @@ function calcSend(){
   const kind = (document.querySelector('.calc .chip.on') || {}).textContent || '';
   const msg = ['Здравствуйте! Хочу посчитать вещь с Poizon:',
     link ? 'Ссылка: ' + link : null, kind ? 'Что это: ' + kind : null, size ? 'Размер: ' + size : null,
-    y ? 'Цена на Poizon: ' + y + ' ¥ (по вашему расчёту ' + fmt(priceFrom(y, calcKg)) + ')' : null,
+    y ? 'Цена на Poizon: ' + y + ' ¥, доставка ' + (calcAir ? 'самолётом' : 'фурой') : null,
     '', 'Подтвердите, пожалуйста, наличие и цену'].filter(v => v !== null).join('\n');
   try{ navigator.clipboard && navigator.clipboard.writeText(msg).catch(() => {}) }catch(e){}
   window.open(`${BOT}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');

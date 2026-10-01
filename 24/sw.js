@@ -1,6 +1,6 @@
 // Build placeholders are replaced by build.js. Each scope owns a separate cache.
 'use strict';
-const BUILD = "aaa774561a32ff48edda";
+const BUILD = "34d20a28bcb338aefc88";
 const FILES = ["fonts/37809322a538075f843a.woff2","fonts/44e514ae89e3e936a880.woff2","fonts/7edc5262966b2b5aa3b3.woff2","fonts/9b3963915707a91fb079.woff2","fonts/a19d936814f18212010d.woff2","fonts/a5df16d8135b4111af83.woff2","fonts/aca8cb86c04d6b4dd732.woff2","fonts/d324f9941b3a33938bc0.woff2","fonts/d3534b8d279e16ecc41c.woff2","fonts/df5fa2abf855ab9bfd1f.woff2","fonts/e0c165192dac62e031a8.woff2","fonts/eb5048c0298c7042b4d2.woff2","fonts/fonts.css","icon.png","img/kris-cut.webp","img/kris.jpg","index.html","manifest.webmanifest"];
 const SCOPE = new URL(self.registration.scope);
 const PREFIX = 'kt-' + encodeURIComponent(SCOPE.href) + '-';
